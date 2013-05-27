@@ -19,7 +19,7 @@ Publications
 
 If you use this framework for your research, we would appreciate if you could cite the following reference:
 
-  Ucar, I.; Navarro-Ortiz, J.; Ameigeiras, P.; Lopez-Soler, J.M., *_Video Tester — A multiple-metric framework for video quality assessment over IP networks_*, _Broadband Multimedia Systems and Broadcasting (BMSB), 2012 IEEE International Symposium on_, pp.1-5, 27-29 June 2012, DOI: [10.1109/BMSB.2012.6264243](http://dx.doi.org/10.1109/BMSB.2012.6264243), *[arXiv:1301.5793](http://arxiv.org/abs/1301.5793) [cs.MM]*
+  Ucar, I.; Navarro-Ortiz, J.; Ameigeiras, P.; Lopez-Soler, J.M., **Video Tester — A multiple-metric framework for video quality assessment over IP networks**, *Broadband Multimedia Systems and Broadcasting (BMSB), 2012 IEEE International Symposium on*, pp.1-5, 27-29 June 2012, DOI: [10.1109/BMSB.2012.6264243](http://dx.doi.org/10.1109/BMSB.2012.6264243), [arXiv:1301.5793](http://arxiv.org/abs/1301.5793) **[cs.MM]**
 
 Installation
 ------------
@@ -37,19 +37,19 @@ Video Tester has the following dependencies:
 * WxPython 2.8.11 with Matplotlib backend.
 * OpenCV 2.1 with Python bindings.
 
-First of all, enable [http://rpmfusion.org RPM Fusion] repositories:
+First of all, enable [RPM Fusion](http://rpmfusion.org) repositories:
 
-  $ su -c 'yum localinstall --nogpgcheck http://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm http://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm'
+	$ su -c 'yum localinstall --nogpgcheck http://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm http://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm'
 
 This dependencies can be installed with the following command (only for Fedora):
 
-  $ su -c 'yum install gstreamer gstreamer-plugins-base gstreamer-plugins-good gstreamer-plugins-ugly gstreamer-plugins-bad-free gstreamer-plugins-bad-nonfree gstreamer-python gstreamer-ffmpeg gstreamer-rtsp gstreamer-rtsp-python scapy numpy python-matplotlib python-matplotlib-wx wxPython opencv-python'
+	$ su -c 'yum install gstreamer gstreamer-plugins-base gstreamer-plugins-good gstreamer-plugins-ugly gstreamer-plugins-bad-free gstreamer-plugins-bad-nonfree gstreamer-python gstreamer-ffmpeg gstreamer-rtsp gstreamer-rtsp-python scapy numpy python-matplotlib python-matplotlib-wx wxPython opencv-python'
 
 Now, you can download the latest version of Video Tester. Then, follow this steps:
 
-  $ tar xzf VideoTester-x.x.tar.gz
-  $ cd VideoTester-x.x
-  $ sudo python setup.py install
+	$ tar xzf VideoTester-x.x.tar.gz
+	$ cd VideoTester-x.x
+	$ sudo python setup.py install
 
 During the installation, you'll be asked for two configuration parameters:
 
@@ -65,16 +65,16 @@ NOTE: the current working directory MUST contain the `VT.conf` file.
 
 VT in server mode:
 
-  $ VT server
+	$ VT server
 
 VT in client mode:
 
-  $ VT client
+	$ VT client
 
 VT in client mode specifying another configuration file:
 
-  $ VT client -c another.conf
+	$ VT client -c another.conf
 
 VT in client mode with GUI:
 
-  $ VT client -g
+	$ VT client -g
