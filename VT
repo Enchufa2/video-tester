@@ -1,0 +1,41 @@
+#! /usr/bin/env python
+# coding=UTF8
+## This file is part of VideoTester
+## See http://video-tester.googlecode.com for more information
+## Copyright 2011 Iñaki Úcar <i.ucar86@gmail.com>
+## This program is published under a GPLv3 license
+
+from VideoTester.config import parseArgs, initLogger, VTLOG
+from sys import exit
+
+if __name__ == '__main__':
+    args = parseArgs()
+    initLogger(args)
+    if args.mode == "server":
+        from VideoTester.config import SERVERIP, SERVERPORT
+        from VideoTester.core import Server
+        server = Server()
+        try:
+            VTLOG.info('XMLRPC Server running at ' + SERVERIP + ':' + str(SERVERPORT))
+            VTLOG.info('Use Control-C to exit')
+            server.serve_forever()
+        except KeyboardInterrupt:
+            pass
+        VTLOG.info("Exiting...")
+    else:
+        from os import getuid
+        if getuid() != 0:
+            VTLOG.error("You need administrator privileges to run this program as client")
+            exit()
+        if args.gui:
+            from VideoTester.gui import ClientGUI
+            client = ClientGUI(0)
+            client.MainLoop()
+        else:
+            from VideoTester.config import CONF
+            from VideoTester.core import Client
+            if args.conf:
+                CONF = args.conf[0]
+            client = Client(CONF)
+            client.run()
+        VTLOG.info("Exiting...")

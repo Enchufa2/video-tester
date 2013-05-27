@@ -1,0 +1,209 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>HOWTO: Implementing new metrics &mdash; VideoTester 0.2 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="shortcut icon" href="_static/VTfavicon.png"/>
+    <link rel="top" title="VideoTester 0.2 documentation" href="index.html" />
+    <link rel="next" title="Module Reference" href="modules.html" />
+    <link rel="prev" title="Usage" href="usage.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="modules.html" title="Module Reference"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="usage.html" title="Usage"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">VideoTester 0.2 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="howto-implementing-new-metrics">
+<h1>HOWTO: Implementing new metrics<a class="headerlink" href="#howto-implementing-new-metrics" title="Permalink to this headline">¶</a></h1>
+<p>Video Tester has three categories:</p>
+<ul class="simple">
+<li>QoS measures (located at <a class="reference internal" href="qos.html#module-VideoTester.measures.qos" title="VideoTester.measures.qos"><tt class="xref py py-mod docutils literal"><span class="pre">VideoTester.measures.qos</span></tt></a>).</li>
+<li>Bitstream measures (located at <a class="reference internal" href="bs.html#module-VideoTester.measures.bs" title="VideoTester.measures.bs"><tt class="xref py py-mod docutils literal"><span class="pre">VideoTester.measures.bs</span></tt></a>).</li>
+<li>Video quality measures (located at <a class="reference internal" href="vq.html#module-VideoTester.measures.vq" title="VideoTester.measures.vq"><tt class="xref py py-mod docutils literal"><span class="pre">VideoTester.measures.vq</span></tt></a>).</li>
+</ul>
+<p>A new metric MUST be a new class that SHOULD be placed in its corresponding module, and it MUST satisfy the following requirements:</p>
+<ul class="simple">
+<li>It MUST inherit from its type of measure (or from another measure):</li>
+</ul>
+<blockquote>
+<div><ul class="simple">
+<li><a class="reference internal" href="qos.html#VideoTester.measures.qos.QoSmeasure" title="VideoTester.measures.qos.QoSmeasure"><tt class="xref py py-class docutils literal"><span class="pre">VideoTester.measures.qos.QoSmeasure</span></tt></a></li>
+<li><a class="reference internal" href="bs.html#VideoTester.measures.bs.BSmeasure" title="VideoTester.measures.bs.BSmeasure"><tt class="xref py py-class docutils literal"><span class="pre">VideoTester.measures.bs.BSmeasure</span></tt></a></li>
+<li><a class="reference internal" href="vq.html#VideoTester.measures.vq.VQmeasure" title="VideoTester.measures.vq.VQmeasure"><tt class="xref py py-class docutils literal"><span class="pre">VideoTester.measures.vq.VQmeasure</span></tt></a></li>
+</ul>
+</div></blockquote>
+<ul class="simple">
+<li>It SHOULD implement a method called <tt class="docutils literal"><span class="pre">__init__()</span></tt>.</li>
+<li>It MUST implement a method called <tt class="docutils literal"><span class="pre">calculate()</span></tt>.</li>
+</ul>
+<p>Here is an example of three new measures:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">PlotMeasure</span><span class="p">(</span><span class="n">QoSmeasure</span><span class="p">):</span>
+        <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+                <span class="n">QoSmeasure</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;&quot;plot&quot; measure&#39;</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s">&#39;type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;plot&#39;</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s">&#39;units&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="s">&#39;units for x axis&#39;</span><span class="p">,</span> <span class="s">&#39;units for y axis&#39;</span><span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">calculate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+                <span class="c"># Some stuff...</span>
+                <span class="n">x</span> <span class="o">=</span> <span class="o">...</span> <span class="c"># List of values (x axis)</span>
+                <span class="n">y</span> <span class="o">=</span> <span class="o">...</span> <span class="c"># List of values (y axis)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span>
+
+<span class="k">class</span> <span class="nc">ValueMeasure</span><span class="p">(</span><span class="n">QoSmeasure</span><span class="p">):</span>
+        <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+                <span class="n">QoSmeasure</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;&quot;value&quot; measure&#39;</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s">&#39;type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;value&#39;</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s">&#39;units&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;units&#39;</span>
+
+        <span class="k">def</span> <span class="nf">calculate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+                <span class="c"># Some stuff...</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s">&#39;value&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="o">...</span> <span class="c"># Output value</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span>
+
+<span class="k">class</span> <span class="nc">BarMeasure</span><span class="p">(</span><span class="n">QoSmeasure</span><span class="p">):</span>
+        <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+                <span class="n">QoSmeasure</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;&quot;bar&quot; measure&#39;</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s">&#39;type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;bar&#39;</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s">&#39;units&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="s">&#39;units for x axis&#39;</span><span class="p">,</span> <span class="s">&#39;units for y axis&#39;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s">&#39;width&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="o">...</span> <span class="c"># Bar width</span>
+
+        <span class="k">def</span> <span class="nf">calculate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+                <span class="c"># Some stuff...</span>
+                <span class="n">x</span> <span class="o">=</span> <span class="o">...</span> <span class="c"># List of values (x axis)</span>
+                <span class="n">y</span> <span class="o">=</span> <span class="o">...</span> <span class="c"># List of values (y axis)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span>
+</pre></div>
+</div>
+<p>Finally, each measure MUST be registered in its corresponding meter:</p>
+<ul class="simple">
+<li><a class="reference internal" href="qos.html#VideoTester.measures.qos.QoSmeter" title="VideoTester.measures.qos.QoSmeter"><tt class="xref py py-class docutils literal"><span class="pre">VideoTester.measures.qos.QoSmeter</span></tt></a></li>
+<li><a class="reference internal" href="bs.html#VideoTester.measures.bs.BSmeter" title="VideoTester.measures.bs.BSmeter"><tt class="xref py py-class docutils literal"><span class="pre">VideoTester.measures.bs.BSmeter</span></tt></a></li>
+<li><a class="reference internal" href="vq.html#VideoTester.measures.vq.VQmeter" title="VideoTester.measures.vq.VQmeter"><tt class="xref py py-class docutils literal"><span class="pre">VideoTester.measures.vq.VQmeter</span></tt></a>.</li>
+</ul>
+<p>Here is an example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">QoSmeter</span><span class="p">(</span><span class="n">Meter</span><span class="p">):</span>
+        <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">selected</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+                <span class="n">Meter</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+                <span class="k">if</span> <span class="s">&#39;latency&#39;</span> <span class="ow">in</span> <span class="n">selected</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">measures</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Latency</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
+
+                <span class="c"># other measures</span>
+
+                <span class="k">if</span> <span class="s">&#39;plotmeasure&#39;</span> <span class="ow">in</span> <span class="n">selected</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">measures</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">PlotMeasure</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
+                <span class="k">if</span> <span class="s">&#39;valuemeasure&#39;</span> <span class="ow">in</span> <span class="n">selected</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">measures</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ValueMeasure</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
+                <span class="k">if</span> <span class="s">&#39;barmeasure&#39;</span> <span class="ow">in</span> <span class="n">selected</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">measures</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">BarMeasure</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/VT200x170.png" alt="Logo"/>
+            </a></p>
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="usage.html"
+                        title="previous chapter">Usage</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="modules.html"
+                        title="next chapter">Module Reference</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/howto.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="modules.html" title="Module Reference"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="usage.html" title="Usage"
+             >previous</a> |</li>
+        <li><a href="index.html">VideoTester 0.2 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Iñaki Úcar.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>
