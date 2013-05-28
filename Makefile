@@ -19,22 +19,21 @@ clean:
 	-rm -f MANIFEST
 
 doc:
-	-svn remove $(DOC)/* --force
+	-rm -rf $(DOC)/*
 	-make -C $(MAKEFILE) html
 	-cp -rf $(BUILDDIR)/* $(DOC)
 	-rm -rf $(DOC)/doctrees
-	-svn add $(DOC)/*
 	-make -C $(MAKEFILE) clean
 	@echo
 	@echo "Doc rebuilt."
 
 sdist:
 	-cp VT.conf doc
-	-cp README doc/README.txt
-	-cp COPYING doc/COPYING.txt
+	-cp README.md doc/
+	-cp LICENSE doc/
 	-cp -rf test doc
 	-python setup.py sdist
-	-rm doc/VT.conf doc/README.txt doc/COPYING.txt
+	-rm doc/VT.conf doc/README.md doc/LICENSE
 	-rm -rf doc/test
 	@echo
 	@echo "Build finished."
