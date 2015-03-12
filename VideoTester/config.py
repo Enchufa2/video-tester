@@ -119,7 +119,7 @@ TEMP = USERPATH + '/temp/'
 thispath = os.path.realpath(__file__)
 thispath = thispath[0:thispath.rfind('/')]
 #: Server interface.
-SERVERIFACE = 'eth0'
+SERVERIFACE = 'lo'
 #: Server IP address.
 SERVERIP = getIpAddress(SERVERIFACE)
 #: Server base port.
