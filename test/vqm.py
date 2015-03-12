@@ -20,8 +20,7 @@ file1 = sys.argv[1]
 file2 = sys.argv[2]
 width, height = map(int, sys.argv[3].split('x'))
 
-if not os.path.isfile(file1) or 
-   not os.path.isfile(file2):
+if not os.path.isfile(file1) or not os.path.isfile(file2):
   raise IOError, 'bad file(s)'
 
 def save_to_file(name, res):
