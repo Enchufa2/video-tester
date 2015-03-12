@@ -10,7 +10,7 @@ class YUVvideo:
     """
     YUV reader.
     """
-    def __init__(self, file, framesize, format='I420'):
+    def __init__(self, file, framesize, fmt='I420'):
         """
         **On init:** Call the proper reader.
         
@@ -23,36 +23,38 @@ class YUVvideo:
         """
         #: Frame size: ``(width, height)``.
         self.framesize = framesize
+        #: File descriptor.
+        self.f = open(file, "rb")
+        
+        if fmt == 'I420':
+            frame = self.framesize[0] * self.framesize[1]
+            self.yblock = frame
+            self.uvblock = frame / 4
+            self.chunk = self.yblock + 2 * self.uvblock
+        else:
+            raise IOError, 'Format not supported'
+
+        self.f.seek(0, 2)
         #: Number of frames in the video.
-        self.frames = None
-        #: Dictionary of lists of frames. Each list is a component (Y, U, V) and each frame is a Numpy array.
-        self.video = {'Y':[], 'U':[], 'V':[]}
-        f = open(file, "rb")
-        #: RAW data.
-        self.raw = f.read()
-        f.close()
-        if format == 'I420':
-            self.__readI420(file, framesize)
+        self.frames = self.f.tell()/self.chunk
+        self.f.seek(0)
     
-    def __readI420(self, file, (width, height)):
-        """
-        I420 format reader.
-        """
-        yblock = width * height
-        uvblock = width * height / 4
-        frame = yblock + 2 * uvblock
-        self.frames = len(self.raw) / frame
-        y = 0
-        u = y + yblock
-        v = y + yblock + uvblock
-        count = 1
-        while y < len(self.raw):
-            self.video['Y'].append(frombuffer(self.raw[y:y+yblock], dtype=uint8).reshape(height, width))
-            y += frame
-            self.video['U'].append(frombuffer(self.raw[u:u+uvblock], dtype=uint8).reshape(height/2, width/2))
-            u += frame
-            self.video['V'].append(frombuffer(self.raw[v:v+uvblock], dtype=uint8).reshape(height/2, width/2))
-            v += frame
+    def __iter__(self):
+        self.f.seek(0)
+        return self
+    
+    def next(self):
+        data = self.f.read(self.chunk)
+        if not data:
+            raise StopIteration
+        else:
+            yu = self.yblock
+            uv = self.yblock + self.uvblock
+            return {
+                'Y' : frombuffer(data[0:yu], dtype=uint8).reshape(self.framesize[1], self.framesize[0]),
+                'U' : frombuffer(data[yu:uv], dtype=uint8).reshape(self.framesize[1]/2, self.framesize[0]/2),
+                'V' : frombuffer(data[uv:], dtype=uint8).reshape(self.framesize[1]/2, self.framesize[0]/2)
+            }
 
 class CodedVideo:
     """

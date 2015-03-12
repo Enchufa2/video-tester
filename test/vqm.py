@@ -25,10 +25,9 @@ if not os.path.isfile(file1) or not os.path.isfile(file2):
 
 def save_to_file(name, res):
   with open(name, 'w') as f:
-    for frame, dB in zip(res['axes'][0], res['axes'][1]):
-      f.write('%i %i\n' % (frame, dB))
+    for frame, value in zip(res['axes'][0], res['axes'][1]):
+      f.write('%i %f\n' % (frame, value))
 
-print "Loading videos..."
 rawdata = {
   'received' : YUVvideo(file1, (width, height)), 
   'original' : YUVvideo(file2, (width, height))

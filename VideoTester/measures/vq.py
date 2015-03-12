@@ -8,6 +8,7 @@ from VideoTester.measures.core import Meter, Measure
 from VideoTester.measures.qos import QoSmeter
 from VideoTester.measures.bs import BSmeter
 from VideoTester.config import VTLOG
+from itertools import izip
 import math
 import cv
 
@@ -111,18 +112,16 @@ class PSNR(VQmeasure):
     
     def calculate(self):
         L = 255
-        width = self.yuv.video['Y'][0].shape[0]
-        height = self.yuv.video['Y'][0].shape[1]
-        fin = min(self.yuv.frames, self.yuvref.frames)
-        x = range(0, fin)
-        y = []
-        for i in x:
-            sum = (self.yuv.video['Y'][i].astype(int) - self.yuvref.video['Y'][i].astype(int))**2
+        width = self.yuv.framesize[0]
+        height = self.yuv.framesize[1]
+        size = min(self.yuv.frames, self.yuvref.frames)
+        x = range(0, size)
+        y = [100] * size
+        for i, (frame1, frame2) in enumerate(izip(self.yuv, self.yuvref)):
+            sum = (frame1['Y'].astype(int) - frame2['Y'].astype(int))**2
             mse = sum.sum() / width / height
             if mse != 0:
-                y.append(20 * math.log(L / math.sqrt(mse), 10))
-            else:
-                y.append(100)
+                y[i] = 20 * math.log(L / math.sqrt(mse), 10)
         self.graph(x, y)
         return self.data
 
@@ -235,11 +234,11 @@ class SSIM(VQmeasure):
         return index_scalar[0]
     
     def calculate(self):
-        fin = min(self.yuv.frames, self.yuvref.frames)
-        x = range(0, fin)
-        y = []
-        for i in x:
-            y.append(self.__SSIM(self.yuv.video['Y'][i], self.yuvref.video['Y'][i]))
+        size = min(self.yuv.frames, self.yuvref.frames)
+        x = range(0, size)
+        y = [0] * size
+        for i, (frame1, frame2) in enumerate(izip(self.yuv, self.yuvref)):
+            y[i] = self.__SSIM(frame1['Y'], frame2['Y'])
         self.graph(x, y)
         return self.data
 
