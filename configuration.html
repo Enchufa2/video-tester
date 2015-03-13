@@ -1,0 +1,182 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Configuration &mdash; VideoTester 0.2 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="shortcut icon" href="_static/VTfavicon.png"/>
+    <link rel="top" title="VideoTester 0.2 documentation" href="index.html" />
+    <link rel="next" title="Usage" href="usage.html" />
+    <link rel="prev" title="Installation" href="installation.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="usage.html" title="Usage"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="installation.html" title="Installation"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">VideoTester 0.2 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="configuration">
+<h1>Configuration<a class="headerlink" href="#configuration" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="videos">
+<h2>Videos<a class="headerlink" href="#videos" title="Permalink to this headline">¶</a></h2>
+<p>It&#8217;s essential that the client and the server have a local repository with the same video files. Video Tester is designed to use lossless-coded video files. For example, EvalVid project has <a class="reference external" href="http://www.tkn.tu-berlin.de/research/evalvid/cif.html">YUV CIF samples compressed with lossless H.264</a>.</p>
+</div>
+<div class="section" id="configuration-files">
+<h2>Configuration files<a class="headerlink" href="#configuration-files" title="Permalink to this headline">¶</a></h2>
+<p>A Video Tester configuration file has the following format:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">[</span><span class="n">section</span><span class="p">]</span>
+<span class="c"># this is a comment</span>
+<span class="n">key</span><span class="o">=</span><span class="n">value</span>
+</pre></div>
+</div>
+<p>Both client and server mode require a section called <tt class="docutils literal"><span class="pre">video</span></tt> in a file called <tt class="docutils literal"><span class="pre">VT.conf</span></tt> like this:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">[</span><span class="n">video</span><span class="p">]</span>
+
+<span class="n">path</span><span class="o">=</span><span class="n">the_path_to_the_video_directory</span>
+
+<span class="n">video0</span><span class="o">=</span><span class="n">one_video_file</span>
+<span class="n">video1</span><span class="o">=</span><span class="n">another</span>
+<span class="n">video2</span><span class="o">=</span><span class="n">and_another</span>
+<span class="c"># and so on</span>
+</pre></div>
+</div>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last"><tt class="docutils literal"><span class="pre">VT.conf</span></tt> MUST be in the current working directory.</p>
+</div>
+<p>This media mapping must be the same on both client and server side. The client mode, moreover, requires a section called <tt class="docutils literal"><span class="pre">client</span></tt> like this:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">[</span><span class="n">client</span><span class="p">]</span>
+
+<span class="c"># Video parameters</span>
+<span class="n">video</span><span class="o">=</span><span class="n">one_key_from_video_section</span> <span class="c"># E. g.: video0</span>
+<span class="n">codec</span><span class="o">=</span><span class="n">the_codec</span> <span class="c"># Options: h263, h264, mpeg4, theora</span>
+<span class="n">bitrate</span><span class="o">=</span><span class="n">the_bitrate_in_kbps</span>
+<span class="n">framerate</span><span class="o">=</span><span class="n">the_framerate_in_fps</span>
+
+<span class="c"># Network parameters</span>
+<span class="n">iface</span><span class="o">=</span><span class="n">the_network_interface</span>
+<span class="n">ip</span><span class="o">=</span><span class="n">the_server_ip_address</span>
+<span class="n">port</span><span class="o">=</span><span class="n">the_server_port</span>
+<span class="n">protocols</span><span class="o">=</span><span class="n">transport_protocol</span> <span class="c"># Options: udp-unicast, tcp, udp-multicast</span>
+
+<span class="c"># Selected measures (comma separated)</span>
+<span class="n">qos</span><span class="o">=</span><span class="n">qos_measures</span> <span class="c"># Options: latency, delta, jitter, skew, bandwidth, plr, pld</span>
+<span class="n">bs</span><span class="o">=</span><span class="n">bs_measures</span> <span class="c"># Options: streameye, refstreameye, gop, iflr</span>
+<span class="n">vq</span><span class="o">=</span><span class="n">vq_measures</span> <span class="c"># Options: psnr, ssim, g1070, psnrtomos, miv</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">By default, Video Tester search this section in <tt class="docutils literal"><span class="pre">VT.conf</span></tt>. You can specify another configuration file from the command line.</p>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/VT200x170.png" alt="Logo"/>
+            </a></p>
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Configuration</a><ul>
+<li><a class="reference internal" href="#videos">Videos</a></li>
+<li><a class="reference internal" href="#configuration-files">Configuration files</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="installation.html"
+                        title="previous chapter">Installation</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="usage.html"
+                        title="next chapter">Usage</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/configuration.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="usage.html" title="Usage"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="installation.html" title="Installation"
+             >previous</a> |</li>
+        <li><a href="index.html">VideoTester 0.2 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Iñaki Úcar.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

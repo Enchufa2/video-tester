@@ -1,0 +1,165 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>5. VideoTester.video — Raw and coded video manipulation &mdash; VideoTester 0.2 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="shortcut icon" href="_static/VTfavicon.png"/>
+    <link rel="top" title="VideoTester 0.2 documentation" href="index.html" />
+    <link rel="up" title="Module Reference" href="modules.html" />
+    <link rel="next" title="6. VideoTester.gui — VT Client Graphical User Interface" href="gui.html" />
+    <link rel="prev" title="4. VideoTester.sniffer — Network sniffing and packet manipulation" href="sniffer.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="gui.html" title="6. VideoTester.gui — VT Client Graphical User Interface"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="sniffer.html" title="4. VideoTester.sniffer — Network sniffing and packet manipulation"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">VideoTester 0.2 documentation</a> &raquo;</li>
+          <li><a href="modules.html" accesskey="U">Module Reference</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-VideoTester.video">
+<span id="videotester-video-raw-and-coded-video-manipulation"></span><h1>5. <tt class="docutils literal"><span class="pre">VideoTester.video</span></tt> &#8212; Raw and coded video manipulation<a class="headerlink" href="#module-VideoTester.video" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="VideoTester.video.CodedVideo">
+<em class="property">class </em><tt class="descclassname">VideoTester.video.</tt><tt class="descname">CodedVideo</tt><big>(</big><em>file</em>, <em>codec</em><big>)</big><a class="headerlink" href="#VideoTester.video.CodedVideo" title="Permalink to this definition">¶</a></dt>
+<dd><p>Coded video reader.</p>
+<dl class="attribute">
+<dt id="VideoTester.video.CodedVideo.frames">
+<tt class="descname">frames</tt><em class="property"> = None</em><a class="headerlink" href="#VideoTester.video.CodedVideo.frames" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dictionary that contains the <cite>types</cite> and the <cite>lengths</cite> for all the frames found.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="VideoTester.video.CodedVideo.raw">
+<tt class="descname">raw</tt><em class="property"> = None</em><a class="headerlink" href="#VideoTester.video.CodedVideo.raw" title="Permalink to this definition">¶</a></dt>
+<dd><p>Numpy array with all the data.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="VideoTester.video.YUVvideo">
+<em class="property">class </em><tt class="descclassname">VideoTester.video.</tt><tt class="descname">YUVvideo</tt><big>(</big><em>file</em>, <em>framesize</em>, <em>fmt='I420'</em><big>)</big><a class="headerlink" href="#VideoTester.video.YUVvideo" title="Permalink to this definition">¶</a></dt>
+<dd><p>YUV reader.</p>
+<dl class="attribute">
+<dt id="VideoTester.video.YUVvideo.f">
+<tt class="descname">f</tt><em class="property"> = None</em><a class="headerlink" href="#VideoTester.video.YUVvideo.f" title="Permalink to this definition">¶</a></dt>
+<dd><p>File descriptor.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="VideoTester.video.YUVvideo.frames">
+<tt class="descname">frames</tt><em class="property"> = None</em><a class="headerlink" href="#VideoTester.video.YUVvideo.frames" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of frames in the video.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="VideoTester.video.YUVvideo.framesize">
+<tt class="descname">framesize</tt><em class="property"> = None</em><a class="headerlink" href="#VideoTester.video.YUVvideo.framesize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Frame size: <tt class="docutils literal"><span class="pre">(width,</span> <span class="pre">height)</span></tt>.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/VT200x170.png" alt="Logo"/>
+            </a></p>
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="sniffer.html"
+                        title="previous chapter">4. <tt class="docutils literal"><span class="pre">VideoTester.sniffer</span></tt> &#8212; Network sniffing and packet manipulation</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="gui.html"
+                        title="next chapter">6. <tt class="docutils literal"><span class="pre">VideoTester.gui</span></tt> &#8212; VT Client Graphical User Interface</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/video.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="gui.html" title="6. VideoTester.gui — VT Client Graphical User Interface"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="sniffer.html" title="4. VideoTester.sniffer — Network sniffing and packet manipulation"
+             >previous</a> |</li>
+        <li><a href="index.html">VideoTester 0.2 documentation</a> &raquo;</li>
+          <li><a href="modules.html" >Module Reference</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Iñaki Úcar.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>

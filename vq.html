@@ -1,0 +1,250 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>7.4. VideoTester.measures.vq — Video Quality measures &mdash; VideoTester 0.2 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="shortcut icon" href="_static/VTfavicon.png"/>
+    <link rel="top" title="VideoTester 0.2 documentation" href="index.html" />
+    <link rel="up" title="7. VideoTester.measures — Measures package" href="measures.html" />
+    <link rel="prev" title="7.3. VideoTester.measures.bs — Bitstream measures" href="bs.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="bs.html" title="7.3. VideoTester.measures.bs — Bitstream measures"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">VideoTester 0.2 documentation</a> &raquo;</li>
+          <li><a href="modules.html" >Module Reference</a> &raquo;</li>
+          <li><a href="measures.html" accesskey="U">7. <tt class="docutils literal"><span class="pre">VideoTester.measures</span></tt> &#8212; Measures package</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-VideoTester.measures.vq">
+<span id="videotester-measures-vq-video-quality-measures"></span><h1>7.4. <tt class="docutils literal"><span class="pre">VideoTester.measures.vq</span></tt> &#8212; Video Quality measures<a class="headerlink" href="#module-VideoTester.measures.vq" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="VideoTester.measures.vq.G1070">
+<em class="property">class </em><tt class="descclassname">VideoTester.measures.vq.</tt><tt class="descname">G1070</tt><big>(</big><em>data</em><big>)</big><a class="headerlink" href="#VideoTester.measures.vq.G1070" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#VideoTester.measures.vq.VQmeasure" title="VideoTester.measures.vq.VQmeasure"><tt class="xref py py-class docutils literal"><span class="pre">VideoTester.measures.vq.VQmeasure</span></tt></a></p>
+<p>ITU-T G.1070 video quality estimation.</p>
+<ul class="simple">
+<li>Type: <cite>value</cite>.</li>
+<li>Units: <cite>-</cite>.</li>
+</ul>
+</dd></dl>
+
+<dl class="class">
+<dt id="VideoTester.measures.vq.MIV">
+<em class="property">class </em><tt class="descclassname">VideoTester.measures.vq.</tt><tt class="descname">MIV</tt><big>(</big><em>data</em><big>)</big><a class="headerlink" href="#VideoTester.measures.vq.MIV" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#VideoTester.measures.vq.VQmeasure" title="VideoTester.measures.vq.VQmeasure"><tt class="xref py py-class docutils literal"><span class="pre">VideoTester.measures.vq.VQmeasure</span></tt></a></p>
+<p>MIV metric used on <cite>Evalvid &lt;http://www.tkn.tu-berlin.de/research/evalvid/&gt;</cite>.</p>
+<ul class="simple">
+<li>Type: <cite>plot</cite>.</li>
+<li>Units: <cite>Distortion in Interval</cite>.</li>
+</ul>
+</dd></dl>
+
+<dl class="class">
+<dt id="VideoTester.measures.vq.PSNR">
+<em class="property">class </em><tt class="descclassname">VideoTester.measures.vq.</tt><tt class="descname">PSNR</tt><big>(</big><em>data</em>, <em>yuv=False</em>, <em>yuvref=False</em><big>)</big><a class="headerlink" href="#VideoTester.measures.vq.PSNR" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#VideoTester.measures.vq.VQmeasure" title="VideoTester.measures.vq.VQmeasure"><tt class="xref py py-class docutils literal"><span class="pre">VideoTester.measures.vq.VQmeasure</span></tt></a></p>
+<p>PSNR: Peak Signal to Noise Ratio (Y component).</p>
+<ul class="simple">
+<li>Type: <cite>plot</cite>.</li>
+<li>Units: <cite>dB per frame</cite>.</li>
+</ul>
+</dd></dl>
+
+<dl class="class">
+<dt id="VideoTester.measures.vq.PSNRtoMOS">
+<em class="property">class </em><tt class="descclassname">VideoTester.measures.vq.</tt><tt class="descname">PSNRtoMOS</tt><big>(</big><em>data</em>, <em>yuv=False</em>, <em>yuvref=False</em><big>)</big><a class="headerlink" href="#VideoTester.measures.vq.PSNRtoMOS" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#VideoTester.measures.vq.VQmeasure" title="VideoTester.measures.vq.VQmeasure"><tt class="xref py py-class docutils literal"><span class="pre">VideoTester.measures.vq.VQmeasure</span></tt></a></p>
+<p>PSNR to MOS mapping used on <cite>Evalvid &lt;http://www.tkn.tu-berlin.de/research/evalvid/&gt;</cite>.</p>
+<ul class="simple">
+<li>Type: <cite>plot</cite>.</li>
+<li>Units: <cite>MOS per frame</cite>.</li>
+</ul>
+</dd></dl>
+
+<dl class="class">
+<dt id="VideoTester.measures.vq.SSIM">
+<em class="property">class </em><tt class="descclassname">VideoTester.measures.vq.</tt><tt class="descname">SSIM</tt><big>(</big><em>data</em><big>)</big><a class="headerlink" href="#VideoTester.measures.vq.SSIM" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#VideoTester.measures.vq.VQmeasure" title="VideoTester.measures.vq.VQmeasure"><tt class="xref py py-class docutils literal"><span class="pre">VideoTester.measures.vq.VQmeasure</span></tt></a></p>
+<p>SSIM: Structural Similarity index (Y component).</p>
+<ul class="simple">
+<li>Type: <cite>plot</cite>.</li>
+<li>Units: <cite>SSIM index per frame</cite>.</li>
+</ul>
+</dd></dl>
+
+<dl class="class">
+<dt id="VideoTester.measures.vq.VQmeasure">
+<em class="property">class </em><tt class="descclassname">VideoTester.measures.vq.</tt><tt class="descname">VQmeasure</tt><big>(</big><em>(conf</em>, <em>rawdata</em>, <em>codecdata</em>, <em>packetdata)</em><big>)</big><a class="headerlink" href="#VideoTester.measures.vq.VQmeasure" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="m-core.html#VideoTester.measures.core.Measure" title="VideoTester.measures.core.Measure"><tt class="xref py py-class docutils literal"><span class="pre">VideoTester.measures.core.Measure</span></tt></a></p>
+<p>Video quality measure type.</p>
+<dl class="attribute">
+<dt id="VideoTester.measures.vq.VQmeasure.codecdata">
+<tt class="descname">codecdata</tt><em class="property"> = None</em><a class="headerlink" href="#VideoTester.measures.vq.VQmeasure.codecdata" title="Permalink to this definition">¶</a></dt>
+<dd><p>Frame information from compressed videos (<cite>received</cite> and <cite>coded</cite>).</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="VideoTester.measures.vq.VQmeasure.conf">
+<tt class="descname">conf</tt><em class="property"> = None</em><a class="headerlink" href="#VideoTester.measures.vq.VQmeasure.conf" title="Permalink to this definition">¶</a></dt>
+<dd><p>Video parameters: <cite>codec</cite>, <cite>bitrate</cite>, <cite>framerate</cite> and <cite>size</cite>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="VideoTester.measures.vq.VQmeasure.getBSm">
+<tt class="descname">getBSm</tt><big>(</big><em>measures</em><big>)</big><a class="headerlink" href="#VideoTester.measures.vq.VQmeasure.getBSm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get bit-stream measures.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>measures</strong> (<em>string or list</em>) &#8211; Selected bit-stream measures.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Calculated bit-stream measures.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">list</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="VideoTester.measures.vq.VQmeasure.getQoSm">
+<tt class="descname">getQoSm</tt><big>(</big><em>measures</em><big>)</big><a class="headerlink" href="#VideoTester.measures.vq.VQmeasure.getQoSm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get QoS measures.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>measures</strong> (<em>string or list</em>) &#8211; Selected QoS measures.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Calculated QoS measures.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">list</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="VideoTester.measures.vq.VQmeasure.packetdata">
+<tt class="descname">packetdata</tt><em class="property"> = None</em><a class="headerlink" href="#VideoTester.measures.vq.VQmeasure.packetdata" title="Permalink to this definition">¶</a></dt>
+<dd><p>QoS parameters.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="VideoTester.measures.vq.VQmeasure.yuv">
+<tt class="descname">yuv</tt><em class="property"> = None</em><a class="headerlink" href="#VideoTester.measures.vq.VQmeasure.yuv" title="Permalink to this definition">¶</a></dt>
+<dd><p>Frame information from received YUV.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="VideoTester.measures.vq.VQmeasure.yuvref">
+<tt class="descname">yuvref</tt><em class="property"> = None</em><a class="headerlink" href="#VideoTester.measures.vq.VQmeasure.yuvref" title="Permalink to this definition">¶</a></dt>
+<dd><p>Frame information from original YUV.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="VideoTester.measures.vq.VQmeter">
+<em class="property">class </em><tt class="descclassname">VideoTester.measures.vq.</tt><tt class="descname">VQmeter</tt><big>(</big><em>selected</em>, <em>data</em><big>)</big><a class="headerlink" href="#VideoTester.measures.vq.VQmeter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="m-core.html#VideoTester.measures.core.Meter" title="VideoTester.measures.core.Meter"><tt class="xref py py-class docutils literal"><span class="pre">VideoTester.measures.core.Meter</span></tt></a></p>
+<p>Video quality meter.</p>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/VT200x170.png" alt="Logo"/>
+            </a></p>
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="bs.html"
+                        title="previous chapter">7.3. <tt class="docutils literal"><span class="pre">VideoTester.measures.bs</span></tt> &#8212; Bitstream measures</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/vq.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="bs.html" title="7.3. VideoTester.measures.bs — Bitstream measures"
+             >previous</a> |</li>
+        <li><a href="index.html">VideoTester 0.2 documentation</a> &raquo;</li>
+          <li><a href="modules.html" >Module Reference</a> &raquo;</li>
+          <li><a href="measures.html" >7. <tt class="docutils literal"><span class="pre">VideoTester.measures</span></tt> &#8212; Measures package</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Iñaki Úcar.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+    </div>
+  </body>
+</html>
