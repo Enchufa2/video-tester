@@ -1,4 +1,3 @@
 *.pyc
 tmp
 dist
-vqm.py
