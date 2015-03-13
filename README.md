@@ -61,7 +61,7 @@ The documentation will be placed at `/usr/share/doc/VideoTester-x.x`.
 Usage
 -----
 
-NOTE: the current working directory MUST contain the `VT.conf` file.
+NOTE: the current working directory MUST contain the `VT.conf` file. Check the [documentation](http://enchufa2.github.io/video-tester/).
 
 VT in server mode:
 
