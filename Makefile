@@ -3,8 +3,8 @@
 
 DIST     = dist
 DOC      = doc
-MAKEFILE = tools/sphinx/
-BUILDDIR = tools/sphinx/_build
+MAKEFILE = doc/sphinx/
+BUILDDIR = doc/sphinx/_build
 
 .PHONY: help clean doc sdist
 
@@ -16,10 +16,10 @@ help:
 
 clean:
 	-rm -rf $(DIST)
+	-rm -rf $(DOC)/html
 	-rm -f MANIFEST
 
-doc:
-	-rm -rf $(DOC)/*
+doc: clean
 	-make -C $(MAKEFILE) html
 	-cp -rf $(BUILDDIR)/* $(DOC)
 	-rm -rf $(DOC)/doctrees
@@ -27,13 +27,8 @@ doc:
 	@echo
 	@echo "Doc rebuilt."
 
-sdist:
-	-cp VT.conf doc
-	-cp README.md doc/
-	-cp LICENSE doc/
-	-cp -rf test doc
+sdist: doc
+	-cp -rf VT.conf README.md LICENSE test $(DOC)
 	-python setup.py sdist
-	-rm doc/VT.conf doc/README.md doc/LICENSE
-	-rm -rf doc/test
 	@echo
 	@echo "Build finished."
