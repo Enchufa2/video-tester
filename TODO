@@ -1,0 +1,12 @@
+Short-term:
+* Fix known compatibility issues with the latest versions of GStreamer.
+* Check for compatibility issues with other libraries.
+* Move several configuration parameters, such as the interface name, from config.py to VT.conf.
+
+Long-term:
+* Move from Scapy to a more efficient solution. Maybe implement the networking part (packet capturing and processing) in a dedicated C library with Python bindings.
+* Parallelization.
+* Refactor... always refactor.
+
+Long-long-term:
+* Online assessment?
