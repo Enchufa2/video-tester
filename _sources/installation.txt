@@ -25,7 +25,7 @@ Then, these dependencies can be installed with the following command (Fedora)::
 		gstreamer-plugins-bad-free gstreamer-plugins-bad-nonfree gstreamer-python gstreamer-ffmpeg \
 		gstreamer-rtsp scapy numpy python-matplotlib python-matplotlib-wx wxPython opencv-python
 
-You can download the latest version of Video Tester from `the project download page at Google Code <https://code.google.com/p/video-tester/>`_. Then, follow this steps (the last command, with root privileges)::
+You can download the latest version of Video Tester from `the project page at GitHub <https://github.com/Enchufa2/video-tester>`_. Then, follow this steps (the last command, with root privileges)::
 
 	$ tar -xvf VideoTester-x.x.tar.gz
 	$ cd VideoTester-x.x
