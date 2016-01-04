@@ -3,8 +3,15 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
+.. image:: _static/VT200x170.png
+   :width: 100 px
+   :align: right
+
 Welcome to VideoTester's documentation!
 =======================================
+
+|
+|
 
 What's this?
 ------------
@@ -34,6 +41,7 @@ Contents
 .. toctree::
    :maxdepth: 2
 
+   self
    installation
    configuration
    usage
