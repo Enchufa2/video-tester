@@ -5,8 +5,9 @@
 ## This program is published under a GPLv3 license
 
 from scapy.all import *
-from time import time
-from VideoTester.config import VTLOG, bubbleSort
+import time, logging
+
+VTLOG = logging.getLogger("VT")
 
 class RTSPi(Packet):
     """
@@ -24,7 +25,7 @@ class Sniffer:
     def __init__(self, conf):
         """
         **On init:** Some initialization code.
-        
+
         :param dictionary conf: Parsed configuration file.
         """
         #: Dictionary of configuration options (see :attr:`VideoTester.core.Client.conf`).
@@ -52,11 +53,11 @@ class Sniffer:
         #: Ping information.
         self.ping = {0:{}, 1:{}, 2:{}, 3:{}}
         self.__add = 0
-    
+
     def run(self, q):
         """
         Start packet sniffing and save the capture.
-        
+
         :param Queue q: Queue to communicate with the main thread.
         """
         VTLOG.info("Starting sniffer...")
@@ -70,11 +71,11 @@ class Sniffer:
     def sniff(count=0, prn = None, lfilter=None, *arg, **karg):
         """
         ``scapy.sendrecv.sniff()`` Scapy function modification. It stops when an RTSP *TEARDOWN* packet is found.
-        
+
         :param integer count: Number of packets to capture (0 means infinite).
         :param prn: Function to apply to each packet. If something is returned, it is displayed.
         :param lfilter: Python function applied to each packet to determine if any further action is requireds.
-        
+
         :returns: A list of packets.
         :rtype: list
         """
@@ -91,7 +92,7 @@ class Sniffer:
                 if p is None:
                     break
                 #This line fixes the lack of timing accuracy
-                p.time = time()
+                p.time = time.time()
                 if lfilter and not lfilter(p):
                     continue
                 lst.append(p)
@@ -110,11 +111,11 @@ class Sniffer:
         s.close()
         VTLOG.debug("Sniffer: loop terminated")
         return PacketList(lst,"Sniffed")
-    
+
     def parsePkts(self):
         """
         Parse packets and extract :attr:`lengths`, :attr:`times`, :attr:`sequences`, :attr:`timestamps` and :attr:`ping`.
-        
+
         :returns: :attr:`lengths`, :attr:`times`, :attr:`sequences`, :attr:`timestamps` and :attr:`ping`.
         :rtype: tuple
         """
@@ -129,11 +130,11 @@ class Sniffer:
         VTLOG.debug(b + " RTP packets received, " + a + " losses")
         VTLOG.info("Packet parser stopped")
         return self.lengths, self.times, self.sequences, self.timestamps, self.ping
-    
+
     def __prepare(self, p):
         """
         Pre-process capture file. This method parses RTSP information and extracts :attr:`ping`, :attr:`ptype` and :attr:`clock`.
-        
+
         :returns: True when a RTSP *PLAY* packet is found.
         :rtype: boolean
         """
@@ -178,7 +179,7 @@ class Sniffer:
         else:
             play = False
         return play
-    
+
     def __parseUDP(self):
         """
         Parse RTP over UDP session.
@@ -186,7 +187,7 @@ class Sniffer:
         def extract(p):
             """
             Extract information from a UDP packet.
-            
+
             :param Packet p: UDP packet.
             """
             ptype = ord(str(p[UDP].payload)[1]) & 0x7F #Delete RTP marker
@@ -201,7 +202,7 @@ class Sniffer:
                     VTLOG.debug("UDP/RTP packet found. Sequence: " + str(p[RTP].sequence))
                     if p[RTP].sequence == 65535:
                         self.__add += 65536
-        
+
         play = False
         for p in self.cap:
             if p.haslayer(IP):
@@ -213,9 +214,10 @@ class Sniffer:
                 elif play and (p[IP].src == self.conf['ip']) and (p.haslayer(UDP)) and (str(p).find("GStreamer") == -1):
                     if (p.sport == self.sport) and (p.dport == self.dport):
                         extract(p)
-        bubbleSort(self.sequences, self.times, self.timestamps)
+        self.sequences, self.times, self.timestamps = \
+            zip(*sorted(zip(self.sequences, self.times, self.timestamps)))
         VTLOG.debug("Sequence list sorted")
-    
+
     def __parseTCP(self):
         """
         Parse RTP over TCP session.
@@ -223,7 +225,7 @@ class Sniffer:
         def extract(p):
             """
             Extract many RTSP packets from a TCP stream recursively.
-            
+
             :param Packet p: TCP stream.
             """
             fin = False
@@ -270,14 +272,14 @@ class Sniffer:
                     fin = True
             if not fin:
                 extract(p)
-        
+
         def fillGaps(seqlist, lenlist):
             """
             Locate packet losses.
-            
+
             :param list seqlist: List of RTP sequence numbers.
             :param list lenlist: List of packet lengths.
-            
+
             :returns: List of losses (0 -> no loss, 1 -> loss).
             :rtype: list
             """
@@ -286,7 +288,7 @@ class Sniffer:
                 if seqlist[i] + lenlist[i] < seqlist[i+1]:
                     fill[i] = 1
             return fill
-        
+
         play = False
         packetlist = []
         seqlist = []
@@ -305,7 +307,7 @@ class Sniffer:
                         seqlist.append(p[TCP].seq)
                         lenlist.append(len(p[TCP].payload))
                         VTLOG.debug("TCP packet appended. Sequence: " + str(p[TCP].seq))
-        bubbleSort(seqlist, packetlist, lenlist)
+        seqlist, packetlist, lenlist = zip(*sorted(zip(seqlist, packetlist, lenlist)))
         VTLOG.debug("Sequence list sorted")
         #Locate packet losses
         fill = fillGaps(seqlist, lenlist)
@@ -325,7 +327,7 @@ class Sniffer:
         VTLOG.debug("TCP payloads assembled")
         stream = RTSPi(stream)
         extract(stream)
-    
+
     def __normalize(self):
         """
         Normalize :attr:`sequences`, :attr:`times` and :attr:`timestamps`.

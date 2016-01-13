@@ -5,7 +5,9 @@
 ## This program is published under a GPLv3 license
 
 from VideoTester.measures.core import Meter, Measure
-from VideoTester.config import VTLOG, bubbleSort
+import logging
+
+VTLOG = logging.getLogger("VT")
 
 class QoSmeter(Meter):
     """
@@ -14,7 +16,7 @@ class QoSmeter(Meter):
     def __init__(self, selected, data):
         """
         **On init:** Register selected QoS measures.
-        
+
         :param selected: Selected QoS measures.
         :type selected: string or list
         :param tuple data: Collected QoS parameters.
@@ -43,7 +45,7 @@ class QoSmeasure(Measure):
     def __init__(self, (lengths, times, sequences, timestamps, ping)):
         """
         **On init:** Register QoS parameters.
-        
+
         :param list lengths: List of packet lengths.
         :param list times: List of packet arrival times.
         :param list sequences: List of RTP sequence numbers.
@@ -65,7 +67,7 @@ class QoSmeasure(Measure):
 class Latency(QoSmeasure):
     """
     Latency: end-to-end delay.
-    
+
     * Type: `value`.
     * Units: `ms`.
     """
@@ -74,7 +76,7 @@ class Latency(QoSmeasure):
         self.data['name'] = 'Latency'
         self.data['type'] = 'value'
         self.data['units'] = 'ms'
-    
+
     def calculate(self):
         sum = 0
         count = 0
@@ -88,7 +90,7 @@ class Latency(QoSmeasure):
 class Delta(QoSmeasure):
     """
     Delta: gap between two consecutive packets.
-    
+
     * Type: `plot`.
     * Units: `ms per RTP packet`.
     """
@@ -97,7 +99,7 @@ class Delta(QoSmeasure):
         self.data['name'] = 'Delta'
         self.data['type'] = 'plot'
         self.data['units'] = ('RTP packet', 'ms')
-    
+
     def calculate(self):
         x = self.sequences
         y = [0 for i in range(0, len(self.times))]
@@ -109,7 +111,7 @@ class Delta(QoSmeasure):
 class Jitter(QoSmeasure):
     """
     Jitter: latency deviation (see :rfc:`3550#page-94`).
-    
+
     * Type: `plot`.
     * Units: `ms per RTP packet`.
     """
@@ -118,7 +120,7 @@ class Jitter(QoSmeasure):
         self.data['name'] = 'Jitter'
         self.data['type'] = 'plot'
         self.data['units'] = ('RTP packet', 'ms')
-    
+
     def calculate(self):
         x = self.sequences
         y = [0 for i in range(0, len(self.times))]
@@ -131,7 +133,7 @@ class Jitter(QoSmeasure):
 class Skew(QoSmeasure):
     """
     Skew: time deviation from RTP timestamp.
-    
+
     * Type: `plot`.
     * Units: `ms per RTP packet`.
     """
@@ -140,7 +142,7 @@ class Skew(QoSmeasure):
         self.data['name'] = 'Skew'
         self.data['type'] = 'plot'
         self.data['units'] = ('RTP packet', 'ms')
-    
+
     def calculate(self):
         x = self.sequences
         y = [0 for i in range(0, len(self.times))]
@@ -152,7 +154,7 @@ class Skew(QoSmeasure):
 class Bandwidth(QoSmeasure):
     """
     Instantaneous bandwidth: data received in the last second.
-    
+
     * Type: `plot`.
     * Units: `kbps per second`.
     """
@@ -161,9 +163,9 @@ class Bandwidth(QoSmeasure):
         self.data['name'] = 'Bandwidth'
         self.data['type'] = 'plot'
         self.data['units'] = ('time (s)', 'kbps')
-    
+
     def calculate(self):
-        bubbleSort(self.times, self.lengths)
+        self.times, self.lengths = zip(*sorted(zip(self.times, self.lengths)))
         x = self.times
         y = [0 for i in range(0, len(x))]
         for i in range(1, len(x)):
@@ -190,7 +192,7 @@ class Bandwidth(QoSmeasure):
 class PacketLossRate(QoSmeasure):
     """
     Packet Loss Rate.
-    
+
     * Type: `value`.
     * Units: `rate`.
     """
@@ -199,7 +201,7 @@ class PacketLossRate(QoSmeasure):
         self.data['name'] = 'PLR'
         self.data['type'] = 'value'
         self.data['units'] = 'rate'
-    
+
     def calculate(self):
         loss = 0
         for i in range(1, len(self.sequences)):
@@ -211,7 +213,7 @@ class PacketLossRate(QoSmeasure):
 class PacketLossDist(QoSmeasure):
     """
     Packet Loss Distribution: loss rate distribution.
-    
+
     * Type: `bar`.
     * Units: `Packet Loss Rate per time`.
     """
@@ -221,7 +223,7 @@ class PacketLossDist(QoSmeasure):
         self.data['type'] = 'bar'
         self.data['units'] = ('time (s)', 'Packet Loss Rate')
         self.data['width'] = 1 #seconds
-    
+
     def calculate(self):
         edge = self.data['width']
         x = []

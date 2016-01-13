@@ -5,8 +5,10 @@
 ## This program is published under a GPLv3 license
 
 from VideoTester.measures.core import Meter, Measure
-from VideoTester.config import VTLOG
 from numpy import *
+import logging
+
+VTLOG = logging.getLogger("VT")
 
 class BSmeter(Meter):
     """
@@ -15,7 +17,7 @@ class BSmeter(Meter):
     def __init__(self, selected, data):
         """
         **On init:** Register selected bit-stream measures.
-        
+
         :param selected: Selected bit-stream measures.
         :type selected: string or list
         :param tuple data: Collected bit-stream parameters.
@@ -38,7 +40,7 @@ class BSmeasure(Measure):
     def __init__(self, codecdata):
         """
         **On init:** Register bit-stream parameters.
-        
+
         :param dictionary codecdata: Frame information from compressed videos (`received` and `coded`).
         """
         Measure.__init__(self)
@@ -50,7 +52,7 @@ class BSmeasure(Measure):
 class StreamEye(BSmeasure):
     """
     Stream Eye: visualization of the compressed frames (received video).
-    
+
     * Type: `videoframes`.
     * Units: `bytes per frame`.
     """
@@ -64,7 +66,7 @@ class StreamEye(BSmeasure):
         elif video == '':
             self.v = self.coded
         self.data['name'] = video + self.data['name']
-    
+
     def calculate(self):
         x = range(len(self.v.frames['lengths']))
         Iframes = [0 for i in x]
@@ -85,7 +87,7 @@ class StreamEye(BSmeasure):
 class RefStreamEye(StreamEye):
     """
     ref Stream Eye: visualization of the compressed frames (reference video).
-    
+
     * Type: `videoframes`.
     * Units: `bytes per frame`.
     """
@@ -95,7 +97,7 @@ class RefStreamEye(StreamEye):
 class GOP(BSmeasure):
     """
     GOP: estimation of *Group Of Pictures* size for received video.
-    
+
     * Type: `value`.
     * Units: `GOP size`.
     """
@@ -104,7 +106,7 @@ class GOP(BSmeasure):
         self.data['name'] = 'GOP'
         self.data['type'] = 'value'
         self.data['units'] = 'GOP size'
-    
+
     def calculate(self):
         gops = []
         gop = 0
@@ -129,7 +131,7 @@ class GOP(BSmeasure):
 class IFrameLossRate(BSmeasure):
     """
     I-Frame Loss Rate.
-    
+
     * Type: `value`.
     * Units: `rate`.
     """
@@ -138,7 +140,7 @@ class IFrameLossRate(BSmeasure):
         self.data['name'] = 'IFLR'
         self.data['type'] = 'value'
         self.data['units'] = 'rate'
-    
+
     def calculate(self):
         count = 0
         gops = []

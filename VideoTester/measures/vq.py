@@ -7,10 +7,10 @@
 from VideoTester.measures.core import Meter, Measure
 from VideoTester.measures.qos import QoSmeter
 from VideoTester.measures.bs import BSmeter
-from VideoTester.config import VTLOG
 from itertools import izip
-import math
-import cv
+import math, cv, logging
+
+VTLOG = logging.getLogger("VT")
 
 class VQmeter(Meter):
     """
@@ -19,7 +19,7 @@ class VQmeter(Meter):
     def __init__(self, selected, data):
         """
         **On init:** Register selected video quality measures.
-        
+
         :param selected: Selected video quality measures.
         :type selected: string or list
         :param tuple data: Collected QoS + bit-stream + video parameters.
@@ -44,7 +44,7 @@ class VQmeasure(Measure):
     def __init__(self, (conf, rawdata, codecdata, packetdata)):
         """
         **On init:** Register QoS + bit-stream + video parameters.
-        
+
         :param string conf: Video parameters: `codec`, `bitrate`, `framerate` and `size`.
         :param dictionary rawdata: Frame information from YUV videos (`original`, `received` and `coded`).
         :param dictionary codecdata: Frame information from compressed videos (`received` and `coded`).
@@ -62,14 +62,14 @@ class VQmeasure(Measure):
         self.codecdata = codecdata
         #: QoS parameters.
         self.packetdata = packetdata
-    
+
     def getQoSm(self, measures):
         """
         Get QoS measures.
-        
+
         :param measures: Selected QoS measures.
         :type measures: string or list
-        
+
         :returns: Calculated QoS measures.
         :rtype: list
         """
@@ -77,14 +77,14 @@ class VQmeasure(Measure):
         measures = QoSmeter(measures, self.packetdata).run()
         VTLOG.info("---------------------------")
         return measures
-    
+
     def getBSm(self, measures):
         """
         Get bit-stream measures.
-        
+
         :param measures: Selected bit-stream measures.
         :type measures: string or list
-        
+
         :returns: Calculated bit-stream measures.
         :rtype: list
         """
@@ -96,7 +96,7 @@ class VQmeasure(Measure):
 class PSNR(VQmeasure):
     """
     PSNR: Peak Signal to Noise Ratio (Y component).
-    
+
     * Type: `plot`.
     * Units: `dB per frame`.
     """
@@ -109,7 +109,7 @@ class PSNR(VQmeasure):
             self.yuv = self.rawdata['coded']
         if yuvref:
             self.yuvref = self.rawdata['coded']
-    
+
     def calculate(self):
         L = 255
         width = self.yuv.framesize[0]
@@ -128,7 +128,7 @@ class PSNR(VQmeasure):
 class SSIM(VQmeasure):
     """
     SSIM: Structural Similarity index (Y component).
-    
+
     * Type: `plot`.
     * Units: `SSIM index per frame`.
     """
@@ -137,7 +137,7 @@ class SSIM(VQmeasure):
         self.data['name'] = 'SSIM'
         self.data['type'] = 'plot'
         self.data['units'] = ('frame', 'SSIM index')
-    
+
     def __array2cv(self, a):
         dtype2depth = {
             'uint8':   cv.IPL_DEPTH_8U,
@@ -155,7 +155,7 @@ class SSIM(VQmeasure):
         cv_im = cv.CreateImageHeader((a.shape[1],a.shape[0]), dtype2depth[str(a.dtype)], nChannels)
         cv.SetData(cv_im, a.tostring(), a.dtype.itemsize*nChannels*a.shape[1])
         return cv_im
-    
+
     def __SSIM(self, frame1, frame2):
         """
             The equivalent of Zhou Wang's SSIM matlab code using OpenCV.
@@ -163,7 +163,7 @@ class SSIM(VQmeasure):
             The measure is described in :
             "Image quality assessment: From error measurement to structural similarity"
             C++ code by Rabah Mehdi. http://mehdi.rabah.free.fr/SSIM
-            
+
             C++ to Python translation and adaptation by Iñaki Úcar
         """
         C1 = 6.5025
@@ -229,10 +229,10 @@ class SSIM(VQmeasure):
         #// ((2*mu1_mu2 + C1).*(2*sigma12 + C2))./((mu1_sq + mu2_sq + C1).*(sigma1_sq + sigma2_sq + C2))
         cv.Div(temp3, temp1, ssim_map, 1)
         index_scalar = cv.Avg(ssim_map)
-        #// through observation, there is approximately 
+        #// through observation, there is approximately
         #// 1% error max with the original matlab program
         return index_scalar[0]
-    
+
     def calculate(self):
         size = min(self.yuv.frames, self.yuvref.frames)
         x = range(0, size)
@@ -245,7 +245,7 @@ class SSIM(VQmeasure):
 class G1070(VQmeasure):
     """
     ITU-T G.1070 video quality estimation.
-    
+
     * Type: `value`.
     * Units: `-`.
     """
@@ -254,24 +254,24 @@ class G1070(VQmeasure):
         self.data['name'] = 'G.1070'
         self.data['type'] = 'value'
         self.data['units'] = ''
-    
+
     def calculate(self):
         v = [0, 1.431, 2.228e-2, 3.759, 184.1, 1.161, 1.446, 3.881e-4, 2.116, 467.4, 2.736, 15.28, 4.170]
-        
+
         Dfrv = v[6] + v[7] * self.conf['bitrate']
         Iofr = v[3] - v[3] / (1 + (self.conf['bitrate'] / v[4])**v[5])
         Ofr = v[1] + v[2] * self.conf['bitrate']
-        
+
         Ic = Iofr * math.exp(-(math.log(self.conf['framerate']) - math.log(Ofr))**2 / (2 * Dfrv**2))
         Dpplv = v[10] + v[11] * math.exp(-self.conf['framerate'] / v[8]) + v[12] * math.exp(-self.conf['bitrate'] / v[9])
-        
+
         self.data['value'] = 1 + Ic * math.exp(-self.getQoSm('plr')[0]['value'] * 100 / Dpplv)
         return self.data
 
 class PSNRtoMOS(VQmeasure):
     """
     PSNR to MOS mapping used on `Evalvid <http://www.tkn.tu-berlin.de/research/evalvid/>`.
-    
+
     * Type: `plot`.
     * Units: `MOS per frame`.
     """
@@ -282,7 +282,7 @@ class PSNRtoMOS(VQmeasure):
         self.data['units'] = ('frame', 'MOS')
         self.yuv = yuv
         self.yuvref = yuvref
-    
+
     def calculate(self):
         x, y = PSNR((None, self.rawdata, None, None), yuv=self.yuv, yuvref=self.yuvref).calculate()['axes']
         for i in range(0, len(y)):
@@ -302,7 +302,7 @@ class PSNRtoMOS(VQmeasure):
 class MIV(VQmeasure):
     """
     MIV metric used on `Evalvid <http://www.tkn.tu-berlin.de/research/evalvid/>`.
-    
+
     * Type: `plot`.
     * Units: `Distortion in Interval`.
     """
@@ -312,7 +312,7 @@ class MIV(VQmeasure):
         self.data['type'] = 'plot'
         self.interval = 25
         self.data['units'] = ('frame', '% of frames with a MOS worse than the reference')
-    
+
     def calculate(self):
         x, refmos = PSNRtoMOS((None, self.rawdata, None, None), yuv=True).calculate()['axes']
         x, mos = PSNRtoMOS((None, self.rawdata, None, None)).calculate()['axes']

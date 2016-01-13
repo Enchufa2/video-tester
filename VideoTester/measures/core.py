@@ -4,7 +4,9 @@
 ## Copyright 2011 Iñaki Úcar <i.ucar86@gmail.com>
 ## This program is published under a GPLv3 license
 
-from VideoTester.config import VTLOG
+import logging
+
+VTLOG = logging.getLogger("VT")
 
 class Meter:
     """
@@ -13,11 +15,11 @@ class Meter:
     def __init__(self):
         #: List of measures.
         self.measures = []
-    
+
     def run(self):
         """
         Run registered measures. For each measure in :attr:`measures`, this method calls :meth:`Measure.calculate`.
-        
+
         :returns: The list of measures.
         :rtype: list
         """
@@ -38,7 +40,7 @@ class Measure:
         self.data = dict()
         """
         Dictionary of results. Contents:
-        
+
         * `name`: The name.
         * `units`: The units (e.g.: ``'ms'``, ``['time (s)', 'kbps']``, etc.).
         * `type`: The type: `plot`, `bar`, `value` or `videoframes`.
@@ -50,51 +52,51 @@ class Measure:
         self.data['name'] = None
         self.data['type'] = None
         self.data['units'] = None
-    
+
     def calculate(self):
         """
         Compute the measure.
-        
+
         :returns: Results (see :attr:`data`).
         :rtype: dictionary
-        
+
         .. note::
             This method MUST be overwritten by the subclasses.
         """
         pass
-    
+
     def __max(self, x, y):
         """
         Find the maximum value.
-        
+
         :param list x: x axis.
         :param list y: y axis.
-        
+
         :returns: Maximum value.
         :rtype: tuple
         """
         i = y.index(max(y))
         return (x[i], y[i])
-    
+
     def __min(self, x, y):
         """
         Find the minimum value.
-        
+
         :param list x: x axis.
         :param list y: y axis.
-        
+
         :returns: Minimum value.
         :rtype: tuple
         """
         i = y.index(min(y))
         return (x[i], y[i])
-    
+
     def __mean(self, y):
         """
         Calculate the mean.
-        
+
         :param list y: y axis.
-        
+
         :returns: Mean.
         :rtype: float
         """
@@ -102,11 +104,11 @@ class Measure:
         for x in y:
             sum = sum + x
         return float(sum) / len(y)
-    
+
     def graph(self, x, y):
         """
         Set `axes`, `max`, `min` and `mean` for `bar` or `plot` graphs (see :attr:`data`).
-        
+
         :param list x: x axis.
         :param list y: y axis.
         """

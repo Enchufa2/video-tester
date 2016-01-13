@@ -4,14 +4,13 @@
 ## Copyright 2011 Iñaki Úcar <i.ucar86@gmail.com>
 ## This program is published under a GPLv3 license
 
-from gobject import MainLoop
-import pygst
+import time, logging, pygst
 pygst.require("0.10")
 from gst import parse_launch, MESSAGE_EOS, MESSAGE_ERROR, STATE_PAUSED, STATE_READY, STATE_NULL, STATE_PLAYING
 from gst.rtspserver import Server, MediaFactory
-from time import sleep
-from VideoTester.config import VTLOG
-from pickle import dump
+from gobject import MainLoop
+
+VTLOG = logging.getLogger("VT")
 
 class RTSPserver:
 	"""
@@ -20,7 +19,7 @@ class RTSPserver:
 	def __init__(self, port, bitrate, framerate, path, videos):
 		"""
 		**On init:** Some initialization code.
-		
+
 		:param port: RTSP server port.
 		:type port: string or integer
 		:param bitrate: The bitrate (in kbps).
@@ -46,7 +45,7 @@ class RTSPserver:
 		#: List of GStreamer RTSP factories.
 		self.factory = []
 		self.__addMedia()
-	
+
 	def __addMedia(self):
 		"""
 		Add media to server.
@@ -73,7 +72,7 @@ class RTSPserver:
 				}[j]
 				mmap.add_factory(name, self.factory[-1])
 				self.server.set_media_mapping(mmap)
-	
+
 	def run(self):
 		"""
 		Attach server and run the loop (see :attr:`loop`).
@@ -89,7 +88,7 @@ class RTSPclient:
 	def __init__(self, conf, video):
 		"""
 		**On init:** Some initialization code.
-		
+
 		:param dictionary conf: Parsed configuration file.
 		:param string video: Path to the selected video.
 		"""
@@ -113,28 +112,28 @@ class RTSPclient:
 			'mpeg4': ("ffenc_mpeg4", "rtpmp4vdepay", self.conf['bitrate'] + '000', ''),
 			'theora': ("theoraenc", "rtptheoradepay ! theoraparse", self.conf['bitrate'], ' ! matroskamux')
 		}[self.conf['codec']]
-	
+
 	def __events(self, bus, msg):
 		"""
 		Event handler.
-		
+
 		:param bus: Gstreamer bus object.
 		:param msg: Gstreamer message object.
-		
+
 		:returns: True.
 		:rtype: boolean
 		"""
 		t = msg.type
 		if t == MESSAGE_EOS:
 			self.pipeline.set_state(STATE_PAUSED)
-			sleep(0.5)
+			time.sleep(0.5)
 			self.pipeline.set_state(STATE_READY)
 			self.pipeline.set_state(STATE_NULL)
 			VTLOG.debug("GStreamer: MESSAGE_EOS received")
 			self.loop.quit()
 		elif t == MESSAGE_ERROR:
 			self.pipeline.set_state(STATE_PAUSED)
-			sleep(0.5)
+			time.sleep(0.5)
 			self.pipeline.set_state(STATE_READY)
 			self.pipeline.set_state(STATE_NULL)
 			e, d = msg.parse_error()
@@ -142,7 +141,7 @@ class RTSPclient:
 			VTLOG.error(e)
 			self.loop.quit()
 		return True
-	
+
 	def __play(self):
 		"""
 		Attach event handler, set state to *playing* and run the loop (see :attr:`loop`).
@@ -152,7 +151,7 @@ class RTSPclient:
 		self.loop = MainLoop()
 		self.loop.run()
 		VTLOG.debug("GStreamer: Loop stopped")
-	
+
 	def receiver(self):
 		"""
 		Connect to the RTSP server and receive the selected video (see :attr:`video`).
@@ -175,11 +174,11 @@ class RTSPclient:
 		pad.connect("notify::caps", self.__notifyCaps)
 		self.__play()
 		VTLOG.info("GStreamer receiver stopped")
-	
+
 	def reference(self):
 		"""
 		Make the reference videos.
-		
+
 		:returns: Paths to video files (see :attr:`files`) and video size (see :attr:`size`).
 		:rtype: tuple
 		"""
@@ -210,11 +209,11 @@ class RTSPclient:
 		self.__play()
 		VTLOG.info("Reference made")
 		return self.files, self.size
-	
+
 	def __notifyCaps(self, pad, args):
 		"""
 		Write caps to a file.
-		
+
 		:param pad: Gstreamer pad object.
 		:param args: Other arguments.
 		"""

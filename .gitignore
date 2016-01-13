@@ -1,3 +1,6 @@
 *.pyc
+*.log
 tmp
+temp
+video
 dist

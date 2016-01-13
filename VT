@@ -5,37 +5,71 @@
 ## Copyright 2011 Iñaki Úcar <i.ucar86@gmail.com>
 ## This program is published under a GPLv3 license
 
-from VideoTester.config import parseArgs, initLogger, VTLOG
-from sys import exit
+import sys, os, textwrap, argparse, logging
+
+VTLOG = logging.getLogger("VT")
 
 if __name__ == '__main__':
-    args = parseArgs()
-    initLogger(args)
+    # Argument parsing
+    parser = argparse.ArgumentParser(
+            formatter_class=argparse.RawDescriptionHelpFormatter,
+            description=textwrap.dedent('''\
+                VideoTester 0.1
+                ===============
+                  Video Quality Assessment Tool
+                  Visit http://video-tester.googlecode.com for support and updates
+
+                  Copyright 2011 Iñaki Úcar <i.ucar86@gmail.com>
+                  This program is published under a GPLv3 license
+                '''))
+    parser.add_argument('-c', '--conf', dest='conf', type=str, default='VT.conf',
+                        help='configuration file')
+    subparsers = parser.add_subparsers(title='subcommands', dest='mode')
+    parser_server = subparsers.add_parser('server', help='launch VT as server')
+    parser_client = subparsers.add_parser('client', help='launch VT as client')
+    parser_client.add_argument('-g', '--gui', dest='gui', action='store_true',
+                               help='launch graphical interface')
+    args = parser.parse_args()
+
+    # Set logger
     if args.mode == "server":
-        from VideoTester.config import SERVERIP, SERVERPORT
+        formatter = logging.Formatter("[%(asctime)s VTServer] %(levelname)s : %(message)s")
+    else:
+        logging.getLogger("scapy.runtime").setLevel(logging.ERROR)
+        formatter = logging.Formatter("[%(asctime)s VTClient] %(levelname)s : %(message)s")
+    fh = logging.FileHandler('VT.log')
+    fh.setLevel(logging.DEBUG)
+    fh.setFormatter(formatter)
+    VTLOG.addHandler(fh)
+    if not hasattr(args, 'gui') or not args.gui:
+        ch = logging.StreamHandler()
+        ch.setLevel(logging.INFO)
+        ch.setFormatter(formatter)
+        VTLOG.addHandler(ch)
+    VTLOG.setLevel(logging.INFO)
+
+    # Init
+    if args.mode == "server":
         from VideoTester.core import Server
-        server = Server()
+        server = Server(args.conf)
         try:
-            VTLOG.info('XMLRPC Server running at ' + SERVERIP + ':' + str(SERVERPORT))
+            VTLOG.info('XMLRPC Server running at 0.0.0.0:' + str(server.conf['port']))
             VTLOG.info('Use Control-C to exit')
             server.serve_forever()
         except KeyboardInterrupt:
             pass
-        VTLOG.info("Exiting...")
     else:
         from os import getuid
         if getuid() != 0:
             VTLOG.error("You need administrator privileges to run this program as client")
-            exit()
+            sys.exit()
         if args.gui:
             from VideoTester.gui import ClientGUI
             client = ClientGUI(0)
             client.MainLoop()
         else:
-            from VideoTester.config import CONF
             from VideoTester.core import Client
-            if args.conf:
-                CONF = args.conf[0]
-            client = Client(CONF)
+            client = Client(args.conf)
             client.run()
-        VTLOG.info("Exiting...")
+    
+    VTLOG.info("Exiting...")
