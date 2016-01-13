@@ -123,6 +123,7 @@ class Server(VT, SimpleXMLRPCServer):
         """
         from multiprocessing import Process
         from VideoTester.gstreamer import RTSPserver
+
         key = str(bitrate) + ' kbps - ' + str(framerate) + ' fps'
         if key in self.servers:
             self.servers[key]['clients'] = self.servers[key]['clients'] + 1
@@ -141,6 +142,7 @@ class Server(VT, SimpleXMLRPCServer):
             self.servers[key]['port'] = self.port
             self.servers[key]['clients'] = 1
             VTLOG.info("RTSP Server running!")
+
         VTLOG.info("PID: " + str(self.servers[key]['server'].pid) + ", " + key + " server, connected clients: " + str(self.servers[key]['clients']))
         return self.servers[key]['port']
 

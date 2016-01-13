@@ -11,10 +11,10 @@ from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg as Canvas
 from matplotlib.backends.backend_wxagg import NavigationToolbar2Wx as Toolbar
 from VideoTester.core import VT, Client
 from VideoTester.resources import getVTIcon, getVTBitmap
-import pickle, logging, pygst, gobject
-pygst.require("0.10")
-from gst import parse_launch, MESSAGE_EOS, MESSAGE_ERROR, STATE_NULL, STATE_PLAYING
-gobject.threads_init()
+import pickle, logging, gi
+gi.require_version('Gst', '1.0')
+from gi.repository import Gst, GObject
+GObject.threads_init()
 
 VTLOG = logging.getLogger("VT")
 
@@ -262,7 +262,7 @@ class VTframe(wx.Frame, VT):
         dlg.Destroy()
         if result == wx.ID_YES:
             try:
-                self.pipeline.set_state(STATE_NULL)
+                self.pipeline.set_state(Gst.State.NULL)
             except:
                 pass
             VTLOG.removeHandler(self.hdlr)
@@ -342,7 +342,7 @@ class VTframe(wx.Frame, VT):
         Play video files.
         """
         if self.play_video.GetLabel() == 'Play':
-            self.pipeline = parse_launch('filesrc name=video1 filesrc name=video2 filesrc name=video3 \
+            self.pipeline = Gst.parse_launch('filesrc name=video1 filesrc name=video2 filesrc name=video3 \
                 videomixer name=mix sink_0::alpha=0 sink_2::xpos=' + str(self.width*2) + ' sink_3::xpos=' + str(self.width) + ' ! xvimagesink \
                 videotestsrc pattern="black" num-buffers=1 \
                     ! video/x-raw-yuv,width=' + str(self.width*3) + ',height=' + str(self.height) + ' \
@@ -381,15 +381,15 @@ class VTframe(wx.Frame, VT):
             parser2.props.height = self.height
             parser3.props.width = self.width
             parser3.props.height = self.height
-            self.pipeline.set_state(STATE_PLAYING)
+            self.pipeline.set_state(Gst.State.PLAYING)
         else:
-            self.pipeline.set_state(STATE_NULL)
+            self.pipeline.set_state(Gst.State.NULL)
             self.play_video.SetLabel('Play')
 
     def onMessage(self, bus, message):
         t = message.type
-        if t == MESSAGE_EOS or t == MESSAGE_ERROR:
-            self.pipeline.set_state(STATE_NULL)
+        if t == Gst.MessageType.EOS or t == Gst.MessageType.ERROR:
+            self.pipeline.set_state(Gst.State.NULL)
             self.play_video.SetLabel('Play')
 
     def results(self):

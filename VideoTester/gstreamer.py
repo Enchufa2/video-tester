@@ -4,11 +4,10 @@
 ## Copyright 2011 Iñaki Úcar <i.ucar86@gmail.com>
 ## This program is published under a GPLv3 license
 
-import time, logging, pygst
-pygst.require("0.10")
-from gst import parse_launch, MESSAGE_EOS, MESSAGE_ERROR, STATE_PAUSED, STATE_READY, STATE_NULL, STATE_PLAYING
-from gst.rtspserver import Server, MediaFactory
-from gobject import MainLoop
+import time, logging, gi
+gi.require_version('Gst', '1.0')
+gi.require_version('GstRtspServer', '1.0')
+from gi.repository import Gst, GstRtspServer, GObject
 
 VTLOG = logging.getLogger("VT")
 
@@ -38,7 +37,7 @@ class RTSPserver:
 		#: List of available videos.
 		self.videos = videos
 		#: GStreamer RTSP server instance.
-		self.server = Server()
+		self.server = GstRtspServer.RTSPServer()
 		#: Gstreamer loop.
 		self.loop = None
 		self.server.set_service(str(port))
@@ -59,8 +58,8 @@ class RTSPserver:
 					2: "ffenc_mpeg4 bitrate="+str(self.bitrate)+"000 ! rtpmp4vpay name=pay0",
 					3: "theoraenc bitrate="+str(self.bitrate)+" ! rtptheorapay name=pay0"
 				}[j]
-				mmap = self.server.get_media_mapping()
-				self.factory.append(MediaFactory())
+				mmap = self.server.get_mount_points()
+				self.factory.append(GstRtspServer.RTSPMediaFactory())
 				self.factory[-1].set_launch(launch)
 				self.factory[-1].set_shared(True)
 				self.factory[-1].set_eos_shutdown(True)
@@ -71,14 +70,14 @@ class RTSPserver:
 					3: "/video"+str(i)+".theora"
 				}[j]
 				mmap.add_factory(name, self.factory[-1])
-				self.server.set_media_mapping(mmap)
+				self.server.set_mount_points(mmap)
 
 	def run(self):
 		"""
 		Attach server and run the loop (see :attr:`loop`).
 		"""
 		if self.server.attach():
-			self.loop = MainLoop()
+			self.loop = GObject.MainLoop()
 			self.loop.run()
 
 class RTSPclient:
@@ -124,20 +123,20 @@ class RTSPclient:
 		:rtype: boolean
 		"""
 		t = msg.type
-		if t == MESSAGE_EOS:
-			self.pipeline.set_state(STATE_PAUSED)
+		if t == Gst.MessageType.EOS:
+			self.pipeline.set_state(Gst.State.PAUSED)
 			time.sleep(0.5)
-			self.pipeline.set_state(STATE_READY)
-			self.pipeline.set_state(STATE_NULL)
-			VTLOG.debug("GStreamer: MESSAGE_EOS received")
+			self.pipeline.set_state(Gst.State.READY)
+			self.pipeline.set_state(Gst.State.NULL)
+			VTLOG.debug("GStreamer: Gst.MessageType.EOS received")
 			self.loop.quit()
-		elif t == MESSAGE_ERROR:
-			self.pipeline.set_state(STATE_PAUSED)
+		elif t == Gst.MessageType.ERROR:
+			self.pipeline.set_state(Gst.State.PAUSED)
 			time.sleep(0.5)
-			self.pipeline.set_state(STATE_READY)
-			self.pipeline.set_state(STATE_NULL)
+			self.pipeline.set_state(Gst.State.READY)
+			self.pipeline.set_state(Gst.State.NULL)
 			e, d = msg.parse_error()
-			VTLOG.error("GStreamer: MESSAGE_ERROR received")
+			VTLOG.error("GStreamer: Gst.MessageType.ERROR received")
 			VTLOG.error(e)
 			self.loop.quit()
 		return True
@@ -147,8 +146,8 @@ class RTSPclient:
 		Attach event handler, set state to *playing* and run the loop (see :attr:`loop`).
 		"""
 		self.pipeline.get_bus().add_watch(self.__events)
-		self.pipeline.set_state(STATE_PLAYING)
-		self.loop = MainLoop()
+		self.pipeline.set_state(Gst.State.PLAYING)
+		self.loop = GObject.MainLoop()
 		self.loop.run()
 		VTLOG.debug("GStreamer: Loop stopped")
 
@@ -157,7 +156,7 @@ class RTSPclient:
 		Connect to the RTSP server and receive the selected video (see :attr:`video`).
 		"""
 		VTLOG.info("Starting GStreamer receiver...")
-		self.pipeline = parse_launch('rtspsrc name=source ! tee name=t ! queue ! ' + self.depay + self.__add + ' ! filesink name=sink1 t. ! queue \
+		self.pipeline = Gst.parse_launch('rtspsrc name=source ! tee name=t ! queue ! ' + self.depay + self.__add + ' ! filesink name=sink1 t. ! queue \
 				! decodebin ! videorate skip-to-first=True ! video/x-raw-yuv,framerate=' + self.conf['framerate'] + '/1 ! filesink name=sink2')
 		source = self.pipeline.get_by_name('source')
 		sink1 = self.pipeline.get_by_name('sink1')
@@ -183,7 +182,7 @@ class RTSPclient:
 		:rtype: tuple
 		"""
 		VTLOG.info("Making reference...")
-		self.pipeline = parse_launch('filesrc name=source ! decodebin ! videorate ! video/x-raw-yuv,framerate=' + self.conf['framerate'] + '/1  ! filesink name=sink1')
+		self.pipeline = Gst.parse_launch('filesrc name=source ! decodebin ! videorate ! video/x-raw-yuv,framerate=' + self.conf['framerate'] + '/1  ! filesink name=sink1')
 		source = self.pipeline.get_by_name('source')
 		sink1 = self.pipeline.get_by_name('sink1')
 		location = self.video
@@ -193,7 +192,7 @@ class RTSPclient:
 		self.files['original'].append(location)
 		sink1.props.location = location
 		self.__play()
-		self.pipeline = parse_launch('filesrc name=source ! decodebin ! videorate ! video/x-raw-yuv,framerate=' + self.conf['framerate'] + '/1  ! ' + self.encoder + ' bitrate=' + self.bitrate \
+		self.pipeline = Gst.parse_launch('filesrc name=source ! decodebin ! videorate ! video/x-raw-yuv,framerate=' + self.conf['framerate'] + '/1  ! ' + self.encoder + ' bitrate=' + self.bitrate \
 				+ ' ! tee name=t ! queue' + self.__add + ' ! filesink name=sink2 t. ! queue ! decodebin ! filesink name=sink3')
 		source = self.pipeline.get_by_name('source')
 		sink2 = self.pipeline.get_by_name('sink2')
