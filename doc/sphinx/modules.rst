@@ -5,8 +5,6 @@ Module Reference
    :maxdepth: 2
    :numbered:
 
-   config
-
    core
 
    gstreamer
