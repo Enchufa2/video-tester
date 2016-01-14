@@ -15,6 +15,7 @@ import pickle, logging, gi
 gi.require_version('Gst', '1.0')
 from gi.repository import Gst, GObject
 GObject.threads_init()
+Gst.init(None)
 
 VTLOG = logging.getLogger("VT")
 
