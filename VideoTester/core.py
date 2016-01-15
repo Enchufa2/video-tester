@@ -211,9 +211,10 @@ class Client(VT):
 
         #: Path to the selected video.
         if not os.path.isabs(self.conf['temp']):
-            self.conf['temp'] = os.getcwd() + self.conf['temp']
+            self.conf['temp'] = '%s/%s' % (os.getcwd(), self.conf['temp'])
         self.video = '/'.join([self.path, dict(self.videos)[self.conf['video']]])
-        self.conf['tempdir'] = self.conf['temp'] + self.conf['video'] + '_' + self.conf['codec'] + '_' + self.conf['bitrate'] + '_' + self.conf['framerate'] + '_' + self.conf['protocols'] + '/'
+        self.conf['tempdir'] = '%s/%s_%s_%s_%s_%s/' % (self.conf['temp'], self.conf['video'], self.conf['codec'], self.conf['bitrate'], self.conf['framerate'], self.conf['protocols'])
+        print self.conf['tempdir']
         try:
             os.mkdir(self.conf['tempdir'])
         except OSError:
@@ -248,6 +249,7 @@ class Client(VT):
         VTLOG.info("XMLRPC Server at " + self.conf['ip'] + ':' + self.conf['port'])
         VTLOG.info("Evaluating: " + self.conf['video'] + " + " + self.conf['codec'] + " at " + self.conf['bitrate'] + " kbps and " + self.conf['framerate'] + " fps under " + self.conf['protocols'])
 
+        import signal
         from xmlrpclib import ServerProxy
         from scapy.all import rdpcap
         from multiprocessing import Process, Queue
@@ -272,15 +274,16 @@ class Client(VT):
             child.start()
             self.__ping()
             rtspclient.receiver()
-            sniffer.cap = rdpcap(q.get())
-            child.join()
         except KeyboardInterrupt:
             VTLOG.warning("Keyboard interrupt!")
             server.stop(self.conf['bitrate'], self.conf['framerate'])
-            child.terminate()
+            os.kill(child.pid, signal.SIGINT)
             child.join()
             sys.exit()
         server.stop(self.conf['bitrate'], self.conf['framerate'])
+        os.kill(child.pid, signal.SIGINT)
+        sniffer.cap = rdpcap(q.get())
+        child.join()
 
         videodata, size = rtspclient.reference()
         conf = {'codec':self.conf['codec'], 'bitrate':float(self.conf['bitrate']), 'framerate':float(self.conf['framerate']), 'size':size}

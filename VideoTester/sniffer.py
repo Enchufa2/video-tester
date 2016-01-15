@@ -5,7 +5,7 @@
 ## This program is published under a GPLv3 license
 
 from scapy.all import *
-import time, logging
+import pcap, time, logging
 
 VTLOG = logging.getLogger("VT")
 
@@ -61,56 +61,20 @@ class Sniffer:
         :param Queue q: Queue to communicate with the main thread.
         """
         VTLOG.info("Starting sniffer...")
-        expr='host ' + self.conf['ip']
-        cap = self.sniff(iface=self.conf['iface'], filter=expr)
-        location = self.conf['tempdir'] + self.conf['num'] + '.cap'
-        wrpcap(location, cap)
-        q.put(location)
+        expr = 'host ' + self.conf['ip']
+        filename = self.conf['tempdir'] + self.conf['num'] + '.cap'
+        try:
+            p = pcap.pcapObject()
+            p.open_live(self.conf['iface'], 65536, 1, 0)
+            p.setfilter(expr, 0, 0)
+            p.dump_open(filename)
+            p.setnonblock(True)
+            while True:
+                p.dispatch(0, None)
+        except KeyboardInterrupt:
+            pass
+        q.put(filename)
         VTLOG.info("Sniffer stopped")
-
-    def sniff(count=0, prn = None, lfilter=None, *arg, **karg):
-        """
-        ``scapy.sendrecv.sniff()`` Scapy function modification. It stops when an RTSP *TEARDOWN* packet is found.
-
-        :param integer count: Number of packets to capture (0 means infinite).
-        :param prn: Function to apply to each packet. If something is returned, it is displayed.
-        :param lfilter: Python function applied to each packet to determine if any further action is requireds.
-
-        :returns: A list of packets.
-        :rtype: list
-        """
-        c = 0
-        L2socket = conf.L2listen
-        s = L2socket(type=ETH_P_ALL, *arg, **karg)
-        lst = []
-        remain = None
-        VTLOG.debug("Sniffer: loop started. Sniffing...")
-        while 1:
-            sel = select([s],[],[],remain)
-            if s in sel[0]:
-                p = s.recv(MTU)
-                if p is None:
-                    break
-                #This line fixes the lack of timing accuracy
-                p.time = time.time()
-                if lfilter and not lfilter(p):
-                    continue
-                lst.append(p)
-                aux = str(p)
-                #Look for a TEARDOWN packet to stop the loop
-                if (aux.find("TEARDOWN") != -1) and (aux.find("Public:") == -1):
-                    VTLOG.debug("TEARDOWN found!")
-                    break
-                c += 1
-                if prn:
-                    r = prn(p)
-                    if r is not None:
-                        print r
-                if count > 0 and c >= count:
-                    break
-        s.close()
-        VTLOG.debug("Sniffer: loop terminated")
-        return PacketList(lst,"Sniffed")
 
     def parsePkts(self):
         """

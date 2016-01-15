@@ -1,7 +1,8 @@
 Short-term:
 * Fix known compatibility issues with the latest versions of GStreamer.
 * Check for compatibility issues with other libraries.
-* Stop sniffer with a signal.
+* Sniffer: pylibpcap: the capture ends in the middle of nowhere
+           pcapy: PcapError (try nonblock?)
 
 Long-term:
 * Move from Scapy to a more efficient solution. Maybe implement the networking part (packet capturing and processing) in a dedicated C library with Python bindings.
