@@ -6,18 +6,18 @@
 
 from numpy import *
 
-class YUVvideo:
+class YUVVideo:
     """
     YUV reader.
     """
     def __init__(self, file, framesize, fmt='I420'):
         """
         **On init:** Call the proper reader.
-        
+
         :param string file: Path to the file.
         :param tuple framesize: Frame size: ``(width, height)``.
         :param string format: YUV format.
-        
+
         .. note::
             Supported formats: I420.
         """
@@ -25,7 +25,7 @@ class YUVvideo:
         self.framesize = framesize
         #: File descriptor.
         self.f = open(file, "rb")
-        
+
         if fmt == 'I420':
             frame = self.framesize[0] * self.framesize[1]
             self.yblock = frame
@@ -38,11 +38,11 @@ class YUVvideo:
         #: Number of frames in the video.
         self.frames = self.f.tell()/self.chunk
         self.f.seek(0)
-    
+
     def __iter__(self):
         self.f.seek(0)
         return self
-    
+
     def next(self):
         data = self.f.read(self.chunk)
         if not data:
@@ -63,10 +63,10 @@ class CodedVideo:
     def __init__(self, file, codec):
         """
         **On init:** Call the proper reader.
-        
+
         :param string file: Path to the file.
         :param string codec: Codec type.
-        
+
         .. note::
             Supported formats: H263, H264, MPEG4 and Theora.
         """
@@ -82,7 +82,7 @@ class CodedVideo:
             self.__readMPEG4()
         elif codec == 'theora':
             self.__readTheora()
-    
+
     def __readH263(self):
         """
         H263 format reader.
@@ -102,7 +102,7 @@ class CodedVideo:
                 else:
                     self.frames['types'].append('P')
             i += 1
-    
+
     def __readH264(self):
         """
         H264 format reader.
@@ -140,7 +140,7 @@ class CodedVideo:
             elif codeNum == 4 or codeNum == 9:
                 type = 'SI'
             return type
-        
+
         SC = array([0x00, 0x00, 0x00, 0x01], dtype=uint8)
         SCmask = array([0xff, 0xff, 0xff, 0xff], dtype=uint8)
         typeI = 0x05
@@ -162,7 +162,7 @@ class CodedVideo:
                     i += 1
                     self.frames['types'].append(getType(self.raw[i:i+1]))
             i += 1
-    
+
     def __readMPEG4(self):
         """
         MPEG4 format reader.
@@ -187,7 +187,7 @@ class CodedVideo:
                 elif comp == 0xc0:
                     self.frames['types'].append('S')
             i += 1
-    
+
     def __readTheora(self):
         """
         Theora over Matroska format reader.

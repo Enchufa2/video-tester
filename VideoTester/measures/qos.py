@@ -4,10 +4,8 @@
 ## Copyright 2011 Iñaki Úcar <i.ucar86@gmail.com>
 ## This program is published under a GPLv3 license
 
-from VideoTester.measures.core import Meter, Measure
-import logging
-
-VTLOG = logging.getLogger("VT")
+from .. import VTLOG
+from .core import Meter, Measure
 
 class QoSmeter(Meter):
     """

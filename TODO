@@ -1,8 +1,10 @@
 Short-term:
-* Fix known compatibility issues with the latest versions of GStreamer.
+* Fix packet parser.
+* Retrieve session information (negotiated video stream ports, etc.) from GStreamer.
+* Fix known compatibility issues with the latest versions of GStreamer (H.263?).
 * Check for compatibility issues with other libraries.
-* Sniffer: pylibpcap: the capture ends in the middle of nowhere
-           pcapy: PcapError (try nonblock?)
+* import numpy as np
+* Set log level via command-line.
 
 Long-term:
 * Move from Scapy to a more efficient solution. Maybe implement the networking part (packet capturing and processing) in a dedicated C library with Python bindings.

@@ -4,9 +4,7 @@
 ## Copyright 2011 Iñaki Úcar <i.ucar86@gmail.com>
 ## This program is published under a GPLv3 license
 
-import logging
-
-VTLOG = logging.getLogger("VT")
+from .. import VTLOG
 
 class Meter:
     """

@@ -4,12 +4,19 @@
 ## Copyright 2011 Iñaki Úcar <i.ucar86@gmail.com>
 ## This program is published under a GPLv3 license
 
+import sys, os, ConfigParser, signal, pickle, time, socket
 from SimpleXMLRPCServer import SimpleXMLRPCServer
-import sys, os, ConfigParser, logging
+from xmlrpclib import ServerProxy
+from multiprocessing import Process
+from . import VTLOG, netifaces, supported_codecs, supported_protocols
+from .gstreamer import RTSPServer, RTSPClient
+from .sniffer import Sniffer
+from .measures.qos import QoSmeter
+from .measures.bs import BSmeter
+from .measures.vq import VQmeter
+from .video import YUVVideo, CodedVideo
 
-VTLOG = logging.getLogger("VT")
-
-class VT:
+class VTBase:
     """
     Superclass that gathers several common functionalities shared by the client and the server.
     """
@@ -24,19 +31,18 @@ class VT:
             This section MUST be present in the default configuration file
             and MUST contain the same videos at the client and the server.
         """
-        #: Configuration file path.
-        self.CONF = conf
         if not conf:
-            self.CONF = os.getcwd() + '/VT.conf'
+            #: Configuration file path.
+            self.CONF = os.path.abspath('VT.conf')
         else:
-            if not os.path.isabs(conf):
-                self.CONF = os.getcwd() + '/' + conf
-
-        #: List of ``(id, name)`` pairs for each available video.
-        self.videos = dict(self.parseConf(self.CONF, "video"))
+            self.CONF = os.path.abspath(conf)
+        self.conf = dict(self.parseConf(self.CONF, 'general'))
+        #: Server port.
+        self.port = int(self.conf.pop('port'))
         #: Video path.
-        self.path = self.videos.pop('path')
-        self.videos = self.videos.items()
+        self.path = self.conf.pop('path')
+        #: List of ``(id, name)`` pairs for each available video.
+        self.videos = self.conf.items()
 
     def run(self):
         """
@@ -44,8 +50,6 @@ class VT:
 
         .. note::
             This method MUST be overwritten by the subclasses.
-
-        :raises: Not implemented.
         """
         VTLOG.error("Not implemented")
         sys.exit()
@@ -59,18 +63,16 @@ class VT:
 
         :returns: A list of ``(name, value)`` pairs for each option in the given section.
         :rtype: list of tuples
-
-        :raises: Bad configuration file or path.
         """
         try:
             config = ConfigParser.RawConfigParser()
             config.read(file)
             return config.items(section)
-        except:
-            VTLOG.error("Bad configuration file or path")
+        except Exception as e:
+            VTLOG.error(e)
             sys.exit()
 
-class Server(VT, SimpleXMLRPCServer):
+class VTServer(VTBase, SimpleXMLRPCServer):
     """
     VT Server class.
     """
@@ -81,18 +83,13 @@ class Server(VT, SimpleXMLRPCServer):
         :param conf: Path to a configuration file.
         :type conf: string
         """
-        VT.__init__(self, conf)
-        #: Dictionary of configuration options.
-        self.conf = dict(self.parseConf(self.CONF, 'server'))
-        self.conf['port'] = int(self.conf['port'])
+        VTBase.__init__(self, conf)
+        SimpleXMLRPCServer.__init__(self, ('0.0.0.0', self.port), logRequests=False)
 
-        SimpleXMLRPCServer.__init__(self, ('0.0.0.0', self.conf['port']), logRequests=False)
         #: List of available videos.
         self.videos = [x[1] for x in self.videos]
         #: Dictionary of running RTSP servers.
         self.servers = dict()
-        #: Next RTSP port (integer). It increases each time by one.
-        self.port = self.conf['port'] + 1
         #: List of exported methods (:meth:`run` and :meth:`stop`).
         self.exports = ['run', 'stop']
 
@@ -106,44 +103,42 @@ class Server(VT, SimpleXMLRPCServer):
         else:
             raise Exception('method "%s" is not supported' % method)
 
+    def serve_forever(self):
+        VTLOG.info('XMLRPC Server at 0.0.0.0:%s, use Ctrl-C to exit' % (self.port))
+        SimpleXMLRPCServer.serve_forever(self)
+
     def run(self, bitrate, framerate):
         """
         Run a subprocess for an RTSP server with a given bitrate and framerate (if not running)
         or add a client (if running).
 
-        :param bitrate: The bitrate (in kbps).
-        :type bitrate: string or integer
-        :param framerate: The framerate (in fps).
-        :type framerate: string or integer
+        :param integer bitrate: The bitrate (in kbps).
+        :param integer framerate: The framerate (in fps).
 
         :returns: The RTSP server port.
         :rtype: integer
-
-        :raises OSError: An error ocurred while running subprocess.
         """
-        from multiprocessing import Process
-        from VideoTester.gstreamer import RTSPserver
-
-        key = str(bitrate) + ' kbps - ' + str(framerate) + ' fps'
+        key = '%s kbps, %s fps' % (bitrate, framerate)
         if key in self.servers:
             self.servers[key]['clients'] = self.servers[key]['clients'] + 1
         else:
             self.servers[key] = dict()
-            while not self.__freePort():
-                self.port = self.port + 1
-            self.servers[key]['server'] = Process(target=RTSPserver(self.port, bitrate, framerate, self.path, self.videos).run)
+            port = self.__freePort()
+            server = RTSPServer(port)
+            server.addMedia(self.videos, bitrate, framerate, self.path)
+            self.servers[key]['server'] = Process(target=server.run)
             try:
                 self.servers[key]['server'].start()
-            except e:
+            except Exception as e:
                 VTLOG.error(e)
                 self.servers[key]['server'].terminate()
                 self.servers[key]['server'].join()
                 sys.exit()
-            self.servers[key]['port'] = self.port
+            self.servers[key]['port'] = port
             self.servers[key]['clients'] = 1
-            VTLOG.info("RTSP Server running!")
+            VTLOG.info('PID: %s | RTSP Server at 0.0.0.0:%s, %s' % (self.servers[key]['server'].pid, port, key))
 
-        VTLOG.info("PID: " + str(self.servers[key]['server'].pid) + ", " + key + " server, connected clients: " + str(self.servers[key]['clients']))
+        VTLOG.info('PID: %s | Client started | Connections: %s' % (self.servers[key]['server'].pid, self.servers[key]['clients']))
         return self.servers[key]['port']
 
     def stop(self, bitrate, framerate):
@@ -151,72 +146,76 @@ class Server(VT, SimpleXMLRPCServer):
         Stop an RTSP server with a given bitrate and framerate (if no remaining clients)
         or remove a client (if remaining clients).
 
-        :param bitrate: The bitrate (in kbps).
-        :type bitrate: string or integer
-        :param framerate: The framerate (in fps).
-        :type framerate: string or integer
+        :param integer bitrate: The bitrate (in kbps).
+        :param integer framerate: The framerate (in fps).
 
         :returns: True.
         :rtype: boolean
         """
-        key = str(bitrate) + ' kbps - ' + str(framerate) + ' fps'
+        key = '%s kbps, %s fps' % (bitrate, framerate)
         self.servers[key]['clients'] = self.servers[key]['clients'] - 1
+        VTLOG.info('PID: %s | Client stopped | Connections: %s' % (self.servers[key]['server'].pid, self.servers[key]['clients']))
         if self.servers[key]['clients'] == 0:
             self.servers[key]['server'].terminate()
             self.servers[key]['server'].join()
-            VTLOG.info(key + " server: last client disconnected and server stopped")
+            VTLOG.info('PID: %s | Terminated' % (self.servers[key]['server'].pid))
             self.servers.pop(key)
-        else:
-            VTLOG.info(key + " server: client disconnected. Remaining: " + str(self.servers[key]['clients']))
         return True
 
     def __freePort(self):
         """
-        Check that the :attr:`VideoTester.core.Server.port` is unused.
+        Find an unused port starting from :attr:`VideoTester.core.Server.port`.
 
-        :returns: True if port is unused. False if port is in use.
-        :rtype: boolean
+        :returns: an unused port number.
+        :rtype: integer
         """
-        from socket import socket
-        try:
-            s = socket()
-            s.bind(('localhost', self.port))
-        except:
-            return False
+        port = self.port
+        while True:
+            port += 1
+            try:
+                s = socket.socket()
+                s.bind(('localhost', port))
+                break
+            except:
+                continue
         s.close()
-        return True
+        return port
 
-class Client(VT):
+class VTClient(VTBase):
     """
     VT Client class.
     """
-    def __init__(self, conf=None, gui=False):
+    def __init__(self, conf=None):
         """
         **On init:** Some initialization code.
 
-        :param conf: Path to a configuration file (string) or parsed configuration file (dictionary).
-        :type conf: string or dictionary
-        :param boolean gui: True if :class:`Client` is called from GUI. False otherwise.
-
-        .. warning::
-            If ``gui == True``, `file` MUST be a dictionary. Otherwise, `file` MUST be a string.
+        :param conf: Path to a configuration file.
+        :type conf: string
         """
-        if gui:
-            VT.__init__(self)
-            #: Dictionary of configuration options.
-            self.conf = conf
-        else:
-            VT.__init__(self, conf)
-            self.conf = dict(self.parseConf(self.CONF, "client"))
-
-        #: Path to the selected video.
-        if not os.path.isabs(self.conf['temp']):
-            self.conf['temp'] = '%s/%s' % (os.getcwd(), self.conf['temp'])
+        VTBase.__init__(self, conf)
+        #: Parsed configuration.
+        self.conf = dict(self.parseConf(self.CONF, 'client'))
+        self.conf['temp'] = os.path.abspath(self.conf['temp'])
+        self.conf['bitrate'] = int(self.conf['bitrate'])
+        self.conf['framerate'] = int(self.conf['framerate'])
+        #: Selected video.
         self.video = '/'.join([self.path, dict(self.videos)[self.conf['video']]])
-        self.conf['tempdir'] = '%s/%s_%s_%s_%s_%s/' % (self.conf['temp'], self.conf['video'], self.conf['codec'], self.conf['bitrate'], self.conf['framerate'], self.conf['protocols'])
-        print self.conf['tempdir']
+        if self.conf['codec'] not in supported_codecs.keys():
+            VTLOG.error('Codec %s not supported' % self.conf['codec'])
+            sys.exit()
+        if self.conf['protocol'] not in supported_protocols:
+            VTLOG.error('Protocol %s not supported' % self.conf['protocol'])
+            sys.exit()
+        if self.conf['iface'] not in netifaces:
+            VTLOG.error('Interface %s not found' % self.conf['iface'])
+            sys.exit()
+        #: Results from all measures.
+        self.results = []
+
+    def __set_tempdir(self):
+        self.conf['tempdir'] = '%s/%s_%s_%s_%s_%s/' % (self.conf['temp'], self.conf['video'], self.conf['codec'], self.conf['bitrate'], self.conf['framerate'], self.conf['protocol'])
         try:
-            os.mkdir(self.conf['tempdir'])
+            os.makedirs(self.conf['tempdir'])
         except OSError:
             pass
         i , j = 0, True
@@ -245,69 +244,58 @@ class Client(VT):
         :returns: A list of measures (see :attr:`VideoTester.measures.core.Meter.measures`) and the path to the temporary directory plus files prefix: ``<path-to-tempdir>/<prefix>``.
         :rtype: tuple
         """
-        VTLOG.info("Client running!")
-        VTLOG.info("XMLRPC Server at " + self.conf['ip'] + ':' + self.conf['port'])
-        VTLOG.info("Evaluating: " + self.conf['video'] + " + " + self.conf['codec'] + " at " + self.conf['bitrate'] + " kbps and " + self.conf['framerate'] + " fps under " + self.conf['protocols'])
-
-        import signal
-        from xmlrpclib import ServerProxy
-        from scapy.all import rdpcap
-        from multiprocessing import Process, Queue
-        from VideoTester.gstreamer import RTSPclient
-        from VideoTester.sniffer import Sniffer
-        from VideoTester.measures.qos import QoSmeter
-        from VideoTester.measures.bs import BSmeter
-        from VideoTester.measures.vq import VQmeter
-
+        VTLOG.info('Client running!')
+        self.__set_tempdir()
         try:
-            server = ServerProxy('http://' + self.conf['ip'] + ':' + self.conf['port'])
-            self.conf['rtspport'] = str(server.run(self.conf['bitrate'], self.conf['framerate']))
-        except:
-            VTLOG.error("Bad IP or port")
+            server = ServerProxy('http://%s:%s' % (self.conf['ip'], self.port))
+            rtspport = server.run(self.conf['bitrate'], self.conf['framerate'])
+        except Exception as e:
+            VTLOG.error(e)
             sys.exit()
+        VTLOG.info('Connected to XMLRPC Server at %s:%s' % (self.conf['ip'], self.port))
+        VTLOG.info('Evaluating: %s, %s, %s kbps, %s fps, %s' % (self.conf['video'], self.conf['codec'], self.conf['bitrate'], self.conf['framerate'], self.conf['protocol']))
 
-        sniffer = Sniffer(self.conf)
-        rtspclient = RTSPclient(self.conf, self.video)
-        q = Queue()
-        child = Process(target=sniffer.run, args=(q,))
+        sniffer = Sniffer(self.conf['iface'],
+                          self.conf['ip'],
+                          self.conf['protocol'],
+                          '%s%s.cap' % (self.conf['tempdir'], self.conf['num']))
+        rtspclient = RTSPClient(self.conf, self.video, rtspport)
+        child = Process(target=sniffer.run)
         try:
             child.start()
-            self.__ping()
+            sniffer.ping()
             rtspclient.receiver()
         except KeyboardInterrupt:
             VTLOG.warning("Keyboard interrupt!")
             server.stop(self.conf['bitrate'], self.conf['framerate'])
-            os.kill(child.pid, signal.SIGINT)
+            child.terminate()
             child.join()
             sys.exit()
         server.stop(self.conf['bitrate'], self.conf['framerate'])
-        os.kill(child.pid, signal.SIGINT)
-        sniffer.cap = rdpcap(q.get())
+        child.terminate()
         child.join()
 
         videodata, size = rtspclient.reference()
-        conf = {'codec':self.conf['codec'], 'bitrate':float(self.conf['bitrate']), 'framerate':float(self.conf['framerate']), 'size':size}
+        conf = {
+            'codec': self.conf['codec'],
+            'bitrate': self.conf['bitrate'],
+            'framerate': self.conf['framerate'],
+            'size': size
+        }
         packetdata = sniffer.parsePkts()
         codecdata, rawdata = self.__loadData(videodata, size, self.conf['codec'])
-        qosm = QoSmeter(self.conf['qos'], packetdata).run()
-        bsm = BSmeter(self.conf['bs'], codecdata).run()
-        vqm = VQmeter(self.conf['vq'], (conf, rawdata, codecdata, packetdata)).run()
 
-        self.__saveMeasures(qosm + bsm + vqm)
-        VTLOG.info("Client stopped!")
-        return qosm + bsm + vqm, self.conf['tempdir'] + self.conf['num']
+        self.results = []
+        self.results.extend(QoSmeter(self.conf['qos'], packetdata).run())
+        self.results.extend(BSmeter(self.conf['bs'], codecdata).run())
+        self.results.extend(VQmeter(self.conf['vq'], (conf, rawdata, codecdata, packetdata)).run())
 
-    def __ping(self):
-        """
-        Ping to server (4 echoes).
-        """
-        from scapy.all import IP, ICMP, send
-        from time import sleep
-        sleep(0.5)
-        VTLOG.info("Pinging...")
-        for i in range(0, 4):
-            send(IP(dst=self.conf['ip'])/ICMP(seq=i), verbose=False)
-            sleep(0.5)
+        VTLOG.info('Saving measures...')
+        for measure in self.results:
+            f = open(self.conf['tempdir'] + self.conf['num'] + '_' + measure['name'] + '.pkl', 'wb')
+            pickle.dump(measure, f)
+            f.close()
+        VTLOG.info('Client stopped!')
 
     def __loadData(self, videodata, size, codec):
         """
@@ -315,29 +303,15 @@ class Client(VT):
 
         :param videodata: (see :attr:`VideoTester.gstreamer.RTSPclient.files`)
 
-        :returns: Coded video data object (see :class:`VideoTester.video.YUVvideo`) and raw video data object (see :class:`VideoTester.video.CodedVideo`).
+        :returns: Coded video data object (see :class:`VideoTester.video.YUVVideo`) and raw video data object (see :class:`VideoTester.video.CodedVideo`).
         :rtype: tuple
         """
         VTLOG.info("Loading videos...")
-        from VideoTester.video import YUVvideo, CodedVideo
         codecdata = {}
         rawdata = {}
         for x in videodata.keys():
             if x != 'original':
                 codecdata[x] = CodedVideo(videodata[x][0], codec)
-            rawdata[x] = YUVvideo(videodata[x][1], size)
+            rawdata[x] = YUVVideo(videodata[x][1], size)
             VTLOG.info("+++")
         return codecdata, rawdata
-
-    def __saveMeasures(self, measures):
-        """
-        Save measures to disc (with standard module :mod:`pickle`).
-
-        :param list measures: List of measures.
-        """
-        VTLOG.info("Saving measures...")
-        from pickle import dump
-        for measure in measures:
-            f = open(self.conf['tempdir'] + self.conf['num'] + '_' + measure['name'] + '.pkl', "wb")
-            dump(measure, f)
-            f.close()

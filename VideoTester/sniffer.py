@@ -4,10 +4,10 @@
 ## Copyright 2011 Iñaki Úcar <i.ucar86@gmail.com>
 ## This program is published under a GPLv3 license
 
-from scapy.all import *
-import pcap, time, logging
-
-VTLOG = logging.getLogger("VT")
+import os, time, pcap
+from scapy.all import Packet, ByteField, ShortField, \
+    IP, ICMP, TCP, UDP, RTP, send, rdpcap
+from . import VTLOG
 
 class RTSPi(Packet):
     """
@@ -22,14 +22,23 @@ class Sniffer:
     """
     Network sniffer and packet parser.
     """
-    def __init__(self, conf):
+    def __init__(self, iface, ip, proto, cap):
         """
         **On init:** Some initialization code.
 
-        :param dictionary conf: Parsed configuration file.
+        :param string iface: Network interface.
+        :param string ip: Server IP to perform packet filtering.
+        :param string proto: Protocol selected for the RTP transmission.
+        :param string filename: PCAP filename to store packets.
         """
-        #: Dictionary of configuration options (see :attr:`VideoTester.core.Client.conf`).
-        self.conf = conf
+        #: Network interface.
+        self.iface = iface
+        #: Server IP.
+        self.ip = ip
+        #: Protocol selected.
+        self.proto = proto
+        #: Capture file.
+        self.cap = cap
         #: SDP clock attribute.
         self.clock = None
         #: RTP payload type.
@@ -40,8 +49,6 @@ class Sniffer:
         self.dport = None
         #: RTSP PLAY packet found (boolean).
         self.play = False
-        #: Capture file.
-        self.cap = None
         #: List of packet lengths.
         self.lengths = []
         #: List of packet arrival times.
@@ -51,30 +58,34 @@ class Sniffer:
         #: List of RTP timestamps.
         self.timestamps = []
         #: Ping information.
-        self.ping = {0:{}, 1:{}, 2:{}, 3:{}}
+        self.__ping = {0:{}, 1:{}, 2:{}, 3:{}}
         self.__add = 0
 
-    def run(self, q):
+    def ping(self):
         """
-        Start packet sniffing and save the capture.
+        Ping to server (4 echoes).
+        """
+        time.sleep(0.5)
+        VTLOG.info("Pinging...")
+        for i in range(0, 4):
+            send(IP(dst=self.ip)/ICMP(seq=i), verbose=False)
+            time.sleep(0.5)
 
-        :param Queue q: Queue to communicate with the main thread.
+    def run(self):
         """
-        VTLOG.info("Starting sniffer...")
-        expr = 'host ' + self.conf['ip']
-        filename = self.conf['tempdir'] + self.conf['num'] + '.cap'
+        Start packet sniffing and save a capture file.
+        """
+        VTLOG.info('PID: %s | Starting sniffer...' % os.getpid())
         try:
             p = pcap.pcapObject()
-            p.open_live(self.conf['iface'], 65536, 1, 0)
-            p.setfilter(expr, 0, 0)
-            p.dump_open(filename)
-            p.setnonblock(True)
-            while True:
-                p.dispatch(0, None)
-        except KeyboardInterrupt:
+            p.open_live(self.iface, 65536, 1, 0)
+            p.setfilter('host ' + self.ip, 0, 0)
+            p.dump_open(self.cap)
+            while p.dispatch(-1, None) >= 0:
+                pass
+        except:
             pass
-        q.put(filename)
-        VTLOG.info("Sniffer stopped")
+        VTLOG.info('PID: %s | Sniffer stopped' % os.getpid())
 
     def parsePkts(self):
         """
@@ -84,7 +95,8 @@ class Sniffer:
         :rtype: tuple
         """
         VTLOG.info("Starting packet parser...")
-        if self.conf['protocols'] == "tcp":
+        self.cap = rdpcap(self.cap)
+        if self.proto == 'tcp':
             self.__parseTCP()
         else:
             self.__parseUDP()
@@ -93,7 +105,7 @@ class Sniffer:
         b = str(len(self.sequences))
         VTLOG.debug(b + " RTP packets received, " + a + " losses")
         VTLOG.info("Packet parser stopped")
-        return self.lengths, self.times, self.sequences, self.timestamps, self.ping
+        return self.lengths, self.times, self.sequences, self.timestamps, self.__ping
 
     def __prepare(self, p):
         """
@@ -103,7 +115,7 @@ class Sniffer:
         :rtype: boolean
         """
         if p.haslayer(ICMP):
-            self.ping[p[ICMP].seq][p[ICMP].type] = p.time
+            self.__ping[p[ICMP].seq][p[ICMP].type] = p.time
         elif str(p).find("Content-Type: application/sdp") != -1:
             lines = str(p[TCP].payload).splitlines()
             for line in lines:
@@ -175,7 +187,7 @@ class Sniffer:
                     break
                 if not play:
                     play = self.__prepare(p)
-                elif play and (p[IP].src == self.conf['ip']) and (p.haslayer(UDP)) and (str(p).find("GStreamer") == -1):
+                elif play and (p[IP].src == self.ip) and (p.haslayer(UDP)) and (str(p).find("GStreamer") == -1):
                     if (p.sport == self.sport) and (p.dport == self.dport):
                         extract(p)
         self.sequences, self.times, self.timestamps = \
@@ -265,7 +277,7 @@ class Sniffer:
                 if not play:
                     play = self.__prepare(p)
                 #Packets from server, with TCP layer. Avoid ACK's. Avoid RTSP packets
-                elif play and (p[IP].src == self.conf['ip']) and p.haslayer(TCP) and (len(p) > 66) and (str(p).find("RTSP/1.0") == -1):
+            elif play and (p[IP].src == self.ip) and p.haslayer(TCP) and (len(p) > 66) and (str(p).find("RTSP/1.0") == -1):
                     if (p.sport == self.sport) and (p.dport == self.dport):
                         packetlist.append(p)
                         seqlist.append(p[TCP].seq)

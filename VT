@@ -6,11 +6,9 @@
 ## This program is published under a GPLv3 license
 
 import sys, os, textwrap, argparse, logging
-
-VTLOG = logging.getLogger("VT")
+from VideoTester import VTLOG
 
 if __name__ == '__main__':
-    # Argument parsing
     parser = argparse.ArgumentParser(
             formatter_class=argparse.RawDescriptionHelpFormatter,
             description=textwrap.dedent('''\
@@ -31,45 +29,23 @@ if __name__ == '__main__':
                                help='launch graphical interface')
     args = parser.parse_args()
 
-    # Set logger
     if args.mode == "server":
-        formatter = logging.Formatter("[%(asctime)s VTServer] %(levelname)s : %(message)s")
-    else:
-        logging.getLogger("scapy.runtime").setLevel(logging.ERROR)
-        formatter = logging.Formatter("[%(asctime)s VTClient] %(levelname)s : %(message)s")
-    fh = logging.FileHandler('VT.log')
-    fh.setLevel(logging.DEBUG)
-    fh.setFormatter(formatter)
-    VTLOG.addHandler(fh)
-    if not hasattr(args, 'gui') or not args.gui:
-        ch = logging.StreamHandler()
-        ch.setLevel(logging.INFO)
-        ch.setFormatter(formatter)
-        VTLOG.addHandler(ch)
-    VTLOG.setLevel(logging.INFO)
-
-    # Init
-    if args.mode == "server":
-        from VideoTester.core import Server
-        server = Server(args.conf)
+        from VideoTester import VTServer
+        server = VTServer(args.conf)
         try:
-            VTLOG.info('XMLRPC Server running at 0.0.0.0:' + str(server.conf['port']))
-            VTLOG.info('Use Control-C to exit')
             server.serve_forever()
         except KeyboardInterrupt:
             pass
     else:
-        from os import getuid
-        if getuid() != 0:
-            VTLOG.error("You need administrator privileges to run this program as client")
+        if os.getuid() != 0:
+            VTLOG.error('You need administrator privileges to run this program as client')
             sys.exit()
+        from VideoTester import VTClient
+        client = VTClient(args.conf)
         if args.gui:
-            from VideoTester.gui import ClientGUI
-            client = ClientGUI(0)
-            client.MainLoop()
+            from VideoTester import VTApp
+            gui = VTApp(client)
+            gui.MainLoop()
         else:
-            from VideoTester.core import Client
-            client = Client(args.conf)
             client.run()
-    
-    VTLOG.info("Exiting...")
+    VTLOG.info('Exiting...')

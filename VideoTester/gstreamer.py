@@ -4,92 +4,68 @@
 ## Copyright 2011 Iñaki Úcar <i.ucar86@gmail.com>
 ## This program is published under a GPLv3 license
 
-import time, logging, gi
-gi.require_version('Gst', '1.0')
-gi.require_version('GstRtspServer', '1.0')
+import time
 from gi.repository import Gst, GstRtspServer, GObject
-GObject.threads_init()
-Gst.init(None)
+from . import VTLOG, supported_codecs
 
-VTLOG = logging.getLogger("VT")
-
-class RTSPserver:
+class RTSPServer:
 	"""
 	GStreamer RTSP server.
 	"""
-	def __init__(self, port, bitrate, framerate, path, videos):
+	def __init__(self, port):
 		"""
 		**On init:** Some initialization code.
 
-		:param port: RTSP server port.
-		:type port: string or integer
-		:param bitrate: The bitrate (in kbps).
-		:type bitrate: string or integer
-		:param framerate: The framerate (in fps).
-		:type framerate: string or integer
-		:param string path: Path to the video directory.
-		:param list videos: List of available videos.
+		:param integer port: RTSP server port.
 		"""
-		#: The bitrate (in kbps).
-		self.bitrate = bitrate
-		#: The framerate (in fps).
-		self.framerate = framerate
-		#: Path to the video directory.
-		self.path = path
-		#: List of available videos.
-		self.videos = videos
 		#: GStreamer RTSP server instance.
 		self.server = GstRtspServer.RTSPServer()
-		#: Gstreamer loop.
-		self.loop = None
 		self.server.set_service(str(port))
-		#: List of GStreamer RTSP factories.
-		self.factory = []
-		self.__addMedia()
 
-	def __addMedia(self):
+	def addMedia(self, videos, bitrate, framerate, path):
 		"""
-		Add media to server.
+		Add videos to the server.
+
+		:param list videos: List of available videos.
+		:param integer bitrate: The bitrate (in kbps).
+		:param integer framerate: The framerate (in fps).
+		:param string path: Path to the video directory.
 		"""
-		for i, video in enumerate(self.videos):
-			for j in range(0, 4):
-				launch = "filesrc location=%s/%s ! decodebin ! videorate ! video/x-raw,framerate=%s/1 ! " % (self.path, video, self.framerate)
-				launch += {
-					0: "avenc_h263p bitrate=%s000 ! rtph263ppay",
-					1: "x264enc bitrate=%s ! rtph264pay",
-					2: "avenc_mpeg4 bitrate=%s000 ! rtpmp4vpay",
-					3: "theoraenc bitrate=%s ! rtptheorapay"
-				}[j] % (self.bitrate) + ' name=pay0'
-				self.factory.append(GstRtspServer.RTSPMediaFactory())
-				self.factory[-1].set_launch(launch)
-				self.factory[-1].set_shared(True)
-				self.factory[-1].set_eos_shutdown(True)
-				name = '/video%s.' % (i) + {
-					0: 'h263',
-					1: 'h264',
-					2: 'mpeg4',
-					3: 'theora'
-				}[j]
-				self.server.get_mount_points().add_factory(name, self.factory[-1])
+		for i, video in enumerate(videos):
+			for codec, items in supported_codecs.iteritems():
+				launch = 'filesrc location=%s/%s ! decodebin ! videorate ! video/x-raw,framerate=%s/1 ! %s bitrate=%s ! %s name=pay0' % (
+					path,
+					video,
+					framerate,
+					items['encoder'],
+					items['bitrate_from_kbps'](bitrate),
+					items['rtppay']
+				)
+				factory = GstRtspServer.RTSPMediaFactory()
+				factory.set_launch(launch)
+				factory.set_shared(True)
+				factory.set_eos_shutdown(True)
+				name = '/video%s.' % (i) + codec
+				self.server.get_mount_points().add_factory(name, factory)
 
 	def run(self):
 		"""
-		Attach server and run the loop (see :attr:`loop`).
+		Attach server and run the loop.
 		"""
 		if self.server.attach():
-			self.loop = GObject.MainLoop()
-			self.loop.run()
+			GObject.MainLoop().run()
 
-class RTSPclient:
+class RTSPClient:
 	"""
 	GStreamer RTSP client.
 	"""
-	def __init__(self, conf, video):
+	def __init__(self, conf, video, port):
 		"""
 		**On init:** Some initialization code.
 
 		:param dictionary conf: Parsed configuration file.
 		:param string video: Path to the selected video.
+		:param integer port: RTSP server port.
 		"""
 		#: Dictionary of configuration options (see :attr:`VideoTester.core.Client.conf`).
 		self.conf = conf
@@ -104,13 +80,12 @@ class RTSPclient:
 		#: Gstreamer loop.
 		self.loop = None
 		#: Selected video URL.
-		self.url = 'rtsp://' + self.conf['ip'] + ':' + self.conf['rtspport'] + '/' + self.conf['video'] + '.' + self.conf['codec']
-		self.encoder, self.depay, self.bitrate, self.__add = {
-			'h263': ("avenc_h263p", "rtph263pdepay", self.conf['bitrate'] + '000', ''),
-			'h264': ("x264enc", "rtph264depay", self.conf['bitrate'], ''),
-			'mpeg4': ("avenc_mpeg4", "rtpmp4vdepay", self.conf['bitrate'] + '000', ''),
-			'theora': ("theoraenc", "rtptheoradepay ! theoraparse", self.conf['bitrate'], ' ! matroskamux')
-		}[self.conf['codec']]
+		self.url = 'rtsp://%s:%s/%s.%s' % (
+			self.conf['ip'],
+			port,
+			self.conf['video'],
+			self.conf['codec']
+		)
 
 	def __events(self, bus, msg):
 		"""
@@ -156,13 +131,16 @@ class RTSPclient:
 		Connect to the RTSP server and receive the selected video (see :attr:`video`).
 		"""
 		VTLOG.info("Starting GStreamer receiver...")
-		self.pipeline = Gst.parse_launch('rtspsrc name=source ! tee name=t ! queue ! ' + self.depay + self.__add + ' ! filesink name=sink1 t. ! queue \
-				! decodebin ! videorate skip-to-first=True ! video/x-raw,framerate=' + self.conf['framerate'] + '/1 ! filesink name=sink2')
+		self.pipeline = Gst.parse_launch('rtspsrc name=source ! tee name=t ! queue ! %s %s ! filesink name=sink1 t. ! queue ! decodebin ! videorate skip-to-first=True ! video/x-raw,framerate=%s/1 ! filesink name=sink2' % (
+			supported_codecs[self.conf['codec']]['rtpdepay'],
+			supported_codecs[self.conf['codec']]['add'],
+			self.conf['framerate']
+		))
 		source = self.pipeline.get_by_name('source')
 		sink1 = self.pipeline.get_by_name('sink1')
 		sink2 = self.pipeline.get_by_name('sink2')
 		source.props.location = self.url
-		source.props.protocols = self.conf['protocols']
+		source.props.protocols = self.conf['protocol']
 		location = self.conf['tempdir'] + self.conf['num'] + '.' + self.conf['codec']
 		self.files['received'].append(location)
 		sink1.props.location = location
@@ -182,7 +160,7 @@ class RTSPclient:
 		:rtype: tuple
 		"""
 		VTLOG.info("Making reference...")
-		self.pipeline = Gst.parse_launch('filesrc name=source ! decodebin ! videorate ! video/x-raw,framerate=' + self.conf['framerate'] + '/1  ! filesink name=sink1')
+		self.pipeline = Gst.parse_launch('filesrc name=source ! decodebin ! videorate ! video/x-raw,framerate=%s/1 ! filesink name=sink1' % self.conf['framerate'])
 		source = self.pipeline.get_by_name('source')
 		sink1 = self.pipeline.get_by_name('sink1')
 		location = self.video
@@ -192,8 +170,12 @@ class RTSPclient:
 		self.files['original'].append(location)
 		sink1.props.location = location
 		self.__play()
-		self.pipeline = Gst.parse_launch('filesrc name=source ! decodebin ! videorate ! video/x-raw,framerate=' + self.conf['framerate'] + '/1  ! ' + self.encoder + ' bitrate=' + self.bitrate \
-				+ ' ! tee name=t ! queue' + self.__add + ' ! filesink name=sink2 t. ! queue ! decodebin ! filesink name=sink3')
+		self.pipeline = Gst.parse_launch('filesrc name=source ! decodebin ! videorate ! video/x-raw,framerate=%s/1 ! %s bitrate=%s ! tee name=t ! queue %s ! filesink name=sink2 t. ! queue ! decodebin ! filesink name=sink3' % (
+			self.conf['framerate'],
+			supported_codecs[self.conf['codec']]['encoder'],
+			supported_codecs[self.conf['codec']]['bitrate_from_kbps'](self.conf['bitrate']),
+			supported_codecs[self.conf['codec']]['add']
+		))
 		source = self.pipeline.get_by_name('source')
 		sink2 = self.pipeline.get_by_name('sink2')
 		sink3 = self.pipeline.get_by_name('sink3')

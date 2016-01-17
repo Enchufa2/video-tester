@@ -4,13 +4,12 @@
 ## Copyright 2011 Iñaki Úcar <i.ucar86@gmail.com>
 ## This program is published under a GPLv3 license
 
-from VideoTester.measures.core import Meter, Measure
-from VideoTester.measures.qos import QoSmeter
-from VideoTester.measures.bs import BSmeter
+import math, cv
 from itertools import izip
-import math, cv, logging
-
-VTLOG = logging.getLogger("VT")
+from .. import VTLOG
+from .core import Meter, Measure
+from .qos import QoSmeter
+from .bs import BSmeter
 
 class VQmeter(Meter):
     """
