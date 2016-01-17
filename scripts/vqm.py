@@ -7,8 +7,7 @@
 
 # A simple script to make use of the PSNR and SSIM methods
 
-import sys
-import os.path
+import sys, os
 from VideoTester import YUVvideo
 from VideoTester.measures import PSNR, SSIM
 

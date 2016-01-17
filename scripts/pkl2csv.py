@@ -9,7 +9,7 @@
 import os, fnmatch, sys, pickle, csv
 
 if len(sys.argv) != 2:
-    print "Usage: test-pkl2csv.py <dir>"
+    print "Usage: pkl2csv.py <dir>"
     sys.exit()
 
 def opj(*args):
@@ -28,7 +28,7 @@ def find_data_files(srcdir, *wildcards, **kw):
             wc_name = opj(dirname, wc)
             for f in files:
                 filename = opj(dirname, f)
-                
+
                 if fnmatch.fnmatch(filename, wc_name) and not os.path.isdir(filename):
                     names.append(f)
         if names:

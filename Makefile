@@ -28,7 +28,7 @@ doc: clean
 	@echo "Doc rebuilt."
 
 sdist: doc
-	-cp -rf VT.conf README.md LICENSE test $(DOC)
+	-cp -rf VT.conf README.md LICENSE scripts $(DOC)
 	-python setup.py sdist
 	@echo
 	@echo "Build finished."
