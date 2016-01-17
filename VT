@@ -1,8 +1,8 @@
 #! /usr/bin/env python
 # coding=UTF8
 ## This file is part of VideoTester
-## See http://video-tester.googlecode.com for more information
-## Copyright 2011 Iñaki Úcar <i.ucar86@gmail.com>
+## See https://github.com/Enchufa2/video-tester for more information
+## Copyright 2011-2016 Iñaki Úcar <i.ucar86@gmail.com>
 ## This program is published under a GPLv3 license
 
 import sys, os, textwrap, argparse, logging
@@ -15,9 +15,9 @@ if __name__ == '__main__':
                 VideoTester 0.1
                 ===============
                   Video Quality Assessment Tool
-                  Visit http://video-tester.googlecode.com for support and updates
+                  Visit https://github.com/Enchufa2/video-tester for support and updates
 
-                  Copyright 2011 Iñaki Úcar <i.ucar86@gmail.com>
+                  Copyright 2011-2016 Iñaki Úcar <i.ucar86@gmail.com>
                   This program is published under a GPLv3 license
                 '''))
     parser.add_argument('-c', '--conf', dest='conf', type=str, default='VT.conf',

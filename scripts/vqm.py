@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding=UTF8
 ## This file is part of VideoTester
-## See http://video-tester.googlecode.com for more information
+## See https://github.com/Enchufa2/video-tester for more information
 ## Copyright 2015 Iñaki Úcar <i.ucar86@gmail.com>
 ## This program is published under a GPLv3 license
 
