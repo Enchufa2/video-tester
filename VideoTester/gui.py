@@ -10,7 +10,7 @@ import matplotlib as mpl
 from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg as Canvas
 from matplotlib.backends.backend_wxagg import NavigationToolbar2Wx as Toolbar
 from gi.repository import Gst, GObject
-from . import VTLOG, netifaces, supported_codecs, supported_protocols
+from . import VTLOG, VTClient, netifaces, supported_codecs, supported_protocols
 from .resources import getVTIcon, getVTBitmap
 
 class FuncLog(logging.Handler):
@@ -29,8 +29,8 @@ class VTframe(wx.Frame):
     """
     Main window.
     """
-    def __init__(self, main):
-        self.main = main
+    def __init__(self, conf):
+        self.main = VTClient(conf)
         # begin wxGlade: VTframe.__init__
         wx.Frame.__init__(self, None)
         self.SetIcon(getVTIcon())
@@ -116,9 +116,10 @@ class VTframe(wx.Frame):
         self.play_video.Bind(wx.EVT_BUTTON, self.onPlay)
 
         # Logging
+        self.old_hdlr = VTLOG.handlers[0]
         self.hdlr = FuncLog(self.log)
-        self.hdlr.setLevel(VTLOG.handlers[0].level)
-        self.hdlr.setFormatter(VTLOG.handlers[0].formatter)
+        self.hdlr.setLevel(self.old_hdlr.level)
+        self.hdlr.setFormatter(self.old_hdlr.formatter)
         VTLOG.handlers[0] = self.hdlr
         # end wxGlade
 
@@ -268,7 +269,7 @@ class VTframe(wx.Frame):
                 self.pipeline.set_state(Gst.State.NULL)
             except:
                 pass
-            VTLOG.removeHandler(self.hdlr)
+            VTLOG.handlers[0] = self.old_hdlr
             self.Destroy() # frame
 
     def onAbout(self, event):
@@ -307,7 +308,7 @@ class VTframe(wx.Frame):
         Show *Open files* dialog.
         """
         self.video_tab.Hide()
-        wildcard = u'Pickle files (*.pkl)|*.pkl|'
+        wildcard = u'Pickle files (*.pkl)|*.pkl'
         dlg = wx.FileDialog(self, u'Open files', '', '', wildcard, wx.FD_MULTIPLE)
         if dlg.ShowModal() == wx.ID_OK:
             self.__open(dlg.GetDirectory(), dlg.GetFilenames())
@@ -527,12 +528,12 @@ class VTApp(wx.App):
     """
     WxPython application class.
     """
-    def __init__(self, main):
-        self.main = main
+    def __init__(self, conf):
+        self.conf = conf
         wx.App.__init__(self)
 
     def OnInit(self):
-        vtframe = VTframe(self.main)
+        vtframe = VTframe(self.conf)
         self.SetTopWindow(vtframe)
         vtframe.Show()
         return True

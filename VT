@@ -5,7 +5,7 @@
 ## Copyright 2011-2016 Iñaki Úcar <i.ucar86@gmail.com>
 ## This program is published under a GPLv3 license
 
-import sys, os, textwrap, argparse, logging
+import sys, os, textwrap, argparse
 from VideoTester import VTLOG
 
 if __name__ == '__main__':
@@ -40,12 +40,11 @@ if __name__ == '__main__':
         if os.getuid() != 0:
             VTLOG.error('You need administrator privileges to run this program as client')
             sys.exit()
-        from VideoTester import VTClient
-        client = VTClient(args.conf)
         if args.gui:
             from VideoTester import VTApp
-            gui = VTApp(client)
+            gui = VTApp(args.conf)
             gui.MainLoop()
         else:
+            from VideoTester import VTClient
+            client = VTClient(args.conf)
             client.run()
-    VTLOG.info('Exiting...')
