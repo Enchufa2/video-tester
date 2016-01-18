@@ -8,6 +8,7 @@ import os, time, pcap
 from scapy.all import Packet, ByteField, ShortField, \
     IP, ICMP, TCP, UDP, RTP, send, rdpcap
 from . import VTLOG
+from .utils import multiSort
 
 class RTSPi(Packet):
     """
@@ -75,7 +76,6 @@ class Sniffer:
         """
         Start packet sniffing and save a capture file.
         """
-        VTLOG.info('PID: %s | Starting sniffer...' % os.getpid())
         try:
             p = pcap.pcapObject()
             p.open_live(self.iface, 65536, 1, 0)
@@ -85,7 +85,6 @@ class Sniffer:
                 pass
         except:
             pass
-        VTLOG.info('PID: %s | Sniffer stopped' % os.getpid())
 
     def parsePkts(self):
         """
@@ -191,7 +190,7 @@ class Sniffer:
                     if (p.sport == self.sport) and (p.dport == self.dport):
                         extract(p)
         self.sequences, self.times, self.timestamps = \
-            zip(*sorted(zip(self.sequences, self.times, self.timestamps)))
+            multiSort(self.sequences, self.times, self.timestamps)
         VTLOG.debug("Sequence list sorted")
 
     def __parseTCP(self):
@@ -283,7 +282,7 @@ class Sniffer:
                         seqlist.append(p[TCP].seq)
                         lenlist.append(len(p[TCP].payload))
                         VTLOG.debug("TCP packet appended. Sequence: " + str(p[TCP].seq))
-        seqlist, packetlist, lenlist = zip(*sorted(zip(seqlist, packetlist, lenlist)))
+        seqlist, packetlist, lenlist = multiSort(seqlist, packetlist, lenlist)
         VTLOG.debug("Sequence list sorted")
         #Locate packet losses
         fill = fillGaps(seqlist, lenlist)

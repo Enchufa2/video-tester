@@ -64,17 +64,19 @@ supported_codecs = {
 }
 
 __all__.extend([
-    'VTServer', 'VTClient',
+    'VTBase', 'VTServer', 'VTClient',
     'RTSPServer', 'RTSPClient',
     'VTApp',
     'Sniffer',
+    'multiSort',
     'YUVVideo', 'CodedVideo',
     'measures'
 ])
-from .core import VTServer, VTClient
+from .core import VTBase, VTServer, VTClient
 from .gstreamer import RTSPServer, RTSPClient
 from .gui import VTApp
 from .sniffer import Sniffer
+from .utils import multiSort
 from .video import YUVVideo, CodedVideo
 
 del(core, gstreamer, gui, resources, sniffer, video)

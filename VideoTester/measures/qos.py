@@ -5,6 +5,7 @@
 ## This program is published under a GPLv3 license
 
 from .. import VTLOG
+from ..utils import multiSort
 from .core import Meter, Measure
 
 class QoSmeter(Meter):
@@ -163,7 +164,7 @@ class Bandwidth(QoSmeasure):
         self.data['units'] = ('time (s)', 'kbps')
 
     def calculate(self):
-        self.times, self.lengths = zip(*sorted(zip(self.times, self.lengths)))
+        self.times, self.lengths = multiSort(self.times, self.lengths)
         x = self.times
         y = [0 for i in range(0, len(x))]
         for i in range(1, len(x)):

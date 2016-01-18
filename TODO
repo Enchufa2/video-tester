@@ -1,13 +1,15 @@
 Short-term:
-* Fix packet parser
 * Retrieve session information (negotiated video stream ports, etc.) from GStreamer
-* Fix known compatibility issues with the latest versions of GStreamer (H.263?)
+* gstreamer: fix h263 error or drop support
+* video: fix h264 and theora readers
 * Check for compatibility issues with other libraries
 * import numpy as np, move imports to the top of the files, etc.
 * Set log level via command-line
 * Fix scripts generate-conf.py and series.py
 * Fix setup.py
 * Update dependencies
+* Update docs
+* New stable release
 
 Long-term:
 * Move from Scapy to a more efficient solution. Maybe implement the networking part (packet capturing and processing) in a dedicated C library with Python bindings

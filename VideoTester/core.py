@@ -263,6 +263,7 @@ class VTClient(VTBase):
         child = Process(target=sniffer.run)
         try:
             child.start()
+            VTLOG.info('PID: %s | Sniffer started' % child.pid)
             sniffer.ping()
             rtspclient.receiver()
         except KeyboardInterrupt:
@@ -270,10 +271,12 @@ class VTClient(VTBase):
             server.stop(self.conf['bitrate'], self.conf['framerate'])
             child.terminate()
             child.join()
+            VTLOG.info('PID: %s | Sniffer stopped' % child.pid)
             sys.exit()
         server.stop(self.conf['bitrate'], self.conf['framerate'])
         child.terminate()
         child.join()
+        VTLOG.info('PID: %s | Sniffer stopped' % child.pid)
 
         videodata, size = rtspclient.reference()
         conf = {

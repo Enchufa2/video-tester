@@ -147,7 +147,7 @@ class RTSPClient:
 		location = self.conf['tempdir'] + self.conf['num'] + '.yuv'
 		self.files['received'].append(location)
 		sink2.props.location = location
-		pad = sink2.get_pad_template('sink')
+		pad = sink2.get_static_pad('sink')
 		pad.connect("notify::caps", self.__notifyCaps)
 		self.__play()
 		VTLOG.info("GStreamer receiver stopped")
@@ -198,7 +198,7 @@ class RTSPClient:
 		:param pad: Gstreamer pad object.
 		:param args: Other arguments.
 		"""
-		caps = pad.get_negotiated_caps()
+		caps = pad.get_current_caps()
 		if caps:
 			caps = caps.to_string()
 			aux = caps.split(', ')

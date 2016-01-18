@@ -347,25 +347,33 @@ class VTframe(wx.Frame):
         """
         if self.play_video.GetLabel() == 'Play':
             self.pipeline = Gst.parse_launch('filesrc name=video1 filesrc name=video2 filesrc name=video3 \
-                videomixer name=mix sink_0::alpha=0 sink_2::xpos=' + str(self.width*2) + ' sink_3::xpos=' + str(self.width) + ' ! xvimagesink \
+                videomixer name=mix sink_0::alpha=0 sink_2::xpos=%s sink_3::xpos=%s ! xvimagesink \
                 videotestsrc pattern="black" num-buffers=1 \
-                    ! video/x-raw-yuv,width=' + str(self.width*3) + ',height=' + str(self.height) + ' \
+                    ! video/x-raw,width=%s,height=%s \
                     ! mix.sink_0 \
                 video1. \
-                    ! queue ! videoparse framerate=' + self.fps + '/1 name=parser1 \
+                    ! queue ! videoparse framerate=%s/1 name=parser1 \
                     ! textoverlay font-desc="Sans 24" text="Original" valignment=top halignment=left shaded-background=true \
-                    ! ffmpegcolorspace ! videoscale \
+                    ! videoscale \
                     ! mix.sink_1 \
                 video2. \
-                    ! queue ! videoparse framerate=' + self.fps + '/1 name=parser2 \
+                    ! queue ! videoparse framerate=%s/1 name=parser2 \
                     ! textoverlay font-desc="Sans 24" text="Coded" valignment=top halignment=left shaded-background=true \
-                    ! ffmpegcolorspace ! videoscale \
+                    ! videoscale \
                     ! mix.sink_2 \
                 video3. \
-                    ! queue ! videoparse framerate=' + self.fps + '/1 name=parser3 \
+                    ! queue ! videoparse framerate=%s/1 name=parser3 \
                     ! textoverlay font-desc="Sans 24" text="Received" valignment=top halignment=left shaded-background=true \
-                    ! ffmpegcolorspace ! videoscale \
-                    ! mix.sink_3')
+                    ! videoscale \
+                    ! mix.sink_3' % (
+                self.width*2,
+                self.width,
+                self.width*3,
+                self.height,
+                self.main.conf['framerate'],
+                self.main.conf['framerate'],
+                self.main.conf['framerate']
+            ))
             self.play_video.SetLabel('Stop')
             bus = self.pipeline.get_bus()
             bus.add_signal_watch()
