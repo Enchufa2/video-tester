@@ -37,7 +37,7 @@ if __name__ == '__main__':
         except KeyboardInterrupt:
             pass
     else:
-        if os.getuid() != 0:
+        if os.geteuid():
             VTLOG.error('You need administrator privileges to run this program as client')
             sys.exit()
         if args.gui:
