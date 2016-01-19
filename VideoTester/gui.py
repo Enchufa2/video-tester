@@ -4,7 +4,7 @@
 ## Copyright 2011-2016 Iñaki Úcar <i.ucar86@gmail.com>
 ## This program is published under a GPLv3 license
 
-import wx, wx.aui, pickle, logging
+import wx, wx.aui, pickle, textwrap, logging
 import matplotlib as mpl
 from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg as Canvas
 from matplotlib.backends.backend_wxagg import NavigationToolbar2Wx as Toolbar
@@ -103,9 +103,9 @@ class VTframe(wx.Frame):
         self.player = wx.Panel(self.video_tab, -1)
         self.player_button = wx.Button(self.video_tab, -1, 'Play', name='playvideo', size=(200, 50))
 
-        self.__set_properties()
-        self.__do_layout()
-        self.__init_video()
+        self.__setProperties()
+        self.__doLayout()
+        self.__initVideo()
 
         self.Bind(wx.EVT_MENU, self.onOpen, self.m_files)
         self.Bind(wx.EVT_MENU, self.onExit, self.m_exit)
@@ -122,7 +122,7 @@ class VTframe(wx.Frame):
         self.hdlr.setFormatter(console.formatter)
         VTLOG.addHandler(self.hdlr)
 
-    def __set_properties(self):
+    def __setProperties(self):
         self.SetTitle('Video Tester')
         self.SetSize((800, 600))
         self.Hide()
@@ -163,7 +163,7 @@ class VTframe(wx.Frame):
         self.results_tab.Hide()
         self.video_tab.Hide()
 
-    def __do_layout(self):
+    def __doLayout(self):
         sizer_body = wx.BoxSizer(wx.VERTICAL)
         sizer_log_tab = wx.BoxSizer(wx.HORIZONTAL)
         sizer_video_tab = wx.BoxSizer(wx.VERTICAL)
@@ -258,6 +258,38 @@ class VTframe(wx.Frame):
         self.Layout()
         self.Centre()
 
+    def __initVideo(self):
+        self.pipeline = Gst.parse_launch(
+        'filesrc name=video1 filesrc name=video2 filesrc name=video3 \
+            videomixer name=mix ! xvimagesink \
+            video1. \
+                ! queue ! videoparse framerate=%s/1 name=parser1 \
+                ! textoverlay font-desc="Sans 24" text="Original" \
+                    valignment=top halignment=left shaded-background=true \
+                ! videoscale \
+                ! mix.sink_1 \
+            video2. \
+                ! queue ! videoparse framerate=%s/1 name=parser2 \
+                ! textoverlay font-desc="Sans 24" text="Coded" \
+                    valignment=top halignment=left shaded-background=true \
+                ! videoscale \
+                ! mix.sink_2 \
+            video3. \
+                ! queue ! videoparse framerate=%s/1 name=parser3 \
+                ! textoverlay font-desc="Sans 24" text="Received" \
+                    valignment=top halignment=left shaded-background=true \
+                ! videoscale \
+                ! mix.sink_3' % (
+            self.main.conf['framerate'],
+            self.main.conf['framerate'],
+            self.main.conf['framerate']
+        ))
+        bus = self.pipeline.get_bus()
+        bus.add_signal_watch()
+        bus.enable_sync_message_emission()
+        bus.connect('message', self.onMessage)
+        bus.connect('sync-message::element', self.onSyncMessage)
+
     def onExit(self, event):
         self.Close(True)
 
@@ -281,7 +313,6 @@ class VTframe(wx.Frame):
         '''
         Show *About* dialog.
         '''
-        import textwrap
         license = textwrap.dedent('''\
         This program is free software: you can redistribute it and/or modify
         it under the terms of the GNU General Public License as published by
@@ -316,16 +347,13 @@ class VTframe(wx.Frame):
         wildcard = u'Pickle files (*.pkl)|*.pkl'
         dlg = wx.FileDialog(self, u'Open files', '', '', wildcard, wx.FD_MULTIPLE)
         if dlg.ShowModal() == wx.ID_OK:
-            self.__open(dlg.GetDirectory(), dlg.GetFilenames())
+            self.main.results = []
+            for filename in dlg.GetFilenames():
+                f = open(dlg.GetDirectory() + '/' + filename, 'rb')
+                self.main.results.append(pickle.load(f))
+                f.close()
             dlg.Destroy()
-            self.results()
-
-    def __open(self, path, files):
-        self.main.results = []
-        for filename in files:
-            f = open(path + '/' + filename, 'rb')
-            self.main.results.append(pickle.load(f))
-            f.close()
+            self.__setResults()
 
     def onRun(self, event):
         '''
@@ -337,43 +365,15 @@ class VTframe(wx.Frame):
         self.video_tab.Hide()
         self.tabs.SetSelection(1)
         self.vtstatusbar.SetStatusText('Running...')
-        self.setValues()
+        self.__setValues()
         ret = self.main.run()
         if ret:
             self.path = self.main.conf['tempdir'] + self.main.conf['num']
-            self.results()
-            self.configureVideos()
+            self.__setResults()
+            self.__setVideos()
         self.conf_tab.Enable()
         wx.Window.Enable(self.vtmenubar)
         self.vtstatusbar.SetStatusText('Stopped')
-
-    def __init_video(self):
-        self.pipeline = Gst.parse_launch('filesrc name=video1 filesrc name=video2 filesrc name=video3 \
-            videomixer name=mix ! xvimagesink \
-            video1. \
-                ! queue ! videoparse framerate=%s/1 name=parser1 \
-                ! textoverlay font-desc="Sans 24" text="Original" valignment=top halignment=left shaded-background=true \
-                ! videoscale \
-                ! mix.sink_1 \
-            video2. \
-                ! queue ! videoparse framerate=%s/1 name=parser2 \
-                ! textoverlay font-desc="Sans 24" text="Coded" valignment=top halignment=left shaded-background=true \
-                ! videoscale \
-                ! mix.sink_2 \
-            video3. \
-                ! queue ! videoparse framerate=%s/1 name=parser3 \
-                ! textoverlay font-desc="Sans 24" text="Received" valignment=top halignment=left shaded-background=true \
-                ! videoscale \
-                ! mix.sink_3' % (
-            self.main.conf['framerate'],
-            self.main.conf['framerate'],
-            self.main.conf['framerate']
-        ))
-        bus = self.pipeline.get_bus()
-        bus.add_signal_watch()
-        bus.enable_sync_message_emission()
-        bus.connect('message', self.onMessage)
-        bus.connect('sync-message::element', self.onSyncMessage)
 
     def onPlay(self, event):
         '''
@@ -417,7 +417,35 @@ class VTframe(wx.Frame):
             self.pipeline.set_state(Gst.State.NULL)
             self.player_button.SetLabel('Play')
 
-    def results(self):
+    def __setValues(self):
+        '''
+        Set configuration options.
+        '''
+        self.main.conf['bitrate'] = int(self.bitrate.GetValue())
+        self.main.conf['framerate'] = int(self.framerate.GetValue())
+        self.main.conf['video'] = str(self.video.GetStringSelection())
+        self.main.conf['codec'] = str(self.codec.GetStringSelection())
+        self.main.conf['iface'] = str(self.iface.GetStringSelection())
+        self.main.conf['ip'] = str(self.ip.GetValue())
+        self.main.port = int(self.port.GetValue())
+        self.main.conf['protocol'] = str(self.protocol.GetStringSelection())
+        qos = []
+        for name, el in self.qos:
+            if el.GetValue():
+                qos.append(name)
+        self.main.conf['qos'] = qos
+        bs = []
+        for name, el in self.bs:
+            if el.GetValue():
+                bs.append(name)
+        self.main.conf['bs'] = bs
+        vq = []
+        for name, el in self.vq:
+            if el.GetValue():
+                vq.append(name)
+        self.main.conf['vq'] = vq
+
+    def __setResults(self):
         '''
         Plot measures and show *Results* tab.
         '''
@@ -453,7 +481,7 @@ class VTframe(wx.Frame):
                 axes.set_ylabel(measure['units'][1])
         self.results_tab.Show()
 
-    def configureVideos(self):
+    def __setVideos(self):
         '''
         Configure and show *Video* tab.
         '''
@@ -471,34 +499,6 @@ class VTframe(wx.Frame):
         self.paths['coded'] = self.path + '_ref.yuv'
         self.paths['received'] = self.path + '.yuv'
         self.video_tab.Show()
-
-    def setValues(self):
-        '''
-        Set configuration options.
-        '''
-        self.main.conf['bitrate'] = int(self.bitrate.GetValue())
-        self.main.conf['framerate'] = int(self.framerate.GetValue())
-        self.main.conf['video'] = str(self.video.GetStringSelection())
-        self.main.conf['codec'] = str(self.codec.GetStringSelection())
-        self.main.conf['iface'] = str(self.iface.GetStringSelection())
-        self.main.conf['ip'] = str(self.ip.GetValue())
-        self.main.port = int(self.port.GetValue())
-        self.main.conf['protocol'] = str(self.protocol.GetStringSelection())
-        qos = []
-        for name, el in self.qos:
-            if el.GetValue():
-                qos.append(name)
-        self.main.conf['qos'] = qos
-        bs = []
-        for name, el in self.bs:
-            if el.GetValue():
-                bs.append(name)
-        self.main.conf['bs'] = bs
-        vq = []
-        for name, el in self.vq:
-            if el.GetValue():
-                vq.append(name)
-        self.main.conf['vq'] = vq
 
 class Plot(wx.Panel):
     '''
