@@ -4,15 +4,15 @@
 ## Copyright 2011-2016 Iñaki Úcar <i.ucar86@gmail.com>
 ## This program is published under a GPLv3 license
 
-from numpy import *
+import numpy as np
 
 class YUVVideo:
     '''
-    YUV reader.
+    YUV parser.
     '''
     def __init__(self, file, framesize, fmt='I420'):
         '''
-        **On init:** Call the proper reader.
+        **On init:** Call the proper parser.
 
         :param string file: Path to the file.
         :param tuple framesize: Frame size: ``(width, height)``.
@@ -32,7 +32,7 @@ class YUVVideo:
             self.uvblock = frame / 4
             self.chunk = self.yblock + 2 * self.uvblock
         else:
-            raise IOError, 'Format not supported'
+            raise IOError('Format %s not supported' % fmt)
 
         self.f.seek(0, 2)
         #: Number of frames in the video.
@@ -51,18 +51,18 @@ class YUVVideo:
             yu = self.yblock
             uv = self.yblock + self.uvblock
             return {
-                'Y' : frombuffer(data[0:yu], dtype=uint8).reshape(self.framesize[1], self.framesize[0]),
-                'U' : frombuffer(data[yu:uv], dtype=uint8).reshape(self.framesize[1]/2, self.framesize[0]/2),
-                'V' : frombuffer(data[uv:], dtype=uint8).reshape(self.framesize[1]/2, self.framesize[0]/2)
+                'Y' : np.frombuffer(data[0:yu], dtype=np.uint8).reshape(self.framesize[1], self.framesize[0]),
+                'U' : np.frombuffer(data[yu:uv], dtype=np.uint8).reshape(self.framesize[1]/2, self.framesize[0]/2),
+                'V' : np.frombuffer(data[uv:], dtype=np.uint8).reshape(self.framesize[1]/2, self.framesize[0]/2)
             }
 
 class CodedVideo:
     '''
-    Coded video reader.
+    Coded video parser.
     '''
     def __init__(self, file, codec):
         '''
-        **On init:** Call the proper reader.
+        **On init:** Call the proper parser.
 
         :param string file: Path to the file.
         :param string codec: Codec type.
@@ -70,29 +70,31 @@ class CodedVideo:
         .. note::
             Supported formats: H263, H264, MPEG4 and Theora.
         '''
-        #: Numpy array with all the data.
-        self.raw = fromfile(file, dtype=uint8)
+        #: Numpy np.array with all the data.
+        self.raw = np.fromfile(file, dtype=np.uint8)
         #: Dictionary that contains the `types` and the `lengths` for all the frames found.
         self.frames = {'types':[], 'lengths':[]}
         if codec == 'h263':
-            self.__readH263()
+            self.__parseH263()
         elif codec == 'h264':
-            self.__readH264()
+            self.__parseH264()
         elif codec == 'mpeg4':
-            self.__readMPEG4()
+            self.__parseMPEG4()
         elif codec == 'theora':
-            self.__readTheora()
+            self.__parseTheora()
+        else:
+            raise IOError('Format %s not supported' % codec)
 
-    def __readH263(self):
+    def __parseH263(self):
         '''
-        H263 format reader.
+        H263 format parser.
         '''
-        PSC = array([0x00, 0x00, 0x80], dtype=uint8)
-        mask = array([0xff, 0xff, 0xfc], dtype=uint8)
+        PSC = np.array([0x00, 0x00, 0x80], dtype=np.uint8)
+        mask = np.array([0xff, 0xff, 0xfc], dtype=np.uint8)
         first = -1
         i = 0
         while i < len(self.raw)-3:
-            if all((self.raw[i:i+3] & mask) == PSC):
+            if np.all((self.raw[i:i+3] & mask) == PSC):
                 if (i != 0) and (first > -1):
                     self.frames['lengths'].append(i-first)
                 first = i
@@ -103,9 +105,9 @@ class CodedVideo:
                     self.frames['types'].append('P')
             i += 1
 
-    def __readH264(self):
+    def __parseH264(self):
         '''
-        H264 format reader.
+        H264 format parser.
         '''
         def getType(byte):
             comp = byte & 0x7f
@@ -141,8 +143,8 @@ class CodedVideo:
                 type = 'SI'
             return type
 
-        SC = array([0x00, 0x00, 0x00, 0x01], dtype=uint8)
-        SCmask = array([0xff, 0xff, 0xff, 0xff], dtype=uint8)
+        SC = np.array([0x00, 0x00, 0x00, 0x01], dtype=np.uint8)
+        SCmask = np.array([0xff, 0xff, 0xff, 0xff], dtype=np.uint8)
         typeI = 0x05
         typePB = 0x01
         typemask = 0x1f
@@ -150,7 +152,7 @@ class CodedVideo:
         first = 0
         i = 0
         while i < len(self.raw)-4:
-            if all((self.raw[i:i+4] & SCmask) == SC):
+            if np.all((self.raw[i:i+4] & SCmask) == SC):
                 if flag:
                     if i != 0:
                         self.frames['lengths'].append(i-first)
@@ -163,16 +165,16 @@ class CodedVideo:
                     self.frames['types'].append(getType(self.raw[i:i+1]))
             i += 1
 
-    def __readMPEG4(self):
+    def __parseMPEG4(self):
         '''
-        MPEG4 format reader.
+        MPEG4 format parser.
         '''
-        SC = array([0x00, 0x00, 0x01, 0xb6], dtype=uint8)
-        mask = array([0xff, 0xff, 0xff, 0xff], dtype=uint8)
+        SC = np.array([0x00, 0x00, 0x01, 0xb6], dtype=np.uint8)
+        mask = np.array([0xff, 0xff, 0xff, 0xff], dtype=np.uint8)
         first = -1
         i = 0
         while i < len(self.raw)-4:
-            if all((self.raw[i:i+4] & mask) == SC):
+            if np.all((self.raw[i:i+4] & mask) == SC):
                 if (i != 0) and (first > -1):
                     self.frames['lengths'].append(i-first)
                 first = i
@@ -188,24 +190,24 @@ class CodedVideo:
                     self.frames['types'].append('S')
             i += 1
 
-    def __readTheora(self):
+    def __parseTheora(self):
         '''
-        Theora over Matroska format reader.
+        Theora over Matroska format parser.
         '''
-        SC1 = [array([0xa3, 0x00, 0x00, 0x81, 0x00, 0x00, 0x00], dtype=uint8),
-                array([0xa3, 0x00, 0x00, 0x81, 0x00, 0x00, 0x80], dtype=uint8),
-                array([0xa3, 0x00, 0x81, 0x00, 0x00, 0x00], dtype=uint8)]
-        mask1 = [array([0xff, 0x00, 0x00, 0xff, 0x00, 0x00, 0xff], dtype=uint8),
-                array([0xff, 0x00, 0xff, 0x00, 0x00, 0xff], dtype=uint8)]
-        SC2 = array([0x1f, 0x43, 0xb6, 0x75], dtype=uint8)
-        mask2 = array([0xff, 0xff, 0xff, 0xff], dtype=uint8)
+        SC1 = [np.array([0xa3, 0x00, 0x00, 0x81, 0x00, 0x00, 0x00], dtype=np.uint8),
+                np.array([0xa3, 0x00, 0x00, 0x81, 0x00, 0x00, 0x80], dtype=np.uint8),
+                np.array([0xa3, 0x00, 0x81, 0x00, 0x00, 0x00], dtype=np.uint8)]
+        mask1 = [np.array([0xff, 0x00, 0x00, 0xff, 0x00, 0x00, 0xff], dtype=np.uint8),
+                np.array([0xff, 0x00, 0xff, 0x00, 0x00, 0xff], dtype=np.uint8)]
+        SC2 = np.array([0x1f, 0x43, 0xb6, 0x75], dtype=np.uint8)
+        mask2 = np.array([0xff, 0xff, 0xff, 0xff], dtype=np.uint8)
         first = -1
         i = 0
         while i < len(self.raw)-7:
-            if all((self.raw[i:i+7] & mask1[0]) == SC1[0]) or all((self.raw[i:i+7] & mask1[0]) == SC1[1]) or all((self.raw[i:i+6] & mask1[1]) == SC1[2]):
-                if not all((self.raw[i:i+7] & mask1[0]) == SC1[1]):
+            if np.all((self.raw[i:i+7] & mask1[0]) == SC1[0]) or np.all((self.raw[i:i+7] & mask1[0]) == SC1[1]) or np.all((self.raw[i:i+6] & mask1[1]) == SC1[2]):
+                if not np.all((self.raw[i:i+7] & mask1[0]) == SC1[1]):
                     self.frames['lengths'].append(i-first)
-                if not all((self.raw[i:i+6] & mask1[1]) == SC1[2]):
+                if not np.all((self.raw[i:i+6] & mask1[1]) == SC1[2]):
                     i += 7
                 else:
                     i += 6
@@ -215,7 +217,7 @@ class CodedVideo:
                 else:
                     self.frames['types'].append('P')
                 i += 1
-            elif all((self.raw[i:i+4] & mask2) == SC2):
+            elif np.all((self.raw[i:i+4] & mask2) == SC2):
                 if not self.raw[i-6:i-1].tostring() == 'Video':
                     self.frames['lengths'].append(i-first)
             i += 1

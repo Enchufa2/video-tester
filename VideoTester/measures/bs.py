@@ -4,7 +4,7 @@
 ## Copyright 2011-2016 Iñaki Úcar <i.ucar86@gmail.com>
 ## This program is published under a GPLv3 license
 
-from numpy import *
+import numpy as np
 from .. import VTLOG
 from .core import Meter, Measure
 
@@ -115,15 +115,15 @@ class GOP(BSmeasure):
                     gops.append(gop)
                 gop = 0
         gops.append(gop)
-        gops = array(gops, dtype=float)
+        gops = np.array(gops, dtype=float)
         loss = []
-        lim1 = mean(gops) - std(gops)/2
-        lim2 = mean(gops) + std(gops)/2
+        lim1 = np.mean(gops) - np.std(gops)/2
+        lim2 = np.mean(gops) + np.std(gops)/2
         for i in range(len(gops)):
             if (gops[i] < lim1) or (gops[i] > lim2):
                 loss.append(i)
-        gops = delete(gops, loss)
-        self.data['value'] = int(round(mean(gops)))
+        gops = np.delete(gops, loss)
+        self.data['value'] = int(round(np.mean(gops)))
         return self.data
 
 class IFrameLossRate(BSmeasure):
@@ -151,9 +151,9 @@ class IFrameLossRate(BSmeasure):
                     gops.append(gop)
                 gop = 0
         gops.append(gop)
-        gops = array(gops, dtype=float)
+        gops = np.array(gops, dtype=float)
         loss = []
-        lim = mean(gops) + std(gops)
+        lim = np.mean(gops) + np.std(gops)
         for i in range(len(gops)):
             if gops[i] > lim:
                 loss.append(i)
