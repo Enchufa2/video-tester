@@ -47,7 +47,7 @@ class VTframe(wx.Frame):
         self.m_about = menu.Append(wx.ID_ABOUT, '&About', 'About this program')
         self.vtmenubar.Append(menu, '&Help')
         self.SetMenuBar(self.vtmenubar)
-        # Menu Bar end
+
         self.vtstatusbar = self.CreateStatusBar(1, 0)
         self.tabs = wx.Notebook(self, -1, style=0)
         self.conf_tab = wx.Panel(self.tabs, -1)
@@ -127,7 +127,6 @@ class VTframe(wx.Frame):
         self.SetSize((800, 600))
         self.Hide()
         self.vtstatusbar.SetStatusWidths([-1])
-        # statusbar fields
         vtstatusbar_fields = ['VT Client']
         for i in range(len(vtstatusbar_fields)):
             self.vtstatusbar.SetStatusText(vtstatusbar_fields[i], i)
@@ -501,8 +500,6 @@ class VTframe(wx.Frame):
                 vq.append(name)
         self.main.conf['vq'] = vq
 
-# end of class VTframe
-
 class Plot(wx.Panel):
     '''
     Plot panel.
@@ -559,5 +556,3 @@ class VTApp(wx.App):
         self.SetTopWindow(vtframe)
         vtframe.Show()
         return True
-
-# end of class Clientgui
