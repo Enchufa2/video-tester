@@ -4,7 +4,7 @@
 ## Copyright 2011-2016 Iñaki Úcar <i.ucar86@gmail.com>
 ## This program is published under a GPLv3 license
 
-import sys, os, ConfigParser, signal, pickle, time, socket
+import os, ConfigParser, signal, pickle, time, socket
 from SimpleXMLRPCServer import SimpleXMLRPCServer
 from xmlrpclib import ServerProxy
 from multiprocessing import Process
@@ -52,7 +52,6 @@ class VTBase:
             This method MUST be overwritten by the subclasses.
         """
         VTLOG.error("Not implemented")
-        sys.exit()
 
     def parseConf(self, file, section):
         """
@@ -64,13 +63,9 @@ class VTBase:
         :returns: A list of ``(name, value)`` pairs for each option in the given section.
         :rtype: list of tuples
         """
-        try:
-            config = ConfigParser.RawConfigParser()
-            config.read(file)
-            return config.items(section)
-        except Exception as e:
-            VTLOG.error(e)
-            sys.exit()
+        config = ConfigParser.RawConfigParser()
+        config.read(file)
+        return config.items(section)
 
 class VTServer(VTBase, SimpleXMLRPCServer):
     """
@@ -133,7 +128,7 @@ class VTServer(VTBase, SimpleXMLRPCServer):
                 VTLOG.error(e)
                 self.servers[key]['server'].terminate()
                 self.servers[key]['server'].join()
-                sys.exit()
+                raise e
             self.servers[key]['port'] = port
             self.servers[key]['clients'] = 1
             VTLOG.info('PID: %s | RTSP Server at 0.0.0.0:%s, %s' % (self.servers[key]['server'].pid, port, key))
@@ -166,7 +161,7 @@ class VTServer(VTBase, SimpleXMLRPCServer):
         """
         Find an unused port starting from :attr:`VideoTester.core.Server.port`.
 
-        :returns: an unused port number.
+        :returns: An unused port number.
         :rtype: integer
         """
         port = self.port
@@ -201,14 +196,11 @@ class VTClient(VTBase):
         #: Selected video.
         self.video = '/'.join([self.path, dict(self.videos)[self.conf['video']]])
         if self.conf['codec'] not in supported_codecs.keys():
-            VTLOG.error('Codec %s not supported' % self.conf['codec'])
-            sys.exit()
+            raise Exception('Codec %s not supported' % self.conf['codec'])
         if self.conf['protocol'] not in supported_protocols:
-            VTLOG.error('Protocol %s not supported' % self.conf['protocol'])
-            sys.exit()
+            raise Exception('Protocol %s not supported' % self.conf['protocol'])
         if self.conf['iface'] not in netifaces:
-            VTLOG.error('Interface %s not found' % self.conf['iface'])
-            sys.exit()
+            raise Exception('Interface %s not found' % self.conf['iface'])
         #: Results from all measures.
         self.results = []
 
@@ -227,8 +219,7 @@ class VTClient(VTBase):
             i = i + 1
             j = os.path.exists(self.conf['tempdir'] + num + '.yuv')
         if j:
-            VTLOG.error("The temp directory is full")
-            sys.exit()
+            raise Exception('The temp directory is full')
         #: Numerical prefix for temporary files.
         self.conf['num'] = num
 
@@ -241,17 +232,17 @@ class VTClient(VTBase):
          * Process data and extract information.
          * Run meters.
 
-        :returns: A list of measures (see :attr:`VideoTester.measures.core.Meter.measures`) and the path to the temporary directory plus files prefix: ``<path-to-tempdir>/<prefix>``.
-        :rtype: tuple
+        :returns: Whether the execution was successful.
+        :rtype: boolean
         """
         VTLOG.info('Client running!')
-        self.__set_tempdir()
         try:
+            self.__set_tempdir()
             server = ServerProxy('http://%s:%s' % (self.conf['ip'], self.port))
             rtspport = server.run(self.conf['bitrate'], self.conf['framerate'])
         except Exception as e:
             VTLOG.error(e)
-            sys.exit()
+            return False
         VTLOG.info('Connected to XMLRPC Server at %s:%s' % (self.conf['ip'], self.port))
         VTLOG.info('Evaluating: %s, %s, %s kbps, %s fps, %s' % (self.conf['video'], self.conf['codec'], self.conf['bitrate'], self.conf['framerate'], self.conf['protocol']))
 
@@ -272,7 +263,7 @@ class VTClient(VTBase):
             child.terminate()
             child.join()
             VTLOG.info('PID: %s | Sniffer stopped' % child.pid)
-            sys.exit()
+            return False
         server.stop(self.conf['bitrate'], self.conf['framerate'])
         child.terminate()
         child.join()
@@ -299,6 +290,7 @@ class VTClient(VTBase):
             pickle.dump(measure, f)
             f.close()
         VTLOG.info('Client stopped!')
+        return True
 
     def __loadData(self, videodata, size, codec):
         """
