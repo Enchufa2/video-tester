@@ -9,7 +9,7 @@ import wx, wx.aui, pickle, logging
 import matplotlib as mpl
 from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg as Canvas
 from matplotlib.backends.backend_wxagg import NavigationToolbar2Wx as Toolbar
-from gi.repository import Gst, GObject
+from gi.repository import Gst, GstVideo, GObject
 from . import VTLOG, VTClient, netifaces, supported_codecs, supported_protocols
 from .resources import getVTIcon, getVTBitmap
 
@@ -37,17 +37,17 @@ class VTframe(wx.Frame):
 
         # Menu Bar
         self.vtmenubar = wx.MenuBar()
-        wxglade_tmp_menu = wx.Menu()
-        self.m_files = wxglade_tmp_menu.Append(wx.ID_OPEN, "&Open files...", "Select Pickle files to plot")
-        wxglade_tmp_menu.AppendSeparator()
-        self.m_exit = wxglade_tmp_menu.Append(wx.ID_EXIT, "E&xit", "Exit program")
-        self.vtmenubar.Append(wxglade_tmp_menu, "&File")
-        wxglade_tmp_menu = wx.Menu()
-        self.m_run = wxglade_tmp_menu.Append(wx.NewId(), "&Run...", "Run test")
-        self.vtmenubar.Append(wxglade_tmp_menu, "R&un")
-        wxglade_tmp_menu = wx.Menu()
-        self.m_about = wxglade_tmp_menu.Append(wx.ID_ABOUT, "&About", "About this program")
-        self.vtmenubar.Append(wxglade_tmp_menu, "&Help")
+        menu = wx.Menu()
+        self.m_files = menu.Append(wx.ID_OPEN, "&Open files...", "Select Pickle files to plot")
+        menu.AppendSeparator()
+        self.m_exit = menu.Append(wx.ID_EXIT, "E&xit", "Exit program")
+        self.vtmenubar.Append(menu, "&File")
+        menu = wx.Menu()
+        self.m_run = menu.Append(wx.ID_REFRESH, "&Run...", "Run test")
+        self.vtmenubar.Append(menu, "R&un")
+        menu = wx.Menu()
+        self.m_about = menu.Append(wx.ID_ABOUT, "&About", "About this program")
+        self.vtmenubar.Append(menu, "&Help")
         self.SetMenuBar(self.vtmenubar)
         # Menu Bar end
         self.vtstatusbar = self.CreateStatusBar(1, 0)
@@ -99,28 +99,30 @@ class VTframe(wx.Frame):
         self.sb_vq = wx.StaticBox(self.conf_tab, -1, "Video quality measures:")
 
         self.log_tab = wx.Panel(self.tabs, -1)
-        self.log = wx.TextCtrl(self.log_tab, -1, '', style=wx.TE_MULTILINE|wx.TE_READONLY)
+        self.log = wx.TextCtrl(self.log_tab, -1, '', style=wx.TE_MULTILINE | wx.TE_READONLY)
         self.results_tab = PlotNotebook(self.tabs)
         self.video_tab = wx.Panel(self.tabs, -1)
-        self.label_2 = wx.StaticText(self.video_tab, -1, "Play videos:")
-        self.play_video = wx.Button(self.video_tab, -1, "Play", name="playvideo")
+        self.player = wx.Panel(self.video_tab, -1)
+        self.player_button = wx.Button(self.video_tab, -1, 'Play', name='playvideo', size=(200, 50))
 
         self.__set_properties()
         self.__do_layout()
+        self.__init_video()
 
         self.Bind(wx.EVT_MENU, self.onOpen, self.m_files)
         self.Bind(wx.EVT_MENU, self.onExit, self.m_exit)
         self.Bind(wx.EVT_MENU, self.onRun, self.m_run)
         self.Bind(wx.EVT_MENU, self.onAbout, self.m_about)
         self.Bind(wx.EVT_CLOSE, self.onCloseWindow)
-        self.play_video.Bind(wx.EVT_BUTTON, self.onPlay)
+        self.player_button.Bind(wx.EVT_BUTTON, self.onPlay)
 
         # Logging
-        self.old_hdlr = VTLOG.handlers[0]
+        console = VTLOG.handlers[0]
         self.hdlr = FuncLog(self.log)
-        self.hdlr.setLevel(self.old_hdlr.level)
-        self.hdlr.setFormatter(self.old_hdlr.formatter)
-        VTLOG.handlers[0] = self.hdlr
+        self.hdlr.setLevel(console.level)
+        console.setLevel(40)
+        self.hdlr.setFormatter(console.formatter)
+        VTLOG.addHandler(self.hdlr)
         # end wxGlade
 
     def __set_properties(self):
@@ -164,14 +166,14 @@ class VTframe(wx.Frame):
                 el.SetValue(True)
 
         self.results_tab.Hide()
-        #self.video_tab.Hide()
+        self.video_tab.Hide()
         # end wxGlade
 
     def __do_layout(self):
         # begin wxGlade: VTframe.__do_layout
         sizer_body = wx.BoxSizer(wx.VERTICAL)
         sizer_log_tab = wx.BoxSizer(wx.HORIZONTAL)
-        sizer_video_tab = wx.GridSizer(1, 2, 0, 0)
+        sizer_video_tab = wx.BoxSizer(wx.VERTICAL)
         sizer_conf_tab = wx.GridSizer(2, 1, 3, 3)
         sizer_conf_up = wx.GridSizer(1, 2, 0, 0)
         sizer_conf_down = wx.GridSizer(1, 3, 0, 0)
@@ -247,16 +249,17 @@ class VTframe(wx.Frame):
         sizer_conf_down.Add(sizer_sb_vq, 1, wx.EXPAND | wx.ALL, 10)
         self.conf_tab.SetSizer(sizer_conf_tab)
 
-        sizer_log_tab.Add(self.log, 1, wx.EXPAND|wx.ADJUST_MINSIZE, 0)
+        sizer_log_tab.Add(self.log, 1, wx.EXPAND | wx.ADJUST_MINSIZE, 0)
         self.log_tab.SetSizer(sizer_log_tab)
-        sizer_video_tab.Add(self.label_2, 0, wx.ALIGN_CENTER_HORIZONTAL | wx.ALIGN_CENTER_VERTICAL | wx.ADJUST_MINSIZE, 0)
-        sizer_video_tab.Add(self.play_video, 0, wx.ALIGN_LEFT | wx.ALIGN_CENTER_VERTICAL | wx.ADJUST_MINSIZE, 0)
+        sizer_video_tab.Add(self.player, 1, wx.EXPAND, 0)
+        sizer_video_tab.Add(self.player_button, 0, wx.ALIGN_CENTER_HORIZONTAL | wx.ALL, 30)
         self.video_tab.SetSizer(sizer_video_tab)
+        self.video_tab.SetBackgroundColour((0, 0, 0))
 
-        self.tabs.AddPage(self.conf_tab, "Configuration")
-        self.tabs.AddPage(self.log_tab, "Log")
-        self.tabs.AddPage(self.results_tab, "Results")
-        self.tabs.AddPage(self.video_tab, "Video")
+        self.tabs.AddPage(self.conf_tab, 'Configuration')
+        self.tabs.AddPage(self.log_tab, 'Log')
+        self.tabs.AddPage(self.results_tab, 'Results')
+        self.tabs.AddPage(self.video_tab, 'Video')
         sizer_body.Add(self.tabs, 1, wx.EXPAND, 0)
         self.SetSizer(sizer_body)
         self.Layout()
@@ -279,7 +282,7 @@ class VTframe(wx.Frame):
                 self.pipeline.set_state(Gst.State.NULL)
             except:
                 pass
-            VTLOG.handlers[0] = self.old_hdlr
+            VTLOG.removeHandler(self.hdlr)
             self.Destroy() # frame
 
     def onAbout(self, event):
@@ -339,8 +342,7 @@ class VTframe(wx.Frame):
         self.conf_tab.Disable()
         self.vtmenubar.Disable()
         self.results_tab.Hide()
-        #self.video_tab.Hide()
-        self.video_tab.Show()
+        self.video_tab.Hide()
         self.tabs.SetSelection(1)
         self.vtstatusbar.SetStatusText('Running...')
         self.setValues()
@@ -352,38 +354,40 @@ class VTframe(wx.Frame):
         wx.Window.Enable(self.vtmenubar)
         self.vtstatusbar.SetStatusText('Stopped')
 
+    def __init_video(self):
+        self.pipeline = Gst.parse_launch('filesrc name=video1 filesrc name=video2 filesrc name=video3 \
+            videomixer name=mix ! xvimagesink \
+            video1. \
+                ! queue ! videoparse framerate=%s/1 name=parser1 \
+                ! textoverlay font-desc="Sans 24" text="Original" valignment=top halignment=left shaded-background=true \
+                ! videoscale \
+                ! mix.sink_1 \
+            video2. \
+                ! queue ! videoparse framerate=%s/1 name=parser2 \
+                ! textoverlay font-desc="Sans 24" text="Coded" valignment=top halignment=left shaded-background=true \
+                ! videoscale \
+                ! mix.sink_2 \
+            video3. \
+                ! queue ! videoparse framerate=%s/1 name=parser3 \
+                ! textoverlay font-desc="Sans 24" text="Received" valignment=top halignment=left shaded-background=true \
+                ! videoscale \
+                ! mix.sink_3' % (
+            self.main.conf['framerate'],
+            self.main.conf['framerate'],
+            self.main.conf['framerate']
+        ))
+        bus = self.pipeline.get_bus()
+        bus.add_signal_watch()
+        bus.enable_sync_message_emission()
+        bus.connect('message', self.onMessage)
+        bus.connect('sync-message::element', self.onSyncMessage)
+
     def onPlay(self, event):
         """
         Play video files.
         """
-        if self.play_video.GetLabel() == 'Play':
-            self.pipeline = Gst.parse_launch('filesrc name=video1 filesrc name=video2 filesrc name=video3 \
-                videomixer name=mix sink_2::xpos=%s sink_3::xpos=%s ! xvimagesink \
-                video1. \
-                    ! queue ! videoparse framerate=%s/1 name=parser1 \
-                    ! textoverlay font-desc="Sans 24" text="Original" valignment=top halignment=left shaded-background=true \
-                    ! videoscale \
-                    ! mix.sink_1 \
-                video2. \
-                    ! queue ! videoparse framerate=%s/1 name=parser2 \
-                    ! textoverlay font-desc="Sans 24" text="Coded" valignment=top halignment=left shaded-background=true \
-                    ! videoscale \
-                    ! mix.sink_2 \
-                video3. \
-                    ! queue ! videoparse framerate=%s/1 name=parser3 \
-                    ! textoverlay font-desc="Sans 24" text="Received" valignment=top halignment=left shaded-background=true \
-                    ! videoscale \
-                    ! mix.sink_3' % (
-                self.width*2,
-                self.width,
-                self.main.conf['framerate'],
-                self.main.conf['framerate'],
-                self.main.conf['framerate']
-            ))
-            self.play_video.SetLabel('Stop')
-            bus = self.pipeline.get_bus()
-            bus.add_signal_watch()
-            bus.connect('message', self.onMessage)
+        if self.player_button.GetLabel() == 'Play':
+            self.player_button.SetLabel('Stop')
             video1 = self.pipeline.get_by_name('video1')
             video2 = self.pipeline.get_by_name('video2')
             video3 = self.pipeline.get_by_name('video3')
@@ -393,6 +397,11 @@ class VTframe(wx.Frame):
             parser1 = self.pipeline.get_by_name('parser1')
             parser2 = self.pipeline.get_by_name('parser2')
             parser3 = self.pipeline.get_by_name('parser3')
+            mix = self.pipeline.get_by_name('mix')
+            sink_2 = mix.get_child_by_name('sink_2')
+            sink_3 = mix.get_child_by_name('sink_3')
+            sink_2.props.xpos = self.width * 2
+            sink_3.props.xpos = self.width
             parser1.props.width = self.width
             parser1.props.height = self.height
             parser2.props.width = self.width
@@ -401,14 +410,19 @@ class VTframe(wx.Frame):
             parser3.props.height = self.height
             self.pipeline.set_state(Gst.State.PLAYING)
         else:
+            self.player_button.SetLabel('Play')
             self.pipeline.set_state(Gst.State.NULL)
-            self.play_video.SetLabel('Play')
+
+    def onSyncMessage(self, bus, message):
+        if GstVideo.is_video_overlay_prepare_window_handle_message(message):
+            message.src.set_property('force-aspect-ratio', True)
+            message.src.set_window_handle(self.video_tab.GetHandle())
 
     def onMessage(self, bus, message):
         t = message.type
         if t == Gst.MessageType.EOS or t == Gst.MessageType.ERROR:
             self.pipeline.set_state(Gst.State.NULL)
-            self.play_video.SetLabel('Play')
+            self.player_button.SetLabel('Play')
 
     def results(self):
         """

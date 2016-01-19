@@ -8,11 +8,12 @@ __all__ = []
 
 import gi
 gi.require_version('Gst', '1.0')
+gi.require_version('GstVideo', '1.0')
 gi.require_version('GstRtspServer', '1.0')
 from gi.repository import Gst, GObject
 GObject.threads_init()
 Gst.init(None)
-del(gi, Gst,GObject)
+del(gi, Gst, GObject)
 
 __all__.extend(['VTLOG'])
 import logging
