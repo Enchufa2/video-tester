@@ -35,10 +35,10 @@ rawdata = {
 psnr = PSNR((None, rawdata, None, None))
 ssim = SSIM((None, rawdata, None, None))
 
-print "Calculating PSNR..."
+print 'Calculating PSNR...'
 res = psnr.calculate()
 save_to_file('result_psnr.dat', res)
 
-print "Calculating SSIM..."
+print 'Calculating SSIM...'
 res = ssim.calculate()
 save_to_file('result_ssim.dat', res)

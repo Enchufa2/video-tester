@@ -7,7 +7,7 @@
 from itertools import izip
 
 def multiSort(*args):
-    """
+    '''
     Efficient sort of multiple lists as the first one passed.
-    """
+    '''
     return map(list, izip(*sorted(izip(*args))))

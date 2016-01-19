@@ -29,7 +29,7 @@ if __name__ == '__main__':
                                help='launch graphical interface')
     args = parser.parse_args()
 
-    if args.mode == "server":
+    if args.mode == 'server':
         from VideoTester import VTServer
         server = VTServer(args.conf)
         try:

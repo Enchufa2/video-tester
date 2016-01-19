@@ -12,19 +12,19 @@ from .qos import QoSmeter
 from .bs import BSmeter
 
 class VQmeter(Meter):
-    """
+    '''
     Video quality meter.
-    """
+    '''
     def __init__(self, selected, data):
-        """
+        '''
         **On init:** Register selected video quality measures.
 
         :param selected: Selected video quality measures.
         :type selected: string or list
         :param tuple data: Collected QoS + bit-stream + video parameters.
-        """
+        '''
         Meter.__init__(self)
-        VTLOG.info("Starting VQmeter...")
+        VTLOG.info('Starting VQmeter...')
         if 'psnr' in selected:
             self.measures.append(PSNR(data))
         if 'ssim' in selected:
@@ -37,18 +37,18 @@ class VQmeter(Meter):
             self.measures.append(MIV(data))
 
 class VQmeasure(Measure):
-    """
+    '''
     Video quality measure type.
-    """
+    '''
     def __init__(self, (conf, rawdata, codecdata, packetdata)):
-        """
+        '''
         **On init:** Register QoS + bit-stream + video parameters.
 
         :param string conf: Video parameters: `codec`, `bitrate`, `framerate` and `size`.
         :param dictionary rawdata: Frame information from YUV videos (`original`, `received` and `coded`).
         :param dictionary codecdata: Frame information from compressed videos (`received` and `coded`).
         :param tuple packetdata: QoS parameters.
-        """
+        '''
         Measure.__init__(self)
         #: Video parameters: `codec`, `bitrate`, `framerate` and `size`.
         self.conf = conf
@@ -63,7 +63,7 @@ class VQmeasure(Measure):
         self.packetdata = packetdata
 
     def getQoSm(self, measures):
-        """
+        '''
         Get QoS measures.
 
         :param measures: Selected QoS measures.
@@ -71,14 +71,14 @@ class VQmeasure(Measure):
 
         :returns: Calculated QoS measures.
         :rtype: list
-        """
-        VTLOG.info("----------getQoSm----------")
+        '''
+        VTLOG.info('----------getQoSm----------')
         measures = QoSmeter(measures, self.packetdata).run()
-        VTLOG.info("---------------------------")
+        VTLOG.info('---------------------------')
         return measures
 
     def getBSm(self, measures):
-        """
+        '''
         Get bit-stream measures.
 
         :param measures: Selected bit-stream measures.
@@ -86,19 +86,19 @@ class VQmeasure(Measure):
 
         :returns: Calculated bit-stream measures.
         :rtype: list
-        """
-        VTLOG.info("----------getBSm-----------")
+        '''
+        VTLOG.info('----------getBSm-----------')
         measures = BSmeter(measures, self.codecdata).run()
-        VTLOG.info("---------------------------")
+        VTLOG.info('---------------------------')
         return measures
 
 class PSNR(VQmeasure):
-    """
+    '''
     PSNR: Peak Signal to Noise Ratio (Y component).
 
     * Type: `plot`.
     * Units: `dB per frame`.
-    """
+    '''
     def __init__(self, data, yuv=False, yuvref=False):
         VQmeasure.__init__(self, data)
         self.data['name'] = 'PSNR'
@@ -125,12 +125,12 @@ class PSNR(VQmeasure):
         return self.data
 
 class SSIM(VQmeasure):
-    """
+    '''
     SSIM: Structural Similarity index (Y component).
 
     * Type: `plot`.
     * Units: `SSIM index per frame`.
-    """
+    '''
     def __init__(self, data):
         VQmeasure.__init__(self, data)
         self.data['name'] = 'SSIM'
@@ -156,7 +156,7 @@ class SSIM(VQmeasure):
         return cv_im
 
     def __SSIM(self, frame1, frame2):
-        """
+        '''
             The equivalent of Zhou Wang's SSIM matlab code using OpenCV.
             from http://www.cns.nyu.edu/~zwang/files/research/ssim/index.html
             The measure is described in :
@@ -164,7 +164,7 @@ class SSIM(VQmeasure):
             C++ code by Rabah Mehdi. http://mehdi.rabah.free.fr/SSIM
 
             C++ to Python translation and adaptation by Iñaki Úcar
-        """
+        '''
         C1 = 6.5025
         C2 = 58.5225
         img1_temp = self.__array2cv(frame1)
@@ -242,12 +242,12 @@ class SSIM(VQmeasure):
         return self.data
 
 class G1070(VQmeasure):
-    """
+    '''
     ITU-T G.1070 video quality estimation.
 
     * Type: `value`.
     * Units: `-`.
-    """
+    '''
     def __init__(self, data):
         VQmeasure.__init__(self, data)
         self.data['name'] = 'G.1070'
@@ -268,12 +268,12 @@ class G1070(VQmeasure):
         return self.data
 
 class PSNRtoMOS(VQmeasure):
-    """
+    '''
     PSNR to MOS mapping used on `Evalvid <http://www.tkn.tu-berlin.de/research/evalvid/>`.
 
     * Type: `plot`.
     * Units: `MOS per frame`.
-    """
+    '''
     def __init__(self, data, yuv=False, yuvref=False):
         VQmeasure.__init__(self, data)
         self.data['name'] = 'PSNRtoMOS'
@@ -299,12 +299,12 @@ class PSNRtoMOS(VQmeasure):
         return self.data
 
 class MIV(VQmeasure):
-    """
+    '''
     MIV metric used on `Evalvid <http://www.tkn.tu-berlin.de/research/evalvid/>`.
 
     * Type: `plot`.
     * Units: `Distortion in Interval`.
-    """
+    '''
     def __init__(self, data):
         VQmeasure.__init__(self, data)
         self.data['name'] = 'MIV'

@@ -17,11 +17,11 @@ from .measures.vq import VQmeter
 from .video import YUVVideo, CodedVideo
 
 class VTBase:
-    """
+    '''
     Superclass that gathers several common functionalities shared by the client and the server.
-    """
+    '''
     def __init__(self, conf=None):
-        """
+        '''
         **On init:** Parse the `video` section.
 
         :param conf: Path to a configuration file.
@@ -30,7 +30,7 @@ class VTBase:
         .. warning::
             This section MUST be present in the default configuration file
             and MUST contain the same videos at the client and the server.
-        """
+        '''
         if not conf:
             #: Configuration file path.
             self.CONF = os.path.abspath('VT.conf')
@@ -45,16 +45,16 @@ class VTBase:
         self.videos = self.conf.items()
 
     def run(self):
-        """
+        '''
         Do nothing.
 
         .. note::
             This method MUST be overwritten by the subclasses.
-        """
-        VTLOG.error("Not implemented")
+        '''
+        VTLOG.error('Not implemented')
 
     def parseConf(self, file, section):
-        """
+        '''
         Extract a section from a configuration file.
 
         :param string file:
@@ -62,22 +62,22 @@ class VTBase:
 
         :returns: A list of ``(name, value)`` pairs for each option in the given section.
         :rtype: list of tuples
-        """
+        '''
         config = ConfigParser.RawConfigParser()
         config.read(file)
         return config.items(section)
 
 class VTServer(VTBase, SimpleXMLRPCServer):
-    """
+    '''
     VT Server class.
-    """
+    '''
     def __init__(self, conf=None):
-        """
+        '''
         **On init:** Some initialization code.
 
         :param conf: Path to a configuration file.
         :type conf: string
-        """
+        '''
         VTBase.__init__(self, conf)
         SimpleXMLRPCServer.__init__(self, ('0.0.0.0', self.port), logRequests=False)
 
@@ -89,9 +89,9 @@ class VTServer(VTBase, SimpleXMLRPCServer):
         self.exports = ['run', 'stop']
 
     def _dispatch(self, method, params):
-        """
+        '''
         Dispatch remote calls only if they are in :attr:`exports`.
-        """
+        '''
         if method in self.exports:
             func = getattr(self, method)
             return func(*params)
@@ -103,7 +103,7 @@ class VTServer(VTBase, SimpleXMLRPCServer):
         SimpleXMLRPCServer.serve_forever(self)
 
     def run(self, bitrate, framerate):
-        """
+        '''
         Run a subprocess for an RTSP server with a given bitrate and framerate (if not running)
         or add a client (if running).
 
@@ -112,7 +112,7 @@ class VTServer(VTBase, SimpleXMLRPCServer):
 
         :returns: The RTSP server port.
         :rtype: integer
-        """
+        '''
         key = '%s kbps, %s fps' % (bitrate, framerate)
         if key in self.servers:
             self.servers[key]['clients'] = self.servers[key]['clients'] + 1
@@ -137,7 +137,7 @@ class VTServer(VTBase, SimpleXMLRPCServer):
         return self.servers[key]['port']
 
     def stop(self, bitrate, framerate):
-        """
+        '''
         Stop an RTSP server with a given bitrate and framerate (if no remaining clients)
         or remove a client (if remaining clients).
 
@@ -146,7 +146,7 @@ class VTServer(VTBase, SimpleXMLRPCServer):
 
         :returns: True.
         :rtype: boolean
-        """
+        '''
         key = '%s kbps, %s fps' % (bitrate, framerate)
         self.servers[key]['clients'] = self.servers[key]['clients'] - 1
         VTLOG.info('PID: %s | Client stopped | Connections: %s' % (self.servers[key]['server'].pid, self.servers[key]['clients']))
@@ -158,12 +158,12 @@ class VTServer(VTBase, SimpleXMLRPCServer):
         return True
 
     def __freePort(self):
-        """
+        '''
         Find an unused port starting from :attr:`VideoTester.core.Server.port`.
 
         :returns: An unused port number.
         :rtype: integer
-        """
+        '''
         port = self.port
         while True:
             port += 1
@@ -177,16 +177,16 @@ class VTServer(VTBase, SimpleXMLRPCServer):
         return port
 
 class VTClient(VTBase):
-    """
+    '''
     VT Client class.
-    """
+    '''
     def __init__(self, conf=None):
-        """
+        '''
         **On init:** Some initialization code.
 
         :param conf: Path to a configuration file.
         :type conf: string
-        """
+        '''
         VTBase.__init__(self, conf)
         #: Parsed configuration.
         self.conf = dict(self.parseConf(self.CONF, 'client'))
@@ -224,7 +224,7 @@ class VTClient(VTBase):
         self.conf['num'] = num
 
     def run(self):
-        """
+        '''
         Run the client and perform all the operations:
          * Connect to the server.
          * Receive video while sniffing packets.
@@ -234,7 +234,7 @@ class VTClient(VTBase):
 
         :returns: Whether the execution was successful.
         :rtype: boolean
-        """
+        '''
         VTLOG.info('Client running!')
         try:
             self.__set_tempdir()
@@ -258,7 +258,7 @@ class VTClient(VTBase):
             sniffer.ping()
             rtspclient.receiver()
         except KeyboardInterrupt:
-            VTLOG.warning("Keyboard interrupt!")
+            VTLOG.warning('Keyboard interrupt!')
             server.stop(self.conf['bitrate'], self.conf['framerate'])
             child.terminate()
             child.join()
@@ -293,20 +293,20 @@ class VTClient(VTBase):
         return True
 
     def __loadData(self, videodata, size, codec):
-        """
+        '''
         Load raw video data and coded video data.
 
         :param videodata: (see :attr:`VideoTester.gstreamer.RTSPclient.files`)
 
         :returns: Coded video data object (see :class:`VideoTester.video.YUVVideo`) and raw video data object (see :class:`VideoTester.video.CodedVideo`).
         :rtype: tuple
-        """
-        VTLOG.info("Loading videos...")
+        '''
+        VTLOG.info('Loading videos...')
         codecdata = {}
         rawdata = {}
         for x in videodata.keys():
             if x != 'original':
                 codecdata[x] = CodedVideo(videodata[x][0], codec)
             rawdata[x] = YUVVideo(videodata[x][1], size)
-            VTLOG.info("+++")
+            VTLOG.info('+++')
         return codecdata, rawdata

@@ -9,7 +9,7 @@
 import os, fnmatch, sys, pickle, csv
 
 if len(sys.argv) != 2:
-    print "Usage: pkl2csv.py <dir>"
+    print 'Usage: pkl2csv.py <dir>'
     sys.exit()
 
 def opj(*args):
@@ -69,4 +69,4 @@ for dir in dirs:
             writer = csv.writer(f)
             writer.writerow([data['value']])
         f.close()
-print "\nFinished"
+print '\nFinished'

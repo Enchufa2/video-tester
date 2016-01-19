@@ -5,29 +5,9 @@
 ## This program is published under a GPLv3 license
 
 from distutils.core import setup
-from distutils.command.build import build as _build
 from distutils import log
 import os, fnmatch
 from stat import ST_MODE
-
-class build(_build):
-    def run(self):
-        _build.run(self)
-        file = self.build_purelib + '/VideoTester/config.py'
-        buffer = open(file).read()
-        iface = raw_input('Select server interface [eth0]: ')
-        port = raw_input('Select server port [8000]: ')
-        if iface != '':
-            log.info("changing SERVERIFACE of %s from eth0 to %s",
-                        file, iface)
-            buffer = buffer.replace("SERVERIFACE = 'eth0'", "SERVERIFACE = '" + iface + "'")
-        if port != '':
-            log.info("changing SERVERPORT of %s from 8000 to %s",
-                        file, port)
-            buffer = buffer.replace("SERVERPORT = 8000", "SERVERPORT = " + port)
-        f = open(file, 'w')
-        f.write(buffer)
-        f.close()
 
 # Code borrowed from wxPython's setup and config files
 # Thanks to Robin Dunn for the suggestion.
@@ -48,7 +28,7 @@ def find_data_files(base, srcdir, *wildcards, **kw):
             wc_name = opj(dirname, wc)
             for f in files:
                 filename = opj(dirname, f)
-                
+
                 if fnmatch.fnmatch(filename, wc_name) and not os.path.isdir(filename):
                     names.append(filename)
         if names:
@@ -63,20 +43,20 @@ def find_data_files(base, srcdir, *wildcards, **kw):
                     [os.path.basename(f) for f in glob.glob(opj(srcdir, '*'))])
     return file_list
 
-version = "0.2"
+version = '0.2'
 files = find_data_files('share/doc/VideoTester-' + version, 'doc/', '*.*')
 
-setup(name = "VideoTester",
+setup(name = 'VideoTester',
     version = version,
-    description = "Video Quality Assessment Tool",
-    author = "Iñaki Úcar",
-    author_email = "i.ucar86@gmail.com",
-    url = "https://github.com/Enchufa2/video-tester",
-    #download_url = "",
+    description = 'Video Quality Assessment Tool',
+    author = 'Iñaki Úcar',
+    author_email = 'i.ucar86@gmail.com',
+    url = 'https://github.com/Enchufa2/video-tester',
+    #download_url = '',
     packages = ['VideoTester', 'VideoTester.measures'],
-    scripts = ["VT"],
+    scripts = ['VT'],
     data_files = files,
-    long_description = """Video Tester is a framework for the video quality assessment over a real or simulated IP network.""",
+    long_description = '''Video Tester is a framework for the video quality assessment over a real or simulated IP network.''',
     classifiers=[
         'Development Status :: 4 - Beta',
         'Environment :: Console',
@@ -93,7 +73,7 @@ setup(name = "VideoTester",
         ],
     keywords = ('video', 'tester', 'quality', 'assessment', 'measures', 'python', 'QoS', 'QoE'),
     platforms = ['Any'],
-    license = "GPLv3",
+    license = 'GPLv3',
     requires = ['scapy', 'wx', 'matplotlib', 'matplotlib.backends.backend_wxagg', 'pygst', 'gst', 'gobject', 'numpy', 'cv'],
     cmdclass = {'build': build}
 )

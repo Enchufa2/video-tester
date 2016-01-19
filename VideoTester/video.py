@@ -7,11 +7,11 @@
 from numpy import *
 
 class YUVVideo:
-    """
+    '''
     YUV reader.
-    """
+    '''
     def __init__(self, file, framesize, fmt='I420'):
-        """
+        '''
         **On init:** Call the proper reader.
 
         :param string file: Path to the file.
@@ -20,11 +20,11 @@ class YUVVideo:
 
         .. note::
             Supported formats: I420.
-        """
+        '''
         #: Frame size: ``(width, height)``.
         self.framesize = framesize
         #: File descriptor.
-        self.f = open(file, "rb")
+        self.f = open(file, 'rb')
 
         if fmt == 'I420':
             frame = self.framesize[0] * self.framesize[1]
@@ -57,11 +57,11 @@ class YUVVideo:
             }
 
 class CodedVideo:
-    """
+    '''
     Coded video reader.
-    """
+    '''
     def __init__(self, file, codec):
-        """
+        '''
         **On init:** Call the proper reader.
 
         :param string file: Path to the file.
@@ -69,7 +69,7 @@ class CodedVideo:
 
         .. note::
             Supported formats: H263, H264, MPEG4 and Theora.
-        """
+        '''
         #: Numpy array with all the data.
         self.raw = fromfile(file, dtype=uint8)
         #: Dictionary that contains the `types` and the `lengths` for all the frames found.
@@ -84,9 +84,9 @@ class CodedVideo:
             self.__readTheora()
 
     def __readH263(self):
-        """
+        '''
         H263 format reader.
-        """
+        '''
         PSC = array([0x00, 0x00, 0x80], dtype=uint8)
         mask = array([0xff, 0xff, 0xfc], dtype=uint8)
         first = -1
@@ -104,9 +104,9 @@ class CodedVideo:
             i += 1
 
     def __readH264(self):
-        """
+        '''
         H264 format reader.
-        """
+        '''
         def getType(byte):
             comp = byte & 0x7f
             if comp >= 0x40:
@@ -164,9 +164,9 @@ class CodedVideo:
             i += 1
 
     def __readMPEG4(self):
-        """
+        '''
         MPEG4 format reader.
-        """
+        '''
         SC = array([0x00, 0x00, 0x01, 0xb6], dtype=uint8)
         mask = array([0xff, 0xff, 0xff, 0xff], dtype=uint8)
         first = -1
@@ -189,9 +189,9 @@ class CodedVideo:
             i += 1
 
     def __readTheora(self):
-        """
+        '''
         Theora over Matroska format reader.
-        """
+        '''
         SC1 = [array([0xa3, 0x00, 0x00, 0x81, 0x00, 0x00, 0x00], dtype=uint8),
                 array([0xa3, 0x00, 0x00, 0x81, 0x00, 0x00, 0x80], dtype=uint8),
                 array([0xa3, 0x00, 0x81, 0x00, 0x00, 0x00], dtype=uint8)]

@@ -9,19 +9,19 @@ from .. import VTLOG
 from .core import Meter, Measure
 
 class BSmeter(Meter):
-    """
+    '''
     Bit-stream meter.
-    """
+    '''
     def __init__(self, selected, data):
-        """
+        '''
         **On init:** Register selected bit-stream measures.
 
         :param selected: Selected bit-stream measures.
         :type selected: string or list
         :param tuple data: Collected bit-stream parameters.
-        """
+        '''
         Meter.__init__(self)
-        VTLOG.info("Starting BSmeter...")
+        VTLOG.info('Starting BSmeter...')
         if 'streameye' in selected:
             self.measures.append(StreamEye(data))
         if 'refstreameye' in selected:
@@ -32,15 +32,15 @@ class BSmeter(Meter):
             self.measures.append(IFrameLossRate(data))
 
 class BSmeasure(Measure):
-    """
+    '''
     Bit-stream measure type.
-    """
+    '''
     def __init__(self, codecdata):
-        """
+        '''
         **On init:** Register bit-stream parameters.
 
         :param dictionary codecdata: Frame information from compressed videos (`received` and `coded`).
-        """
+        '''
         Measure.__init__(self)
         #: Frame information from received video.
         self.coded = codecdata['received']
@@ -48,12 +48,12 @@ class BSmeasure(Measure):
         self.codedref = codecdata['coded']
 
 class StreamEye(BSmeasure):
-    """
+    '''
     Stream Eye: visualization of the compressed frames (received video).
 
     * Type: `videoframes`.
     * Units: `bytes per frame`.
-    """
+    '''
     def __init__(self, data, video=''):
         BSmeasure.__init__(self, data)
         self.data['name'] = 'StreamEye'
@@ -83,22 +83,22 @@ class StreamEye(BSmeasure):
         return self.data
 
 class RefStreamEye(StreamEye):
-    """
+    '''
     ref Stream Eye: visualization of the compressed frames (reference video).
 
     * Type: `videoframes`.
     * Units: `bytes per frame`.
-    """
+    '''
     def __init__(self, data):
         StreamEye.__init__(self, data, 'ref')
 
 class GOP(BSmeasure):
-    """
+    '''
     GOP: estimation of *Group Of Pictures* size for received video.
 
     * Type: `value`.
     * Units: `GOP size`.
-    """
+    '''
     def __init__(self, data):
         BSmeasure.__init__(self, data)
         self.data['name'] = 'GOP'
@@ -127,12 +127,12 @@ class GOP(BSmeasure):
         return self.data
 
 class IFrameLossRate(BSmeasure):
-    """
+    '''
     I-Frame Loss Rate.
 
     * Type: `value`.
     * Units: `rate`.
-    """
+    '''
     def __init__(self, data):
         BSmeasure.__init__(self, data)
         self.data['name'] = 'IFLR'

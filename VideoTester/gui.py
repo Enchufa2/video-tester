@@ -13,9 +13,9 @@ from . import VTLOG, VTClient, netifaces, supported_codecs, supported_protocols
 from .resources import getVTIcon, getVTBitmap
 
 class FuncLog(logging.Handler):
-    """
+    '''
     A logging handler that sends logs to an update function.
-    """
+    '''
     def __init__(self, textctrl):
         logging.Handler.__init__(self)
         self.textctrl = textctrl
@@ -25,9 +25,9 @@ class FuncLog(logging.Handler):
         self.textctrl.WriteText(self.format(record) + '\n')
 
 class VTframe(wx.Frame):
-    """
+    '''
     Main window.
-    """
+    '''
     def __init__(self, conf):
         self.main = VTClient(conf)
         wx.Frame.__init__(self, None)
@@ -36,65 +36,65 @@ class VTframe(wx.Frame):
         # Menu Bar
         self.vtmenubar = wx.MenuBar()
         menu = wx.Menu()
-        self.m_files = menu.Append(wx.ID_OPEN, "&Open files...", "Select Pickle files to plot")
+        self.m_files = menu.Append(wx.ID_OPEN, '&Open files...', 'Select Pickle files to plot')
         menu.AppendSeparator()
-        self.m_exit = menu.Append(wx.ID_EXIT, "E&xit", "Exit program")
-        self.vtmenubar.Append(menu, "&File")
+        self.m_exit = menu.Append(wx.ID_EXIT, 'E&xit', 'Exit program')
+        self.vtmenubar.Append(menu, '&File')
         menu = wx.Menu()
-        self.m_run = menu.Append(wx.ID_REFRESH, "&Run...", "Run test")
-        self.vtmenubar.Append(menu, "R&un")
+        self.m_run = menu.Append(wx.ID_REFRESH, '&Run...', 'Run test')
+        self.vtmenubar.Append(menu, 'R&un')
         menu = wx.Menu()
-        self.m_about = menu.Append(wx.ID_ABOUT, "&About", "About this program")
-        self.vtmenubar.Append(menu, "&Help")
+        self.m_about = menu.Append(wx.ID_ABOUT, '&About', 'About this program')
+        self.vtmenubar.Append(menu, '&Help')
         self.SetMenuBar(self.vtmenubar)
         # Menu Bar end
         self.vtstatusbar = self.CreateStatusBar(1, 0)
         self.tabs = wx.Notebook(self, -1, style=0)
         self.conf_tab = wx.Panel(self.tabs, -1)
 
-        self.video_label = wx.StaticText(self.conf_tab, -1, "Choose a video:")
+        self.video_label = wx.StaticText(self.conf_tab, -1, 'Choose a video:')
         self.video = wx.Choice(self.conf_tab, -1, choices=[x[0] for x in self.main.videos])
-        self.codec_label = wx.StaticText(self.conf_tab, -1, "Choose a codec:")
+        self.codec_label = wx.StaticText(self.conf_tab, -1, 'Choose a codec:')
         self.codec = wx.Choice(self.conf_tab, -1, choices=supported_codecs.keys())
-        self.bitrate_label = wx.StaticText(self.conf_tab, -1, "Select the bitrate:")
+        self.bitrate_label = wx.StaticText(self.conf_tab, -1, 'Select the bitrate:')
         self.bitrate = wx.Slider(self.conf_tab, -1, self.main.conf['bitrate'], 64, 1024, style=wx.SL_HORIZONTAL | wx.SL_LABELS)
-        self.framerate_label = wx.StaticText(self.conf_tab, -1, "Select the framerate:")
+        self.framerate_label = wx.StaticText(self.conf_tab, -1, 'Select the framerate:')
         self.framerate = wx.Slider(self.conf_tab, -1, self.main.conf['framerate'], 1, 100, style=wx.SL_HORIZONTAL | wx.SL_LABELS)
-        self.sb_video = wx.StaticBox(self.conf_tab, -1, "Video options:")
+        self.sb_video = wx.StaticBox(self.conf_tab, -1, 'Video options:')
 
-        self.iface_label = wx.StaticText(self.conf_tab, -1, "Interface:")
+        self.iface_label = wx.StaticText(self.conf_tab, -1, 'Interface:')
         self.iface = wx.Choice(self.conf_tab, -1, choices=netifaces)
-        self.ip_label = wx.StaticText(self.conf_tab, -1, "Server IP:")
+        self.ip_label = wx.StaticText(self.conf_tab, -1, 'Server IP:')
         self.ip = wx.TextCtrl(self.conf_tab, -1, self.main.conf['ip'])
-        self.port_label = wx.StaticText(self.conf_tab, -1, "Server port:")
+        self.port_label = wx.StaticText(self.conf_tab, -1, 'Server port:')
         self.port = wx.TextCtrl(self.conf_tab, -1, str(self.main.port))
-        self.protocol = wx.RadioBox(self.conf_tab, -1, "Protocol:", choices=supported_protocols, majorDimension=3, style=wx.RA_SPECIFY_COLS)
-        self.sb_net = wx.StaticBox(self.conf_tab, -1, "Net options:")
+        self.protocol = wx.RadioBox(self.conf_tab, -1, 'Protocol:', choices=supported_protocols, majorDimension=3, style=wx.RA_SPECIFY_COLS)
+        self.sb_net = wx.StaticBox(self.conf_tab, -1, 'Net options:')
 
         self.qos = []
-        self.qos.append(('latency', wx.CheckBox(self.conf_tab, -1, "Latency")))
-        self.qos.append(('delta', wx.CheckBox(self.conf_tab, -1, "Delta")))
-        self.qos.append(('jitter', wx.CheckBox(self.conf_tab, -1, "Jitter")))
-        self.qos.append(('skew', wx.CheckBox(self.conf_tab, -1, "Skew")))
-        self.qos.append(('bandwidth', wx.CheckBox(self.conf_tab, -1, "Bandwidth")))
-        self.qos.append(('plr', wx.CheckBox(self.conf_tab, -1, "Packet Loss Rate")))
-        self.qos.append(('pld', wx.CheckBox(self.conf_tab, -1, "Packet Loss Distribution")))
-        self.sb_qos = wx.StaticBox(self.conf_tab, -1, "QoS measures:")
+        self.qos.append(('latency', wx.CheckBox(self.conf_tab, -1, 'Latency')))
+        self.qos.append(('delta', wx.CheckBox(self.conf_tab, -1, 'Delta')))
+        self.qos.append(('jitter', wx.CheckBox(self.conf_tab, -1, 'Jitter')))
+        self.qos.append(('skew', wx.CheckBox(self.conf_tab, -1, 'Skew')))
+        self.qos.append(('bandwidth', wx.CheckBox(self.conf_tab, -1, 'Bandwidth')))
+        self.qos.append(('plr', wx.CheckBox(self.conf_tab, -1, 'Packet Loss Rate')))
+        self.qos.append(('pld', wx.CheckBox(self.conf_tab, -1, 'Packet Loss Distribution')))
+        self.sb_qos = wx.StaticBox(self.conf_tab, -1, 'QoS measures:')
 
         self.bs = []
-        self.bs.append(('streameye', wx.CheckBox(self.conf_tab, -1, "Stream Eye")))
-        self.bs.append(('refstreameye', wx.CheckBox(self.conf_tab, -1, "refStream Eye")))
-        self.bs.append(('gop', wx.CheckBox(self.conf_tab, -1, "GOP size")))
-        self.bs.append(('iflr', wx.CheckBox(self.conf_tab, -1, "I Frame Loss Rate")))
-        self.sb_bs = wx.StaticBox(self.conf_tab, -1, "BitStream measures:")
+        self.bs.append(('streameye', wx.CheckBox(self.conf_tab, -1, 'Stream Eye')))
+        self.bs.append(('refstreameye', wx.CheckBox(self.conf_tab, -1, 'refStream Eye')))
+        self.bs.append(('gop', wx.CheckBox(self.conf_tab, -1, 'GOP size')))
+        self.bs.append(('iflr', wx.CheckBox(self.conf_tab, -1, 'I Frame Loss Rate')))
+        self.sb_bs = wx.StaticBox(self.conf_tab, -1, 'BitStream measures:')
 
         self.vq = []
-        self.vq.append(('psnr', wx.CheckBox(self.conf_tab, -1, "PSNR")))
-        self.vq.append(('ssim', wx.CheckBox(self.conf_tab, -1, "SSIM")))
-        self.vq.append(('g1070', wx.CheckBox(self.conf_tab, -1, "G.1070")))
-        self.vq.append(('psnrtomos', wx.CheckBox(self.conf_tab, -1, "PSNRtoMOS")))
-        self.vq.append(('miv', wx.CheckBox(self.conf_tab, -1, "MIV")))
-        self.sb_vq = wx.StaticBox(self.conf_tab, -1, "Video quality measures:")
+        self.vq.append(('psnr', wx.CheckBox(self.conf_tab, -1, 'PSNR')))
+        self.vq.append(('ssim', wx.CheckBox(self.conf_tab, -1, 'SSIM')))
+        self.vq.append(('g1070', wx.CheckBox(self.conf_tab, -1, 'G.1070')))
+        self.vq.append(('psnrtomos', wx.CheckBox(self.conf_tab, -1, 'PSNRtoMOS')))
+        self.vq.append(('miv', wx.CheckBox(self.conf_tab, -1, 'MIV')))
+        self.sb_vq = wx.StaticBox(self.conf_tab, -1, 'Video quality measures:')
 
         self.log_tab = wx.Panel(self.tabs, -1)
         self.log = wx.TextCtrl(self.log_tab, -1, '', style=wx.TE_MULTILINE | wx.TE_READONLY)
@@ -123,12 +123,12 @@ class VTframe(wx.Frame):
         VTLOG.addHandler(self.hdlr)
 
     def __set_properties(self):
-        self.SetTitle("Video Tester")
+        self.SetTitle('Video Tester')
         self.SetSize((800, 600))
         self.Hide()
         self.vtstatusbar.SetStatusWidths([-1])
         # statusbar fields
-        vtstatusbar_fields = ["VT Client"]
+        vtstatusbar_fields = ['VT Client']
         for i in range(len(vtstatusbar_fields)):
             self.vtstatusbar.SetStatusText(vtstatusbar_fields[i], i)
 
@@ -263,11 +263,11 @@ class VTframe(wx.Frame):
         self.Close(True)
 
     def onCloseWindow(self, event):
-        """
+        '''
         Show a dialog to verify exit.
-        """
+        '''
         # dialog to verify exit (including menuExit)
-        dlg = wx.MessageDialog(self, "Do you want to exit?", "Exit", wx.YES_NO | wx.ICON_QUESTION)
+        dlg = wx.MessageDialog(self, 'Do you want to exit?', 'Exit', wx.YES_NO | wx.ICON_QUESTION)
         result = dlg.ShowModal()
         dlg.Destroy()
         if result == wx.ID_YES:
@@ -279,9 +279,9 @@ class VTframe(wx.Frame):
             self.Destroy() # frame
 
     def onAbout(self, event):
-        """
+        '''
         Show *About* dialog.
-        """
+        '''
         import textwrap
         license = textwrap.dedent('''\
         This program is free software: you can redistribute it and/or modify
@@ -310,9 +310,9 @@ class VTframe(wx.Frame):
         wx.AboutBox(info)
 
     def onOpen(self, event):
-        """
+        '''
         Show *Open files* dialog.
-        """
+        '''
         self.video_tab.Hide()
         wildcard = u'Pickle files (*.pkl)|*.pkl'
         dlg = wx.FileDialog(self, u'Open files', '', '', wildcard, wx.FD_MULTIPLE)
@@ -329,9 +329,9 @@ class VTframe(wx.Frame):
             f.close()
 
     def onRun(self, event):
-        """
+        '''
         Run VT Client.
-        """
+        '''
         self.conf_tab.Disable()
         self.vtmenubar.Disable()
         self.results_tab.Hide()
@@ -377,9 +377,9 @@ class VTframe(wx.Frame):
         bus.connect('sync-message::element', self.onSyncMessage)
 
     def onPlay(self, event):
-        """
+        '''
         Play video files.
-        """
+        '''
         if self.player_button.GetLabel() == 'Play':
             self.player_button.SetLabel('Stop')
             video1 = self.pipeline.get_by_name('video1')
@@ -419,9 +419,9 @@ class VTframe(wx.Frame):
             self.player_button.SetLabel('Play')
 
     def results(self):
-        """
+        '''
         Plot measures and show *Results* tab.
-        """
+        '''
         self.results_tab.removePages()
         for measure in self.main.results:
             axes = self.results_tab.add(measure['name']).gca()
@@ -455,9 +455,9 @@ class VTframe(wx.Frame):
         self.results_tab.Show()
 
     def configureVideos(self):
-        """
+        '''
         Configure and show *Video* tab.
-        """
+        '''
         f = open(self.path + '_caps.txt', 'rb')
         caps = f.read()
         f.close()
@@ -474,9 +474,9 @@ class VTframe(wx.Frame):
         self.video_tab.Show()
 
     def setValues(self):
-        """
+        '''
         Set configuration options.
-        """
+        '''
         self.main.conf['bitrate'] = int(self.bitrate.GetValue())
         self.main.conf['framerate'] = int(self.framerate.GetValue())
         self.main.conf['video'] = str(self.video.GetStringSelection())
@@ -504,9 +504,9 @@ class VTframe(wx.Frame):
 # end of class VTframe
 
 class Plot(wx.Panel):
-    """
+    '''
     Plot panel.
-    """
+    '''
     def __init__(self, parent, id = -1, dpi = None, **kwargs):
         wx.Panel.__init__(self, parent, id=id, **kwargs)
         self.figure = mpl.figure.Figure(dpi=dpi, figsize=(2,2))
@@ -519,9 +519,9 @@ class Plot(wx.Panel):
         self.SetSizer(sizer)
 
 class PlotNotebook(wx.Panel):
-    """
+    '''
     Tab-style plotting panel.
-    """
+    '''
     def __init__(self, parent, id = -1):
         wx.Panel.__init__(self, parent, id=id)
         self.nb = wx.aui.AuiNotebook(self)
@@ -530,26 +530,26 @@ class PlotNotebook(wx.Panel):
         self.SetSizer(sizer)
         self.pages = []
 
-    def add(self, name="plot"):
-        """
+    def add(self, name='plot'):
+        '''
         Add a tab.
-        """
+        '''
         page = Plot(self.nb)
         self.pages.append(page)
         self.nb.AddPage(page, name)
         return page.figure
 
     def removePages(self):
-        """
+        '''
         Remove all tabs.
-        """
+        '''
         for page in self.pages:
             self.nb.DeletePage(0)
 
 class VTApp(wx.App):
-    """
+    '''
     WxPython application class.
-    """
+    '''
     def __init__(self, conf):
         self.conf = conf
         wx.App.__init__(self)

@@ -9,19 +9,19 @@ from ..utils import multiSort
 from .core import Meter, Measure
 
 class QoSmeter(Meter):
-    """
+    '''
     QoS meter.
-    """
+    '''
     def __init__(self, selected, data):
-        """
+        '''
         **On init:** Register selected QoS measures.
 
         :param selected: Selected QoS measures.
         :type selected: string or list
         :param tuple data: Collected QoS parameters.
-        """
+        '''
         Meter.__init__(self)
-        VTLOG.info("Starting QoSmeter...")
+        VTLOG.info('Starting QoSmeter...')
         if 'latency' in selected:
             self.measures.append(Latency(data))
         if 'delta' in selected:
@@ -38,11 +38,11 @@ class QoSmeter(Meter):
             self.measures.append(PacketLossDist(data))
 
 class QoSmeasure(Measure):
-    """
+    '''
     QoS measure type.
-    """
+    '''
     def __init__(self, (lengths, times, sequences, timestamps, ping)):
-        """
+        '''
         **On init:** Register QoS parameters.
 
         :param list lengths: List of packet lengths.
@@ -50,7 +50,7 @@ class QoSmeasure(Measure):
         :param list sequences: List of RTP sequence numbers.
         :param list timestamps: List of RTP timestamps.
         :param dictionary ping: Ping information.
-        """
+        '''
         Measure.__init__(self)
         #: List of packet lengths (see :attr:`VideoTester.sniffer.Sniffer.lengths`).
         self.lengths = lengths
@@ -64,12 +64,12 @@ class QoSmeasure(Measure):
         self.ping = ping
 
 class Latency(QoSmeasure):
-    """
+    '''
     Latency: end-to-end delay.
 
     * Type: `value`.
     * Units: `ms`.
-    """
+    '''
     def __init__(self, data):
         QoSmeasure.__init__(self, data)
         self.data['name'] = 'Latency'
@@ -87,12 +87,12 @@ class Latency(QoSmeasure):
         return self.data
 
 class Delta(QoSmeasure):
-    """
+    '''
     Delta: gap between two consecutive packets.
 
     * Type: `plot`.
     * Units: `ms per RTP packet`.
-    """
+    '''
     def __init__(self, data):
         QoSmeasure.__init__(self, data)
         self.data['name'] = 'Delta'
@@ -108,12 +108,12 @@ class Delta(QoSmeasure):
         return self.data
 
 class Jitter(QoSmeasure):
-    """
+    '''
     Jitter: latency deviation (see :rfc:`3550#page-94`).
 
     * Type: `plot`.
     * Units: `ms per RTP packet`.
-    """
+    '''
     def __init__(self, data):
         QoSmeasure.__init__(self, data)
         self.data['name'] = 'Jitter'
@@ -130,12 +130,12 @@ class Jitter(QoSmeasure):
         return self.data
 
 class Skew(QoSmeasure):
-    """
+    '''
     Skew: time deviation from RTP timestamp.
 
     * Type: `plot`.
     * Units: `ms per RTP packet`.
-    """
+    '''
     def __init__(self, data):
         QoSmeasure.__init__(self, data)
         self.data['name'] = 'Skew'
@@ -151,12 +151,12 @@ class Skew(QoSmeasure):
         return self.data
 
 class Bandwidth(QoSmeasure):
-    """
+    '''
     Instantaneous bandwidth: data received in the last second.
 
     * Type: `plot`.
     * Units: `kbps per second`.
-    """
+    '''
     def __init__(self, data):
         QoSmeasure.__init__(self, data)
         self.data['name'] = 'Bandwidth'
@@ -189,12 +189,12 @@ class Bandwidth(QoSmeasure):
         return self.data
 
 class PacketLossRate(QoSmeasure):
-    """
+    '''
     Packet Loss Rate.
 
     * Type: `value`.
     * Units: `rate`.
-    """
+    '''
     def __init__(self, data):
         QoSmeasure.__init__(self, data)
         self.data['name'] = 'PLR'
@@ -210,12 +210,12 @@ class PacketLossRate(QoSmeasure):
         return self.data
 
 class PacketLossDist(QoSmeasure):
-    """
+    '''
     Packet Loss Distribution: loss rate distribution.
 
     * Type: `bar`.
     * Units: `Packet Loss Rate per time`.
-    """
+    '''
     def __init__(self, data):
         QoSmeasure.__init__(self, data)
         self.data['name'] = 'PLD'

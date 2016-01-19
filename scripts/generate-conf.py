@@ -67,13 +67,13 @@ for i in range(0, selection):
     file = 'test-' + str(i) + '.conf'
     print 'Generating file "' + file + '"...'
     f = open(file, 'wb')
-    f.write("[client]\n")
+    f.write('[client]\n')
     for j in range(0, 11):
         if not menu[j][0]:
             value = raw_input('Value for "' + menu[j][2] + '": ')
         else:
             value = menu[j][3]
-        line = menu[j][2] + '=' + value + "\n"
+        line = menu[j][2] + '=' + value + '\n'
         f.write(line)
     f.close()
     print ''
