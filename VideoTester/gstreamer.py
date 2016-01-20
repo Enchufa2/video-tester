@@ -62,33 +62,31 @@ class RTSPClient:
 	'''
 	GStreamer RTSP client.
 	'''
-	def __init__(self, conf, video, port):
+	def __init__(self, path, codec, bitrate, framerate):
 		'''
 		**On init:** Some initialization code.
 
-		:param dictionary conf: Parsed configuration file.
-		:param string video: Path to the selected video.
-		:param integer port: RTSP server port.
+		:param string path: Path for the output files.
+		:param string codec: Selected codec.
+		:param integer bitrate: Selected bitrate.
+		:param integer framerate: Selected framerate.
 		'''
-		#: Dictionary of configuration options (see :attr:`VideoTester.core.VTClient.conf`).
-		self.conf = conf
-		#: Path to the selected video (see :attr:`VideoTester.core.VTClient.video`).
-		self.video = video
-		#: Video size: ``(width, height)``.
-		self.size = None
+		#: Path for the output files.
+		self.path = path
+		#: Selected codec.
+		self.codec = codec
+		#: Selected bitrate.
+		self.bitrate = bitrate
+		#: Selected framerate.
+		self.framerate = framerate
 		#: Dictionary of paths to the processed video files: ``{'original':[<compressed>, <yuv>], 'coded':[<compressed>, <yuv>], 'received':[<compressed>, <yuv>]}``.
 		self.files = {'original':[], 'coded':[], 'received':[]}
+		#: Video caps: ``(width, height, format)``.
+		self.caps = None
 		#: Gstreamer pipeline.
 		self.pipeline = None
 		#: Gstreamer loop.
 		self.loop = None
-		#: Selected video URL.
-		self.url = 'rtsp://%s:%s/%s.%s' % (
-			self.conf['ip'],
-			port,
-			self.conf['video'],
-			self.conf['codec']
-		)
 
 	def __events(self, bus, msg):
 		'''
@@ -123,31 +121,36 @@ class RTSPClient:
 		'''
 		Attach event handler, set state to *playing* and run the loop (see :attr:`loop`).
 		'''
-		self.pipeline.get_bus().add_watch(0, self.__events)
+		bus = self.pipeline.get_bus()
+		bus.add_signal_watch()
+		bus.connect('message', self.__events)
 		self.pipeline.set_state(Gst.State.PLAYING)
 		self.loop = GObject.MainLoop()
 		self.loop.run()
 		VTLOG.debug('GStreamer: Loop stopped')
 
-	def receiver(self):
+	def receive(self, url, proto):
 		'''
 		Connect to the RTSP server and receive the selected video (see :attr:`video`).
+
+		:param string url: RTSP server's URL to the selected video.
+		:param string proto: Transport protocol for the RTP transmission.
 		'''
 		VTLOG.info('Starting GStreamer receiver...')
 		self.pipeline = Gst.parse_launch('rtspsrc name=source ! tee name=t ! queue ! %s %s ! filesink name=sink1 t. ! queue ! decodebin ! videorate skip-to-first=True ! video/x-raw,framerate=%s/1 ! filesink name=sink2' % (
-			supported_codecs[self.conf['codec']]['rtpdepay'],
-			supported_codecs[self.conf['codec']]['add'],
-			self.conf['framerate']
+			supported_codecs[self.codec]['rtpdepay'],
+			supported_codecs[self.codec]['add'],
+			self.framerate
 		))
 		source = self.pipeline.get_by_name('source')
 		sink1 = self.pipeline.get_by_name('sink1')
 		sink2 = self.pipeline.get_by_name('sink2')
-		source.props.location = self.url
-		source.props.protocols = self.conf['protocol']
-		location = self.conf['tempdir'] + self.conf['num'] + '.' + self.conf['codec']
+		source.props.location = url
+		source.props.protocols = proto
+		location = self.path + '.' + self.codec
 		self.files['received'].append(location)
 		sink1.props.location = location
-		location = self.conf['tempdir'] + self.conf['num'] + '.yuv'
+		location = self.path + '.yuv'
 		self.files['received'].append(location)
 		sink2.props.location = location
 		pad = sink2.get_static_pad('sink')
@@ -155,62 +158,52 @@ class RTSPClient:
 		self.__play()
 		VTLOG.info('GStreamer receiver stopped')
 
-	def reference(self):
+	def makeReference(self, video):
 		'''
 		Make the reference videos.
 
-		:returns: Paths to video files (see :attr:`files`) and video size (see :attr:`size`).
-		:rtype: tuple
+		:param string video: Path to the selected video.
 		'''
 		VTLOG.info('Making reference...')
-		self.pipeline = Gst.parse_launch('filesrc name=source ! decodebin ! videorate ! video/x-raw,framerate=%s/1 ! filesink name=sink1' % self.conf['framerate'])
+		self.pipeline = Gst.parse_launch('filesrc name=source ! decodebin ! videorate ! video/x-raw,framerate=%s/1 ! filesink name=sink1' % self.framerate)
 		source = self.pipeline.get_by_name('source')
 		sink1 = self.pipeline.get_by_name('sink1')
-		location = self.video
-		self.files['original'].append(location)
-		source.props.location = location
-		location = self.conf['tempdir'] + self.conf['num'] + '_ref_original.yuv'
+		self.files['original'].append(video)
+		source.props.location = video
+		location = self.path + '_ref_original.yuv'
 		self.files['original'].append(location)
 		sink1.props.location = location
 		self.__play()
 		self.pipeline = Gst.parse_launch('filesrc name=source ! decodebin ! videorate ! video/x-raw,framerate=%s/1 ! %s bitrate=%s ! tee name=t ! queue %s ! filesink name=sink2 t. ! queue ! decodebin ! filesink name=sink3' % (
-			self.conf['framerate'],
-			supported_codecs[self.conf['codec']]['encoder'],
-			supported_codecs[self.conf['codec']]['bitrate_from_kbps'](self.conf['bitrate']),
-			supported_codecs[self.conf['codec']]['add']
+			self.framerate,
+			supported_codecs[self.codec]['encoder'],
+			supported_codecs[self.codec]['bitrate_from_kbps'](self.bitrate),
+			supported_codecs[self.codec]['add']
 		))
 		source = self.pipeline.get_by_name('source')
 		sink2 = self.pipeline.get_by_name('sink2')
 		sink3 = self.pipeline.get_by_name('sink3')
-		location = self.video
-		source.props.location = location
-		location = self.conf['tempdir'] + self.conf['num'] + '_ref.' + self.conf['codec']
+		source.props.location = video
+		location = self.path + '_ref.' + self.codec
 		self.files['coded'].append(location)
 		sink2.props.location = location
-		location = self.conf['tempdir'] + self.conf['num'] + '_ref.yuv'
+		location = self.path + '_ref.yuv'
 		self.files['coded'].append(location)
 		sink3.props.location = location
 		self.__play()
 		VTLOG.info('Reference made')
-		return self.files, self.size
 
 	def __notifyCaps(self, pad, args):
 		'''
-		Write caps to a file.
+		Retrieve width, height and format.
 
 		:param pad: Gstreamer pad object.
 		:param args: Other arguments.
 		'''
 		caps = pad.get_current_caps()
 		if caps:
-			caps = caps.to_string()
-			aux = caps.split(', ')
-			for x in aux:
-				if x.find('width') != -1:
-					width = int(x[11:len(x)])
-				elif x.find('height') != -1:
-					height = int(x[12:len(x)])
-			self.size = (width, height)
-			f = open(self.conf['tempdir'] + self.conf['num'] + '_caps.txt', 'wb')
-			f.write(caps)
-			f.close()
+			struct = caps.get_structure(0)
+			width = struct.get_int('width')[1]
+			height = struct.get_int('height')[1]
+			fmt = struct.get_string('format')
+			self.caps = (width, height, fmt)

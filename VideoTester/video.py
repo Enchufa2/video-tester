@@ -10,24 +10,27 @@ class YUVVideo:
     '''
     YUV parser.
     '''
-    def __init__(self, file, framesize, fmt='I420'):
+    def __init__(self, file, (width, height, fmt)):
         '''
         **On init:** Call the proper parser.
 
         :param string file: Path to the file.
-        :param tuple framesize: Frame size: ``(width, height)``.
+        :param integer width: Frame width.
+        :param integer height: Frame height.
         :param string format: YUV format.
 
         .. note::
             Supported formats: I420.
         '''
-        #: Frame size: ``(width, height)``.
-        self.framesize = framesize
+        #: Frame width.
+        self.width = width
+        #: Frame height.
+        self.height = height
         #: File descriptor.
         self.f = open(file, 'rb')
 
         if fmt == 'I420':
-            frame = self.framesize[0] * self.framesize[1]
+            frame = self.width * self.height
             self.yblock = frame
             self.uvblock = frame / 4
             self.chunk = self.yblock + 2 * self.uvblock
@@ -51,9 +54,9 @@ class YUVVideo:
             yu = self.yblock
             uv = self.yblock + self.uvblock
             return {
-                'Y' : np.frombuffer(data[0:yu], dtype=np.uint8).reshape(self.framesize[1], self.framesize[0]),
-                'U' : np.frombuffer(data[yu:uv], dtype=np.uint8).reshape(self.framesize[1]/2, self.framesize[0]/2),
-                'V' : np.frombuffer(data[uv:], dtype=np.uint8).reshape(self.framesize[1]/2, self.framesize[0]/2)
+                'Y' : np.frombuffer(data[0:yu], dtype=np.uint8).reshape(self.height, self.width),
+                'U' : np.frombuffer(data[yu:uv], dtype=np.uint8).reshape(self.height/2, self.width/2),
+                'V' : np.frombuffer(data[uv:], dtype=np.uint8).reshape(self.height/2, self.width/2)
             }
 
 class CodedVideo:

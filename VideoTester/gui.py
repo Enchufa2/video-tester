@@ -347,13 +347,14 @@ class VTframe(wx.Frame):
         wildcard = u'Pickle files (*.pkl)|*.pkl'
         dlg = wx.FileDialog(self, u'Open files', '', '', wildcard, wx.FD_MULTIPLE)
         if dlg.ShowModal() == wx.ID_OK:
-            self.main.results = []
+            results = []
             for filename in dlg.GetFilenames():
                 f = open(dlg.GetDirectory() + '/' + filename, 'rb')
-                self.main.results.append(pickle.load(f))
+                results.append(pickle.load(f))
                 f.close()
             dlg.Destroy()
-            self.__setResults()
+            self.__setResults(results)
+            self.tabs.SetSelection(2)
 
     def onRun(self, event):
         '''
@@ -368,9 +369,9 @@ class VTframe(wx.Frame):
         self.__setValues()
         ret = self.main.run()
         if ret:
-            self.path = self.main.conf['tempdir'] + self.main.conf['num']
-            self.__setResults()
-            self.__setVideos()
+            self.paths, self.caps, results = ret
+            self.__setResults(results)
+            self.video_tab.Show()
         self.conf_tab.Enable()
         wx.Window.Enable(self.vtmenubar)
         self.vtstatusbar.SetStatusText('Stopped')
@@ -384,23 +385,23 @@ class VTframe(wx.Frame):
             video1 = self.pipeline.get_by_name('video1')
             video2 = self.pipeline.get_by_name('video2')
             video3 = self.pipeline.get_by_name('video3')
-            video1.props.location = self.paths['original']
-            video2.props.location = self.paths['coded']
-            video3.props.location = self.paths['received']
+            video1.props.location = self.paths['original'][1]
+            video2.props.location = self.paths['coded'][1]
+            video3.props.location = self.paths['received'][1]
             parser1 = self.pipeline.get_by_name('parser1')
             parser2 = self.pipeline.get_by_name('parser2')
             parser3 = self.pipeline.get_by_name('parser3')
             mix = self.pipeline.get_by_name('mix')
             sink_2 = mix.get_child_by_name('sink_2')
             sink_3 = mix.get_child_by_name('sink_3')
-            sink_2.props.xpos = self.width * 2
-            sink_3.props.xpos = self.width
-            parser1.props.width = self.width
-            parser1.props.height = self.height
-            parser2.props.width = self.width
-            parser2.props.height = self.height
-            parser3.props.width = self.width
-            parser3.props.height = self.height
+            sink_2.props.xpos = self.caps[0] * 2
+            sink_3.props.xpos = self.caps[0]
+            parser1.props.width = self.caps[0]
+            parser1.props.height = self.caps[1]
+            parser2.props.width = self.caps[0]
+            parser2.props.height = self.caps[1]
+            parser3.props.width = self.caps[0]
+            parser3.props.height = self.caps[1]
             self.pipeline.set_state(Gst.State.PLAYING)
         else:
             self.player_button.SetLabel('Play')
@@ -445,12 +446,12 @@ class VTframe(wx.Frame):
                 vq.append(name)
         self.main.conf['vq'] = vq
 
-    def __setResults(self):
+    def __setResults(self, results):
         '''
         Plot measures and show *Results* tab.
         '''
         self.results_tab.removePages()
-        for measure in self.main.results:
+        for measure in results:
             axes = self.results_tab.add(measure['name']).gca()
             if measure['type'] == 'plot':
                 axes.plot(measure['axes'][0], measure['axes'][1], 'b')
@@ -480,25 +481,6 @@ class VTframe(wx.Frame):
                 axes.set_xlabel(measure['units'][0])
                 axes.set_ylabel(measure['units'][1])
         self.results_tab.Show()
-
-    def __setVideos(self):
-        '''
-        Configure and show *Video* tab.
-        '''
-        f = open(self.path + '_caps.txt', 'rb')
-        caps = f.read()
-        f.close()
-        caps = caps.split(', ')
-        for x in caps:
-            if x.find('width') != -1:
-                self.width = int(x[11:len(x)])
-            elif x.find('height') != -1:
-                self.height = int(x[12:len(x)])
-        self.paths = dict()
-        self.paths['original'] = self.path + '_ref_original.yuv'
-        self.paths['coded'] = self.path + '_ref.yuv'
-        self.paths['received'] = self.path + '.yuv'
-        self.video_tab.Show()
 
 class Plot(wx.Panel):
     '''

@@ -276,7 +276,7 @@ class Sniffer:
                 if not play:
                     play = self.__prepare(p)
                 #Packets from server, with TCP layer. Avoid ACK's. Avoid RTSP packets
-            elif play and (p[IP].src == self.ip) and p.haslayer(TCP) and (len(p) > 66) and (str(p).find('RTSP/1.0') == -1):
+                elif play and (p[IP].src == self.ip) and p.haslayer(TCP) and (len(p) > 66) and (str(p).find('RTSP/1.0') == -1):
                     if (p.sport == self.sport) and (p.dport == self.dport):
                         packetlist.append(p)
                         seqlist.append(p[TCP].seq)

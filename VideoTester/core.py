@@ -193,21 +193,17 @@ class VTClient(VTBase):
         self.conf['temp'] = os.path.abspath(self.conf['temp'])
         self.conf['bitrate'] = int(self.conf['bitrate'])
         self.conf['framerate'] = int(self.conf['framerate'])
-        #: Selected video.
-        self.video = '/'.join([self.path, dict(self.videos)[self.conf['video']]])
         if self.conf['codec'] not in supported_codecs.keys():
             raise Exception('Codec %s not supported' % self.conf['codec'])
         if self.conf['protocol'] not in supported_protocols:
             raise Exception('Protocol %s not supported' % self.conf['protocol'])
         if self.conf['iface'] not in netifaces:
             raise Exception('Interface %s not found' % self.conf['iface'])
-        #: Results from all measures.
-        self.results = []
 
-    def __set_tempdir(self):
-        self.conf['tempdir'] = '%s/%s_%s_%s_%s_%s/' % (self.conf['temp'], self.conf['video'], self.conf['codec'], self.conf['bitrate'], self.conf['framerate'], self.conf['protocol'])
+    def __get_tempdir(self):
+        tempdir = '%s/%s_%s_%s_%s_%s/' % (self.conf['temp'], self.conf['video'], self.conf['codec'], self.conf['bitrate'], self.conf['framerate'], self.conf['protocol'])
         try:
-            os.makedirs(self.conf['tempdir'])
+            os.makedirs(tempdir)
         except OSError:
             pass
         i , j = 0, True
@@ -217,11 +213,10 @@ class VTClient(VTBase):
             else:
                 num = str(i)
             i = i + 1
-            j = os.path.exists(self.conf['tempdir'] + num + '.yuv')
+            j = os.path.exists(tempdir + num + '.yuv')
         if j:
             raise Exception('The temp directory is full')
-        #: Numerical prefix for temporary files.
-        self.conf['num'] = num
+        return tempdir, num
 
     def run(self):
         '''
@@ -230,73 +225,87 @@ class VTClient(VTBase):
          * Receive video while sniffing packets.
          * Close connection.
          * Process data and extract information.
-         * Run meters.
+         * Run measures.
 
-        :returns: Whether the execution was successful.
-        :rtype: boolean
+        :returns: The video files received, the caps (width, height and format of the RAW video) and the measurement results
+        :rtype: list
         '''
         VTLOG.info('Client running!')
         try:
-            self.__set_tempdir()
+            tempdir, num = self.__get_tempdir()
             server = ServerProxy('http://%s:%s' % (self.conf['ip'], self.port))
             rtspport = server.run(self.conf['bitrate'], self.conf['framerate'])
         except Exception as e:
             VTLOG.error(e)
-            return False
+            return None
         VTLOG.info('Connected to XMLRPC Server at %s:%s' % (self.conf['ip'], self.port))
         VTLOG.info('Evaluating: %s, %s, %s kbps, %s fps, %s' % (self.conf['video'], self.conf['codec'], self.conf['bitrate'], self.conf['framerate'], self.conf['protocol']))
 
         sniffer = Sniffer(self.conf['iface'],
                           self.conf['ip'],
                           self.conf['protocol'],
-                          '%s%s.cap' % (self.conf['tempdir'], self.conf['num']))
-        rtspclient = RTSPClient(self.conf, self.video, rtspport)
+                          '%s%s.cap' % (tempdir, num))
+        rtspclient = RTSPClient(
+            tempdir + num,
+            self.conf['codec'],
+            self.conf['bitrate'],
+            self.conf['framerate']
+        )
+        url = 'rtsp://%s:%s/%s.%s' % (
+			self.conf['ip'],
+			rtspport,
+			self.conf['video'],
+			self.conf['codec']
+		)
         child = Process(target=sniffer.run)
         try:
             child.start()
             VTLOG.info('PID: %s | Sniffer started' % child.pid)
             sniffer.ping()
-            rtspclient.receiver()
+            rtspclient.receive(url, self.conf['protocol'])
         except KeyboardInterrupt:
             VTLOG.warning('Keyboard interrupt!')
             server.stop(self.conf['bitrate'], self.conf['framerate'])
             child.terminate()
             child.join()
             VTLOG.info('PID: %s | Sniffer stopped' % child.pid)
-            return False
+            return None
         server.stop(self.conf['bitrate'], self.conf['framerate'])
         child.terminate()
         child.join()
         VTLOG.info('PID: %s | Sniffer stopped' % child.pid)
 
-        videodata, size = rtspclient.reference()
+        video = '/'.join([self.path, dict(self.videos)[self.conf['video']]])
+        rtspclient.makeReference(video)
         conf = {
             'codec': self.conf['codec'],
             'bitrate': self.conf['bitrate'],
             'framerate': self.conf['framerate'],
-            'size': size
+            'caps': rtspclient.caps
         }
         packetdata = sniffer.parsePkts()
-        codecdata, rawdata = self.__parseVideo(videodata, size, self.conf['codec'])
+        codecdata, rawdata = self.__parseVideo(
+            rtspclient.files, rtspclient.caps, self.conf['codec'])
 
-        self.results = []
-        self.results.extend(QoSmeter(self.conf['qos'], packetdata).run())
-        self.results.extend(BSmeter(self.conf['bs'], codecdata).run())
-        self.results.extend(VQmeter(self.conf['vq'], (conf, rawdata, codecdata, packetdata)).run())
+        results = []
+        results.extend(QoSmeter(self.conf['qos'], packetdata).run())
+        results.extend(BSmeter(self.conf['bs'], codecdata).run())
+        results.extend(VQmeter(self.conf['vq'], (conf, rawdata, codecdata, packetdata)).run())
 
         VTLOG.info('Saving measures...')
-        for measure in self.results:
-            f = open(self.conf['tempdir'] + self.conf['num'] + '_' + measure['name'] + '.pkl', 'wb')
+        for measure in results:
+            f = open(tempdir + num + '_' + measure['name'] + '.pkl', 'wb')
             pickle.dump(measure, f)
             f.close()
         VTLOG.info('Client stopped!')
-        return True
 
-    def __parseVideo(self, videodata, size, codec):
+        return rtspclient.files, rtspclient.caps, results
+
+    def __parseVideo(self, videofiles, caps, codec):
         '''
         Parse raw and coded videos.
 
-        :param videodata: (see :attr:`VideoTester.gstreamer.RTSPClient.files`)
+        :param videofiles: (see :attr:`VideoTester.gstreamer.RTSPClient.files`)
 
         :returns: Coded video data object (see :class:`VideoTester.video.YUVVideo`) and raw video data object (see :class:`VideoTester.video.CodedVideo`).
         :rtype: tuple
@@ -304,8 +313,8 @@ class VTClient(VTBase):
         VTLOG.info('Parsing videos...')
         codecdata = {}
         rawdata = {}
-        for x in videodata.keys():
+        for x in videofiles.keys():
             if x != 'original':
-                codecdata[x] = CodedVideo(videodata[x][0], codec)
-            rawdata[x] = YUVVideo(videodata[x][1], size)
+                codecdata[x] = CodedVideo(videofiles[x][0], codec)
+            rawdata[x] = YUVVideo(videofiles[x][1], caps)
         return codecdata, rawdata
