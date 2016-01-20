@@ -35,9 +35,9 @@ __all__.extend(['supported_protocols', 'supported_codecs'])
 supported_protocols = ['udp', 'tcp', 'udp-mcast']
 supported_codecs = {
     'h263': {
-        'encoder': 'avenc_h263p',
-        'rtppay': 'rtph263ppay',
-        'rtpdepay': 'rtph263pdepay',
+        'encoder': 'avenc_h263',
+        'rtppay': 'rtph263pay',
+        'rtpdepay': 'rtph263depay',
         'bitrate_from_kbps': lambda x: x*1000,
         'add': ''
     },

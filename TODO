@@ -1,6 +1,5 @@
 Short-term:
 * Retrieve session information (negotiated video stream ports, etc.) from GStreamer
-* gstreamer: fix h263 error or drop support
 * video: fix h264 and theora readers
 * Check for compatibility issues with other libraries
 * Set log level via command-line

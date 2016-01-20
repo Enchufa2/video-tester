@@ -8,6 +8,9 @@ import time
 from gi.repository import Gst, GstRtspServer, GObject
 from . import VTLOG, supported_codecs
 
+#Gst.debug_set_active(True)
+#Gst.debug_set_default_threshold(3)
+
 class RTSPServer:
 	'''
 	GStreamer RTSP server.
