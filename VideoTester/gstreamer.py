@@ -70,9 +70,9 @@ class RTSPClient:
 		:param string video: Path to the selected video.
 		:param integer port: RTSP server port.
 		'''
-		#: Dictionary of configuration options (see :attr:`VideoTester.core.Client.conf`).
+		#: Dictionary of configuration options (see :attr:`VideoTester.core.VTClient.conf`).
 		self.conf = conf
-		#: Path to the selected video (see :attr:`VideoTester.core.Client.video`).
+		#: Path to the selected video (see :attr:`VideoTester.core.VTClient.video`).
 		self.video = video
 		#: Video size: ``(width, height)``.
 		self.size = None

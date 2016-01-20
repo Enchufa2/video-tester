@@ -159,7 +159,7 @@ class VTServer(VTBase, SimpleXMLRPCServer):
 
     def __freePort(self):
         '''
-        Find an unused port starting from :attr:`VideoTester.core.Server.port`.
+        Find an unused port starting from :attr:`VideoTester.core.VTServer.port`.
 
         :returns: An unused port number.
         :rtype: integer
@@ -277,7 +277,7 @@ class VTClient(VTBase):
             'size': size
         }
         packetdata = sniffer.parsePkts()
-        codecdata, rawdata = self.__loadData(videodata, size, self.conf['codec'])
+        codecdata, rawdata = self.__parseVideo(videodata, size, self.conf['codec'])
 
         self.results = []
         self.results.extend(QoSmeter(self.conf['qos'], packetdata).run())
@@ -292,21 +292,20 @@ class VTClient(VTBase):
         VTLOG.info('Client stopped!')
         return True
 
-    def __loadData(self, videodata, size, codec):
+    def __parseVideo(self, videodata, size, codec):
         '''
-        Load raw video data and coded video data.
+        Parse raw and coded videos.
 
-        :param videodata: (see :attr:`VideoTester.gstreamer.RTSPclient.files`)
+        :param videodata: (see :attr:`VideoTester.gstreamer.RTSPClient.files`)
 
         :returns: Coded video data object (see :class:`VideoTester.video.YUVVideo`) and raw video data object (see :class:`VideoTester.video.CodedVideo`).
         :rtype: tuple
         '''
-        VTLOG.info('Loading videos...')
+        VTLOG.info('Parsing videos...')
         codecdata = {}
         rawdata = {}
         for x in videodata.keys():
             if x != 'original':
                 codecdata[x] = CodedVideo(videodata[x][0], codec)
             rawdata[x] = YUVVideo(videodata[x][1], size)
-            VTLOG.info('+++')
         return codecdata, rawdata
