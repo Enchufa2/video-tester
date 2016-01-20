@@ -10,24 +10,38 @@ from VideoTester import VTLOG
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
-            formatter_class=argparse.RawDescriptionHelpFormatter,
-            description=textwrap.dedent('''\
-                VideoTester 0.1
-                ===============
-                  Video Quality Assessment Tool
-                  Visit https://github.com/Enchufa2/video-tester for support and updates
+        formatter_class=argparse.RawTextHelpFormatter,
+        description=textwrap.dedent('''\
+            VideoTester 0.2
+            ===============
+              Video Quality Assessment Tool
+              Visit https://github.com/Enchufa2/video-tester for support and updates
 
-                  Copyright 2011-2016 Iñaki Úcar <i.ucar86@gmail.com>
-                  This program is published under a GPLv3 license
-                '''))
-    parser.add_argument('-c', '--conf', dest='conf', type=str, default='VT.conf',
-                        help='configuration file')
+              Copyright 2011-2016 Iñaki Úcar <i.ucar86@gmail.com>
+              This program is published under a GPLv3 license
+            '''))
+    parser.add_argument(
+        '-c', '--conf', dest='conf', type=str, default='VT.conf',
+        help='configuration file (default: ./VT.conf)')
+    parser.add_argument(
+        '-v', '--verbose', dest='v', type=int, default=20,
+        help=textwrap.dedent('''\
+            verbosity level (default: 20)
+              CRITICAL = 50
+              ERROR    = 40
+              WARNING  = 30
+              INFO     = 20  <--
+              DEBUG    = 10
+              NOTSET   =  0'''))
     subparsers = parser.add_subparsers(title='subcommands', dest='mode')
     parser_server = subparsers.add_parser('server', help='launch VT as server')
     parser_client = subparsers.add_parser('client', help='launch VT as client')
-    parser_client.add_argument('-g', '--gui', dest='gui', action='store_true',
-                               help='launch graphical interface')
+    parser_client.add_argument(
+        '-g', '--gui', dest='gui', action='store_true',
+        help='launch graphical interface')
     args = parser.parse_args()
+
+    VTLOG.setLevel(args.v)
 
     if args.mode == 'server':
         from VideoTester import VTServer

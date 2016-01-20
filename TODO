@@ -2,7 +2,6 @@ Short-term:
 * Retrieve session information (negotiated video stream ports, etc.) from GStreamer
 * video: fix h264 and theora readers
 * Check for compatibility issues with other libraries
-* Set log level via command-line
 * Fix scripts generate-conf.py and series.py
 * Fix setup.py
 * Update dependencies
