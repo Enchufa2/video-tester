@@ -22,7 +22,7 @@ formatter = logging.Formatter('[%(asctime)s] %(levelname)s : %(message)s')
 ch = logging.StreamHandler()
 ch.setFormatter(formatter)
 VTLOG.addHandler(ch)
-VTLOG.setLevel(logging.INFO)
+VTLOG.setLevel(logging.ERROR)
 logging.getLogger('scapy.runtime').setLevel(logging.ERROR)
 del(logging, formatter, ch)
 
