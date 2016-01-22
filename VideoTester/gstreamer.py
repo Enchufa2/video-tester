@@ -144,7 +144,7 @@ class RTSPClient:
 			struct = caps.get_structure(0)
 			self.caps['ptype'] = struct.get_int('payload')[1]
 			self.caps['clock-rate'] = struct.get_int('clock-rate')[1]
-			self.caps['seq-base'] = struct.get_int('seqnum-base')[1]
+			self.caps['seq-base'] = struct.get_uint('seqnum-base')[1]
 
 	def __capsYUV(self, pad, args):
 		caps = pad.get_current_caps()
