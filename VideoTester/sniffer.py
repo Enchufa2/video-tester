@@ -23,7 +23,7 @@ class Sniffer:
     '''
     Network sniffer and packet parser.
     '''
-    def __init__(self, iface, ip, proto, cap):
+    def __init__(self, iface, ip, cap):
         '''
         **On init:** Some initialization code.
 
@@ -36,14 +36,8 @@ class Sniffer:
         self.iface = iface
         #: Server IP.
         self.ip = ip
-        #: Protocol selected.
-        self.proto = proto
         #: Capture file.
-        self.cap = cap
-        #: SDP clock attribute.
-        self.clock = None
-        #: RTP payload type.
-        self.ptype = None
+        self.captureFile = cap
         #: RTP source port (server).
         self.sport = None
         #: RTP destination port (client).
@@ -59,10 +53,10 @@ class Sniffer:
         #: List of RTP timestamps.
         self.timestamps = []
         #: Ping information.
-        self.__ping = {0:{}, 1:{}, 2:{}, 3:{}}
+        self.ping = {0:{}, 1:{}, 2:{}, 3:{}}
         self.__add = 0
 
-    def ping(self):
+    def doPing(self):
         '''
         Ping to server (4 echoes).
         '''
@@ -80,53 +74,43 @@ class Sniffer:
             p = pcap.pcapObject()
             p.open_live(self.iface, 65536, 1, 0)
             p.setfilter('host ' + self.ip, 0, 0)
-            p.dump_open(self.cap)
+            p.dump_open(self.captureFile)
             while p.dispatch(-1, None) >= 0:
                 pass
         except:
             pass
 
-    def parsePkts(self):
+    def parsePkts(self, proto, caps):
         '''
         Parse packets and extract :attr:`lengths`, :attr:`times`, :attr:`sequences`, :attr:`timestamps` and :attr:`ping`.
+
+        :param dictionary caps: Caps recolected from the GStreamer pipeline (see :attr:`VideoTester.gstreamer.RTSPClient.caps`).
 
         :returns: :attr:`lengths`, :attr:`times`, :attr:`sequences`, :attr:`timestamps` and :attr:`ping`.
         :rtype: tuple
         '''
         VTLOG.info('Starting packet parser...')
-        self.cap = rdpcap(self.cap)
-        if self.proto == 'tcp':
-            self.__parseTCP()
+        self.captureFile = rdpcap(self.captureFile)
+        if proto == 'tcp':
+            self.__parseTCP(caps)
         else:
-            self.__parseUDP()
-        self.__normalize()
+            self.__parseUDP(caps)
+        self.__normalize(caps)
         a = str(self.sequences[-1]-len(self.sequences)+1)
         b = str(len(self.sequences))
         VTLOG.debug(b + ' RTP packets received, ' + a + ' losses')
         VTLOG.info('Packet parser stopped')
-        return self.lengths, self.times, self.sequences, self.timestamps, self.__ping
+        return self.lengths, self.times, self.sequences, self.timestamps, self.ping
 
     def __prepare(self, p):
         '''
-        Pre-process capture file. This method parses RTSP information and extracts :attr:`ping`, :attr:`ptype` and :attr:`clock`.
+        Pre-process capture file. This method parses RTSP information and extracts :attr:`ping`.
 
         :returns: True when a RTSP *PLAY* packet is found.
         :rtype: boolean
         '''
         if p.haslayer(ICMP):
-            self.__ping[p[ICMP].seq][p[ICMP].type] = p.time
-        elif str(p).find('Content-Type: application/sdp') != -1:
-            lines = str(p[TCP].payload).splitlines()
-            for line in lines:
-                if line.find('m=video') != -1:
-                    fields = line.split(' ')
-                    self.ptype = int(fields[-1])
-                    VTLOG.debug('Payload type found! Value: ' + str(self.ptype))
-            for line in lines:
-                if line.find('rtpmap:' + str(self.ptype)) != -1:
-                    fields = line.split('/')
-                    self.clock = int(fields[-1])
-                    VTLOG.debug('Clock rate found! Value: ' + str(self.clock))
+            self.ping[p[ICMP].seq][p[ICMP].type] = p.time
         elif (str(p).find('Transport: RTP') != -1) and (str(p).find('mode="PLAY"') != -1):
             if str(p).find('RTP/AVP/TCP') != -1:
                 self.sport = int(p.sport)
@@ -155,7 +139,7 @@ class Sniffer:
             play = False
         return play
 
-    def __parseUDP(self):
+    def __parseUDP(self, caps):
         '''
         Parse RTP over UDP session.
         '''
@@ -167,7 +151,7 @@ class Sniffer:
             '''
             ptype = ord(str(p[UDP].payload)[1]) & 0x7F #Delete RTP marker
             p[UDP].decode_payload_as(RTP)
-            if ptype == self.ptype:
+            if ptype == caps['ptype']:
                 #Avoid duplicates while running on loopback interface
                 if p[RTP].sequence not in self.sequences:
                     self.lengths.append(p.len)
@@ -179,7 +163,7 @@ class Sniffer:
                         self.__add += 65536
 
         play = False
-        for p in self.cap:
+        for p in self.captureFile:
             if p.haslayer(IP):
                 if (str(p).find('PAUSE') != -1) and play:
                     VTLOG.debug('PAUSE found!')
@@ -193,7 +177,7 @@ class Sniffer:
             multiSort(self.sequences, self.times, self.timestamps)
         VTLOG.debug('Sequence list sorted')
 
-    def __parseTCP(self):
+    def __parseTCP(self, caps):
         '''
         Parse RTP over TCP session.
         '''
@@ -211,7 +195,7 @@ class Sniffer:
             if loss == -1:
                 #No loss: look inside then
                 ptype = ord(str(p[RTSPi].payload)[1]) & 0x7F #Delete RTP marker
-                if ptype == self.ptype:
+                if ptype == caps['ptype']:
                     aux = str(p).split('ENDOFPACKET')
                     p[RTSPi].decode_payload_as(RTP)
                     #Avoid duplicates while running on loopback interface
@@ -230,7 +214,7 @@ class Sniffer:
             p = RTSPi(str(b)[a:len(b)])
             ptype = ord(str(p[RTSPi].payload)[1]) & 0x7F
             #Let's find the next RTSP packet
-            while not fin and not ((p[RTSPi].magic == 0x24) and (p[RTSPi].channel == 0x00) and (ptype == self.ptype)):
+            while not fin and not ((p[RTSPi].magic == 0x24) and (p[RTSPi].channel == 0x00) and (ptype == caps['ptype'])):
                 stream = str(p)
                 if stream.find('PACKETLOSS') == 0:
                     #Avoid PACKETLOSS
@@ -268,7 +252,7 @@ class Sniffer:
         packetlist = []
         seqlist = []
         lenlist = []
-        for p in self.cap:
+        for p in self.captureFile:
             if p.haslayer(IP):
                 if (str(p).find('PAUSE') != -1) and play:
                     VTLOG.debug('PAUSE found!')
@@ -303,14 +287,13 @@ class Sniffer:
         stream = RTSPi(stream)
         extract(stream)
 
-    def __normalize(self):
+    def __normalize(self, caps):
         '''
         Normalize :attr:`sequences`, :attr:`times` and :attr:`timestamps`.
         '''
-        seq = self.sequences[0]
         time = self.times[0]
         timest = float(self.timestamps[0])
         for i in range(0, len(self.sequences)):
-            self.sequences[i] = self.sequences[i] - seq
+            self.sequences[i] = self.sequences[i] - caps['seq-base']
             self.times[i] = self.times[i] - time
-            self.timestamps[i] = (float(self.timestamps[i]) - timest) / self.clock
+            self.timestamps[i] = (float(self.timestamps[i]) - timest) / caps['clock-rate']

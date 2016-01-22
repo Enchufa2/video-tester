@@ -227,7 +227,7 @@ class VTClient(VTBase):
          * Process data and extract information.
          * Run measures.
 
-        :returns: The video files received, the caps (width, height and format of the RAW video) and the measurement results
+        :returns: A dictionary of video files received (see :attr:`VideoTester.gstreamer.RTSPClient.files`), a dictionary of caps (see :attr:`VideoTester.gstreamer.RTSPClient.caps`) and a list of results
         :rtype: list
         '''
         VTLOG.info('Client running!')
@@ -243,7 +243,6 @@ class VTClient(VTBase):
 
         sniffer = Sniffer(self.conf['iface'],
                           self.conf['ip'],
-                          self.conf['protocol'],
                           '%s%s.cap' % (tempdir, num))
         rtspclient = RTSPClient(
             tempdir + num,
@@ -261,7 +260,7 @@ class VTClient(VTBase):
         try:
             child.start()
             VTLOG.info('PID: %s | Sniffer started' % child.pid)
-            sniffer.ping()
+            sniffer.doPing()
             rtspclient.receive(url, self.conf['protocol'])
         except KeyboardInterrupt:
             VTLOG.warning('Keyboard interrupt!')
@@ -283,7 +282,7 @@ class VTClient(VTBase):
             'framerate': self.conf['framerate'],
             'caps': rtspclient.caps
         }
-        packetdata = sniffer.parsePkts()
+        packetdata = sniffer.parsePkts(self.conf['protocol'], rtspclient.caps)
         codecdata, rawdata = self.__parseVideo(
             rtspclient.files, rtspclient.caps, self.conf['codec'])
 
@@ -302,19 +301,13 @@ class VTClient(VTBase):
         return rtspclient.files, rtspclient.caps, results
 
     def __parseVideo(self, videofiles, caps, codec):
-        '''
-        Parse raw and coded videos.
-
-        :param videofiles: (see :attr:`VideoTester.gstreamer.RTSPClient.files`)
-
-        :returns: Coded video data object (see :class:`VideoTester.video.YUVVideo`) and raw video data object (see :class:`VideoTester.video.CodedVideo`).
-        :rtype: tuple
-        '''
         VTLOG.info('Parsing videos...')
         codecdata = {}
         rawdata = {}
         for x in videofiles.keys():
             if x != 'original':
                 codecdata[x] = CodedVideo(videofiles[x][0], codec)
-            rawdata[x] = YUVVideo(videofiles[x][1], caps)
+            rawdata[x] = YUVVideo(videofiles[x][1], (
+                caps['width'], caps['height'], caps['format']
+            ))
         return codecdata, rawdata

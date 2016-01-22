@@ -81,8 +81,11 @@ class RTSPClient:
 		self.framerate = framerate
 		#: Dictionary of paths to the processed video files: ``{'original':[<compressed>, <yuv>], 'coded':[<compressed>, <yuv>], 'received':[<compressed>, <yuv>]}``.
 		self.files = {'original':[], 'coded':[], 'received':[]}
-		#: Video caps: ``(width, height, format)``.
-		self.caps = None
+		#: Various caps recolected from the pipeline.
+		self.caps = {
+			'ptype': None, 'clock-rate': None, 'seq-base': None,	# RTP
+			'width': None, 'height': None, 'format': None			# YUV
+		}
 		#: Gstreamer pipeline.
 		self.pipeline = None
 		#: Gstreamer loop.
@@ -137,12 +140,13 @@ class RTSPClient:
 		:param string proto: Transport protocol for the RTP transmission.
 		'''
 		VTLOG.info('Starting GStreamer receiver...')
-		self.pipeline = Gst.parse_launch('rtspsrc name=source ! tee name=t ! queue ! %s %s ! filesink name=sink1 t. ! queue ! decodebin ! videorate skip-to-first=True ! video/x-raw,framerate=%s/1 ! filesink name=sink2' % (
+		self.pipeline = Gst.parse_launch('rtspsrc name=source ! tee name=t ! queue ! %s name=depay %s ! filesink name=sink1 t. ! queue ! decodebin ! videorate skip-to-first=True ! video/x-raw,framerate=%s/1 ! filesink name=sink2' % (
 			supported_codecs[self.codec]['rtpdepay'],
 			supported_codecs[self.codec]['add'],
 			self.framerate
 		))
 		source = self.pipeline.get_by_name('source')
+		depay = self.pipeline.get_by_name('depay')
 		sink1 = self.pipeline.get_by_name('sink1')
 		sink2 = self.pipeline.get_by_name('sink2')
 		source.props.location = url
@@ -153,8 +157,8 @@ class RTSPClient:
 		location = self.path + '.yuv'
 		self.files['received'].append(location)
 		sink2.props.location = location
-		pad = sink2.get_static_pad('sink')
-		pad.connect('notify::caps', self.__notifyCaps)
+		depay.get_static_pad('sink').connect('notify::caps', self.__capsRTP)
+		sink2.get_static_pad('sink').connect('notify::caps', self.__capsYUV)
 		self.__play()
 		VTLOG.info('GStreamer receiver stopped')
 
@@ -193,7 +197,21 @@ class RTSPClient:
 		self.__play()
 		VTLOG.info('Reference made')
 
-	def __notifyCaps(self, pad, args):
+	def __capsRTP(self, pad, args):
+		'''
+		Retrieve payload type, clock rate and sequence base.
+
+		:param pad: Gstreamer pad object.
+		:param args: Other arguments.
+		'''
+		caps = pad.get_current_caps()
+		if caps:
+			struct = caps.get_structure(0)
+			self.caps['ptype'] = struct.get_int('payload')[1]
+			self.caps['clock-rate'] = struct.get_int('clock-rate')[1]
+			self.caps['seq-base'] = struct.get_int('seqnum-base')[1]
+
+	def __capsYUV(self, pad, args):
 		'''
 		Retrieve width, height and format.
 
@@ -203,7 +221,6 @@ class RTSPClient:
 		caps = pad.get_current_caps()
 		if caps:
 			struct = caps.get_structure(0)
-			width = struct.get_int('width')[1]
-			height = struct.get_int('height')[1]
-			fmt = struct.get_string('format')
-			self.caps = (width, height, fmt)
+			self.caps['width'] = struct.get_int('width')[1]
+			self.caps['height'] = struct.get_int('height')[1]
+			self.caps['format'] = struct.get_string('format')

@@ -395,14 +395,14 @@ class VTframe(wx.Frame):
             mix = self.pipeline.get_by_name('mix')
             sink_2 = mix.get_child_by_name('sink_2')
             sink_3 = mix.get_child_by_name('sink_3')
-            sink_2.props.xpos = self.caps[0] * 2
-            sink_3.props.xpos = self.caps[0]
-            parser1.props.width = self.caps[0]
-            parser1.props.height = self.caps[1]
-            parser2.props.width = self.caps[0]
-            parser2.props.height = self.caps[1]
-            parser3.props.width = self.caps[0]
-            parser3.props.height = self.caps[1]
+            sink_2.props.xpos = self.caps['width'] * 2
+            sink_3.props.xpos = self.caps['width']
+            parser1.props.width = self.caps['width']
+            parser1.props.height = self.caps['height']
+            parser2.props.width = self.caps['width']
+            parser2.props.height = self.caps['height']
+            parser3.props.width = self.caps['width']
+            parser3.props.height = self.caps['height']
             self.pipeline.set_state(Gst.State.PLAYING)
         else:
             self.player_button.SetLabel('Play')
