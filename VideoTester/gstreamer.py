@@ -5,6 +5,7 @@
 ## This program is published under a GPLv3 license
 
 import time
+from urlparse import urlparse
 from gi.repository import Gst, GstRtspServer, GObject
 from . import VTLOG, supported_codecs
 
@@ -83,6 +84,7 @@ class RTSPClient:
 		self.files = {'original':[], 'coded':[], 'received':[]}
 		#: Various caps recolected from the pipeline.
 		self.caps = {
+			'rtspserver-port': None, 'udpsrc-port': None,			# TCP/UDP
 			'ptype': None, 'clock-rate': None, 'seq-base': None,	# RTP
 			'width': None, 'height': None, 'format': None			# YUV
 		}
@@ -132,12 +134,33 @@ class RTSPClient:
 		self.loop.run()
 		VTLOG.debug('GStreamer: Loop stopped')
 
+	def __capsUDP(self, elem, new_elem):
+		if 'udpsrc' in new_elem.name:
+			elem.disconnect(self.__shdlr)
+			self.caps['udpsrc-port'], = new_elem.get_properties('port')
+
+	def __capsRTP(self, pad, args):
+		caps = pad.get_current_caps()
+		if caps:
+			struct = caps.get_structure(0)
+			self.caps['ptype'] = struct.get_int('payload')[1]
+			self.caps['clock-rate'] = struct.get_int('clock-rate')[1]
+			self.caps['seq-base'] = struct.get_int('seqnum-base')[1]
+
+	def __capsYUV(self, pad, args):
+		caps = pad.get_current_caps()
+		if caps:
+			struct = caps.get_structure(0)
+			self.caps['width'] = struct.get_int('width')[1]
+			self.caps['height'] = struct.get_int('height')[1]
+			self.caps['format'] = struct.get_string('format')
+
 	def receive(self, url, proto):
 		'''
 		Connect to the RTSP server and receive the selected video (see :attr:`video`).
 
-		:param string url: RTSP server's URL to the selected video.
-		:param string proto: Transport protocol for the RTP transmission.
+		:param string url: RTSP server URL.
+		:param integer proto: Transport protocol for the RTP transmission.
 		'''
 		VTLOG.info('Starting GStreamer receiver...')
 		self.pipeline = Gst.parse_launch('rtspsrc name=source ! tee name=t ! queue ! %s name=depay %s ! filesink name=sink1 t. ! queue ! decodebin ! videorate skip-to-first=True ! video/x-raw,framerate=%s/1 ! filesink name=sink2' % (
@@ -157,8 +180,16 @@ class RTSPClient:
 		location = self.path + '.yuv'
 		self.files['received'].append(location)
 		sink2.props.location = location
+
+		port = urlparse(url).port
+		if port:
+			self.caps['rtspserver-port'] = port
+		else:
+			self.caps['rtspserver-port'] = 554
+		self.__shdlr = source.connect('element-added', self.__capsUDP)
 		depay.get_static_pad('sink').connect('notify::caps', self.__capsRTP)
 		sink2.get_static_pad('sink').connect('notify::caps', self.__capsYUV)
+
 		self.__play()
 		VTLOG.info('GStreamer receiver stopped')
 
@@ -196,31 +227,3 @@ class RTSPClient:
 		sink3.props.location = location
 		self.__play()
 		VTLOG.info('Reference made')
-
-	def __capsRTP(self, pad, args):
-		'''
-		Retrieve payload type, clock rate and sequence base.
-
-		:param pad: Gstreamer pad object.
-		:param args: Other arguments.
-		'''
-		caps = pad.get_current_caps()
-		if caps:
-			struct = caps.get_structure(0)
-			self.caps['ptype'] = struct.get_int('payload')[1]
-			self.caps['clock-rate'] = struct.get_int('clock-rate')[1]
-			self.caps['seq-base'] = struct.get_int('seqnum-base')[1]
-
-	def __capsYUV(self, pad, args):
-		'''
-		Retrieve width, height and format.
-
-		:param pad: Gstreamer pad object.
-		:param args: Other arguments.
-		'''
-		caps = pad.get_current_caps()
-		if caps:
-			struct = caps.get_structure(0)
-			self.caps['width'] = struct.get_int('width')[1]
-			self.caps['height'] = struct.get_int('height')[1]
-			self.caps['format'] = struct.get_string('format')

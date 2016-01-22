@@ -38,12 +38,6 @@ class Sniffer:
         self.ip = ip
         #: Capture file.
         self.captureFile = cap
-        #: RTP source port (server).
-        self.sport = None
-        #: RTP destination port (client).
-        self.dport = None
-        #: RTSP PLAY packet found (boolean).
-        self.play = False
         #: List of packet lengths.
         self.lengths = []
         #: List of packet arrival times.
@@ -109,34 +103,12 @@ class Sniffer:
         :returns: True when a RTSP *PLAY* packet is found.
         :rtype: boolean
         '''
+        play = False
         if p.haslayer(ICMP):
             self.ping[p[ICMP].seq][p[ICMP].type] = p.time
-        elif (str(p).find('Transport: RTP') != -1) and (str(p).find('mode="PLAY"') != -1):
-            if str(p).find('RTP/AVP/TCP') != -1:
-                self.sport = int(p.sport)
-                VTLOG.debug('Source port found! Value: ' + str(self.sport))
-                self.dport = int(p.dport)
-                VTLOG.debug('Destination port found! Value: ' + str(self.dport))
-            else:
-                fields = str(p[TCP].payload).split(';')
-                for field in fields:
-                    if field.find('server_port=') != -1:
-                        self.sport = int(field[12:field.index('-')])
-                        VTLOG.debug('Source port found! Value: ' + str(self.sport))
-                    elif field.find('client_port=') != -1:
-                        self.dport = int(field[12:field.index('-')])
-                        VTLOG.debug('Destination port found! Value: ' + str(self.dport))
-                    elif field.find('port=') != -1:
-                        self.sport = int(field[5:field.index('-')])
-                        self.dport = self.sport
-                        VTLOG.debug('Source/destination port found! Value: ' + str(self.sport))
         elif (str(p).find('PLAY') != -1) and (str(p).find('Public:') == -1):
-            self.play = True
-            VTLOG.debug('PLAY found!')
-        if self.play and self.sport and self.dport:
             play = True
-        else:
-            play = False
+            VTLOG.debug('PLAY found!')
         return play
 
     def __parseUDP(self, caps):
@@ -171,7 +143,7 @@ class Sniffer:
                 if not play:
                     play = self.__prepare(p)
                 elif play and (p[IP].src == self.ip) and (p.haslayer(UDP)) and (str(p).find('GStreamer') == -1):
-                    if (p.sport == self.sport) and (p.dport == self.dport):
+                    if p.dport == caps['udpsrc-port']:
                         extract(p)
         self.sequences, self.times, self.timestamps = \
             multiSort(self.sequences, self.times, self.timestamps)
@@ -261,7 +233,7 @@ class Sniffer:
                     play = self.__prepare(p)
                 #Packets from server, with TCP layer. Avoid ACK's. Avoid RTSP packets
                 elif play and (p[IP].src == self.ip) and p.haslayer(TCP) and (len(p) > 66) and (str(p).find('RTSP/1.0') == -1):
-                    if (p.sport == self.sport) and (p.dport == self.dport):
+                    if p.sport == caps['rtspserver-port']:
                         packetlist.append(p)
                         seqlist.append(p[TCP].seq)
                         lenlist.append(len(p[TCP].payload))
