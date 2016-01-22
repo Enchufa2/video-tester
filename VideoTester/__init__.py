@@ -5,7 +5,6 @@
 ## This program is published under a GPLv3 license
 
 version = '1.0.0'
-release = True
 
 __all__ = []
 
