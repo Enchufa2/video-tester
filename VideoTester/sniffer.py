@@ -5,6 +5,7 @@
 ## This program is published under a GPLv3 license
 
 import os, time, pcap
+from collections import defaultdict
 from scapy.all import Packet, ByteField, ShortField, \
     IP, ICMP, TCP, UDP, RTP, send, rdpcap
 from . import VTLOG
@@ -46,19 +47,18 @@ class Sniffer:
         self.sequences = []
         #: List of RTP timestamps.
         self.timestamps = []
-        #: Ping information.
-        self.ping = {0:{}, 1:{}, 2:{}, 3:{}}
+        #: Round-trip time information (dictionary of request-response pairs).
+        self.rtt = defaultdict(dict)
         self.__add = 0
 
     def doPing(self):
         '''
         Ping to server (4 echoes).
         '''
-        time.sleep(0.5)
         VTLOG.info('Pinging...')
         for i in range(0, 4):
             send(IP(dst=self.ip)/ICMP(seq=i), verbose=False)
-            time.sleep(0.5)
+            time.sleep(0.25)
 
     def run(self):
         '''
@@ -94,7 +94,7 @@ class Sniffer:
         b = str(len(self.sequences))
         VTLOG.debug(b + ' RTP packets received, ' + a + ' losses')
         VTLOG.info('Packet parser stopped')
-        return self.lengths, self.times, self.sequences, self.timestamps, self.ping
+        return self.lengths, self.times, self.sequences, self.timestamps, self.rtt
 
     def __prepare(self, p):
         '''
@@ -105,7 +105,7 @@ class Sniffer:
         '''
         play = False
         if p.haslayer(ICMP):
-            self.ping[p[ICMP].seq][p[ICMP].type] = p.time
+            self.rtt[p[ICMP].seq][p[ICMP].type] = p.time
         elif (str(p).find('PLAY') != -1) and (str(p).find('Public:') == -1):
             play = True
             VTLOG.debug('PLAY found!')

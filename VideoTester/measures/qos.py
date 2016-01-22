@@ -41,7 +41,7 @@ class QoSmeasure(Measure):
     '''
     QoS measure type.
     '''
-    def __init__(self, (lengths, times, sequences, timestamps, ping)):
+    def __init__(self, (lengths, times, sequences, timestamps, rtt)):
         '''
         **On init:** Register QoS parameters.
 
@@ -49,7 +49,7 @@ class QoSmeasure(Measure):
         :param list times: List of packet arrival times.
         :param list sequences: List of RTP sequence numbers.
         :param list timestamps: List of RTP timestamps.
-        :param dictionary ping: Ping information.
+        :param dictionary rtt: RTT information.
         '''
         Measure.__init__(self)
         #: List of packet lengths (see :attr:`VideoTester.sniffer.Sniffer.lengths`).
@@ -60,8 +60,8 @@ class QoSmeasure(Measure):
         self.sequences = sequences
         #: List of RTP timestamps (see :attr:`VideoTester.sniffer.Sniffer.timestamps`).
         self.timestamps = timestamps
-        #: Ping information (see :attr:`VideoTester.sniffer.Sniffer.ping`).
-        self.ping = ping
+        #: Round-trip time information (see :attr:`VideoTester.sniffer.Sniffer.rtt`).
+        self.rtt = rtt
 
 class Latency(QoSmeasure):
     '''
@@ -80,8 +80,8 @@ class Latency(QoSmeasure):
         sum = 0
         count = 0
         for i in range(0, 4):
-            if len(self.ping[i]) == 2:
-                sum = sum + (self.ping[i][0] - self.ping[i][8]) * 500
+            if len(self.rtt[i]) == 2:
+                sum = sum + (self.rtt[i][0] - self.rtt[i][8]) * 500
                 count = count + 1
         self.data['value'] = sum / count
         return self.data
