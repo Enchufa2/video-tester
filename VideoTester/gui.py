@@ -9,7 +9,8 @@ import matplotlib as mpl
 from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg as Canvas
 from matplotlib.backends.backend_wxagg import NavigationToolbar2Wx as Toolbar
 from gi.repository import Gst, GstVideo, GObject
-from . import VTLOG, VTClient, netifaces, supported_codecs, supported_protocols
+from . import version, VTLOG, VTClient, netifaces, \
+    supported_codecs, supported_protocols
 from .resources import getVTIcon, getVTBitmap
 
 class FuncLog(logging.Handler):
@@ -329,7 +330,7 @@ class VTframe(wx.Frame):
         info = wx.AboutDialogInfo()
         info.SetIcon(getVTIcon())
         info.SetName('Video Tester')
-        info.SetVersion('version 0.2')
+        info.SetVersion('version ' + version)
         info.SetDescription('Video Quality Assessment Tool')
         info.SetCopyright('(C) 2011-2016 Iñaki Úcar')
         info.SetWebSite('https://github.com/Enchufa2/video-tester')

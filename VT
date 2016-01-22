@@ -6,20 +6,20 @@
 ## This program is published under a GPLv3 license
 
 import sys, os, textwrap, argparse
-from VideoTester import VTLOG
+from VideoTester import VTLOG, version
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
         formatter_class=argparse.RawTextHelpFormatter,
         description=textwrap.dedent('''\
-            VideoTester 0.2
-            ===============
+            VideoTester %s
+
               Video Quality Assessment Tool
               Visit https://github.com/Enchufa2/video-tester for support and updates
 
               Copyright 2011-2016 Iñaki Úcar <i.ucar86@gmail.com>
               This program is published under a GPLv3 license
-            '''))
+            ''' % version))
     parser.add_argument(
         '-c', '--conf', dest='conf', type=str, default='VT.conf',
         help='configuration file (default: ./VT.conf)')

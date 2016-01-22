@@ -7,12 +7,12 @@ Video Tester has the following dependencies:
 * GStreamer 0.10.35 with Python bindings.
 * GStreamer plugins: base, good, ugly, bad.
 * GStreamer FFmpeg plugins.
-* GStreamer RTSP server 0.10.8 (at least) with Python bindings. 
+* GStreamer RTSP server 0.10.8 (at least) with Python bindings.
 * Scapy 2.0.
 * Matplotlib 1.0.1.
 * Numpy 1.4.1.
 * WxPython 2.8.11 with Matplotlib backend.
-* OpenCV 2.1 with Python bindings. 
+* OpenCV 2.1 with Python bindings.
 
 First of all, enable `RPM Fusion <http://rpmfusion.org/>`_ repositories::
 
@@ -27,7 +27,7 @@ Then, these dependencies can be installed with the following command (Fedora)::
 
 You can download the latest version of Video Tester from `the project page at GitHub <https://github.com/Enchufa2/video-tester>`_. Then, follow this steps (the last command, with root privileges)::
 
-	$ tar -xvf VideoTester-x.x.tar.gz
+	$ tar -xvf VideoTester-x.x.x.tar.gz
 	$ cd VideoTester-x.x
 	$ python setup.py install
 
@@ -36,4 +36,4 @@ During the installation, you'll be asked for two configuration parameters:
 * The server interface (default: ``eth0``).
 * The server port (default: ``8000``).
 
-After installation, Video Tester will be located in ``/usr/lib/python2.7/site-packages/VideoTester``, and this documentation, in ``/usr/share/doc/VideoTester-0.2``. You'll be able to launch the application with the command ``VT``.
+After installation, Video Tester will be located in ``/usr/lib/python2.7/site-packages/VideoTester``, and this documentation, in ``/usr/share/doc/VideoTester-x.x.x``. You'll be able to launch the application with the command ``VT``.

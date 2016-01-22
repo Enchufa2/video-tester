@@ -8,6 +8,7 @@ from distutils.core import setup
 from distutils import log
 import os, fnmatch
 from stat import ST_MODE
+from VideoTester import version
 
 # Code borrowed from wxPython's setup and config files
 # Thanks to Robin Dunn for the suggestion.
@@ -43,7 +44,6 @@ def find_data_files(base, srcdir, *wildcards, **kw):
                     [os.path.basename(f) for f in glob.glob(opj(srcdir, '*'))])
     return file_list
 
-version = '0.2'
 files = find_data_files('share/doc/VideoTester-' + version, 'doc/', '*.*')
 
 setup(name = 'VideoTester',

@@ -4,6 +4,9 @@
 ## Copyright 2011-2016 Iñaki Úcar <i.ucar86@gmail.com>
 ## This program is published under a GPLv3 license
 
+version = '1.0.0'
+release = True
+
 __all__ = []
 
 import gi
