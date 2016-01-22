@@ -92,6 +92,7 @@ class RTSPClient:
 		self.pipeline = None
 		#: Gstreamer loop.
 		self.loop = None
+		self.__exception = None
 
 	def __events(self, bus, msg):
 		'''
@@ -116,9 +117,8 @@ class RTSPClient:
 			time.sleep(0.5)
 			self.pipeline.set_state(Gst.State.READY)
 			self.pipeline.set_state(Gst.State.NULL)
-			e, d = msg.parse_error()
+			self.__exception, d = msg.parse_error()
 			VTLOG.error('GStreamer: Gst.MessageType.ERROR received')
-			VTLOG.error(e)
 			self.loop.quit()
 		return True
 
@@ -132,7 +132,6 @@ class RTSPClient:
 		self.pipeline.set_state(Gst.State.PLAYING)
 		self.loop = GObject.MainLoop()
 		self.loop.run()
-		VTLOG.debug('GStreamer: Loop stopped')
 
 	def __capsUDP(self, elem, new_elem):
 		if 'udpsrc' in new_elem.name:
@@ -191,6 +190,8 @@ class RTSPClient:
 		sink2.get_static_pad('sink').connect('notify::caps', self.__capsYUV)
 
 		self.__play()
+		if self.__exception:
+			raise Exception(self.__exception)
 		VTLOG.info('GStreamer receiver stopped')
 
 	def makeReference(self, video):

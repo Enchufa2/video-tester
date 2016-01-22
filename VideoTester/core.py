@@ -257,6 +257,7 @@ class VTClient(VTBase):
 			self.conf['codec']
 		)
         child = Process(target=sniffer.run)
+        ret = True
         try:
             child.start()
             VTLOG.info('PID: %s | Sniffer started' % child.pid)
@@ -264,15 +265,16 @@ class VTClient(VTBase):
             rtspclient.receive(url, self.conf['protocol'])
         except KeyboardInterrupt:
             VTLOG.warning('Keyboard interrupt!')
-            server.stop(self.conf['bitrate'], self.conf['framerate'])
-            child.terminate()
-            child.join()
-            VTLOG.info('PID: %s | Sniffer stopped' % child.pid)
-            return None
+        except Exception as e:
+            VTLOG.error(e)
+        else:
+            ret = False
         server.stop(self.conf['bitrate'], self.conf['framerate'])
         child.terminate()
         child.join()
         VTLOG.info('PID: %s | Sniffer stopped' % child.pid)
+        if ret:
+            return None
 
         video = '/'.join([self.path, dict(self.videos)[self.conf['video']]])
         rtspclient.makeReference(video)
