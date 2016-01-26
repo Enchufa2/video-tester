@@ -84,7 +84,7 @@ class RTSPClient:
 		self.files = {'original':[], 'coded':[], 'received':[]}
 		#: Various caps recolected from the pipeline.
 		self.caps = {
-			'rtspserver-port': None, 'udpsrc-port': None,			# TCP/UDP
+			'rtsp-sport': None, 'sdp-id': None, 'udp-dport': None,	# RTSP/UDP
 			'ptype': None, 'clock-rate': None, 'seq-base': None,	# RTP
 			'width': None, 'height': None, 'format': None			# YUV
 		}
@@ -133,10 +133,14 @@ class RTSPClient:
 		self.loop = GObject.MainLoop()
 		self.loop.run()
 
+	def __capsSDP(self, elem, sdp):
+		if sdp:
+			self.caps['sdp-id'] = sdp.get_origin().sess_id
+
 	def __capsUDP(self, elem, new_elem):
 		if 'udpsrc' in new_elem.name:
 			elem.disconnect(self.__shdlr)
-			self.caps['udpsrc-port'], = new_elem.get_properties('port')
+			self.caps['udp-dport'], = new_elem.get_properties('port')
 
 	def __capsRTP(self, pad, args):
 		caps = pad.get_current_caps()
@@ -182,9 +186,10 @@ class RTSPClient:
 
 		port = urlparse(url).port
 		if port:
-			self.caps['rtspserver-port'] = port
+			self.caps['rtsp-sport'] = port
 		else:
-			self.caps['rtspserver-port'] = 554
+			self.caps['rtsp-sport'] = 554
+		source.connect('on-sdp', self.__capsSDP)
 		self.__shdlr = source.connect('element-added', self.__capsUDP)
 		depay.get_static_pad('sink').connect('notify::caps', self.__capsRTP)
 		sink2.get_static_pad('sink').connect('notify::caps', self.__capsYUV)

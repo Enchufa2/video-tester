@@ -4,7 +4,7 @@
 ## Copyright 2011-2016 Iñaki Úcar <i.ucar86@gmail.com>
 ## This program is published under a GPLv3 license
 
-import os, time, pcap
+import os, time, struct, pcap
 from collections import defaultdict
 from scapy.all import Packet, ByteField, ShortField, \
     IP, ICMP, TCP, UDP, RTP, send, rdpcap
@@ -19,6 +19,24 @@ class RTSPi(Packet):
     fields_desc = [ ByteField('magic', 24),
                     ByteField('channel', 0),
                     ShortField('length', None) ]
+
+class PcapIter(pcap.pcapObject):
+    '''
+    *Iterable PCAP Object*.
+    '''
+    def __init__(self, cap, filter=''):
+        pcap.pcapObject.__init__(self)
+        self.open_offline(cap)
+        self.setfilter(filter, 0, 0)
+
+    def __iter__(self):
+        return self
+
+    def next(self):
+        res = pcap.pcapObject.next(self)
+        if res is None:
+            raise StopIteration
+        return res
 
 class Sniffer:
     '''
@@ -84,6 +102,7 @@ class Sniffer:
         :rtype: tuple
         '''
         VTLOG.info('Starting packet parser...')
+        dport = self.__identifySession(caps['sdp-id'])
         self.captureFile = rdpcap(self.captureFile)
         if proto == 'tcp':
             self.__parseTCP(caps)
@@ -95,6 +114,13 @@ class Sniffer:
         VTLOG.debug(b + ' RTP packets received, ' + a + ' losses')
         VTLOG.info('Packet parser stopped')
         return self.lengths, self.times, self.sequences, self.timestamps, self.rtt
+
+    def __identifySession(self, sid):
+        for plen, pkt, ts in PcapIter(self.captureFile, 'host %s' % self.ip):
+            if sid in pkt:
+                dport, = struct.unpack_from('>H', pkt, 36)
+                break
+        return dport
 
     def __prepare(self, p):
         '''
@@ -143,7 +169,7 @@ class Sniffer:
                 if not play:
                     play = self.__prepare(p)
                 elif play and (p[IP].src == self.ip) and (p.haslayer(UDP)) and (str(p).find('GStreamer') == -1):
-                    if p.dport == caps['udpsrc-port']:
+                    if p.dport == caps['udp-dport']:
                         extract(p)
         self.sequences, self.times, self.timestamps = \
             multiSort(self.sequences, self.times, self.timestamps)
@@ -233,7 +259,7 @@ class Sniffer:
                     play = self.__prepare(p)
                 #Packets from server, with TCP layer. Avoid ACK's. Avoid RTSP packets
                 elif play and (p[IP].src == self.ip) and p.haslayer(TCP) and (len(p) > 66) and (str(p).find('RTSP/1.0') == -1):
-                    if p.sport == caps['rtspserver-port']:
+                    if p.sport == caps['rtsp-sport']:
                         packetlist.append(p)
                         seqlist.append(p[TCP].seq)
                         lenlist.append(len(p[TCP].payload))
