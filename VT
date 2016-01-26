@@ -6,7 +6,7 @@
 ## This program is published under a GPLv3 license
 
 import sys, os, textwrap, argparse
-from VideoTester import VTLOG, version
+from VideoTester import VTLOG, __version__, __author__
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
@@ -17,9 +17,9 @@ if __name__ == '__main__':
               Video Quality Assessment Tool
               Visit https://github.com/Enchufa2/video-tester for support and updates
 
-              Copyright 2011-2016 Iñaki Úcar <i.ucar86@gmail.com>
+              Copyright 2011-2016 %s
               This program is published under a GPLv3 license
-            ''' % version))
+            ''' % (__version__, __author__)))
     parser.add_argument(
         '-c', '--conf', dest='conf', type=str, default='VT.conf',
         help='configuration file (default: ./VT.conf)')
