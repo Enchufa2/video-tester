@@ -49,7 +49,7 @@ class QoSmeasure(Measure):
         :param list times: List of packet arrival times.
         :param list sequences: List of RTP sequence numbers.
         :param list timestamps: List of RTP timestamps.
-        :param dictionary rtt: RTT information.
+        :param list rtt: RTT information.
         '''
         Measure.__init__(self)
         #: List of packet lengths (see :attr:`VideoTester.sniffer.Sniffer.lengths`).
@@ -77,13 +77,8 @@ class Latency(QoSmeasure):
         self.data['units'] = 'ms'
 
     def calculate(self):
-        sum = 0
-        count = 0
-        for i in range(0, 4):
-            if len(self.rtt[i]) == 2:
-                sum = sum + (self.rtt[i][0] - self.rtt[i][8]) * 500
-                count = count + 1
-        self.data['value'] = sum / count
+        add = sum([(res - req) * 500 for req, res in self.rtt])
+        self.data['value'] = add / len(self.rtt)
         return self.data
 
 class Delta(QoSmeasure):

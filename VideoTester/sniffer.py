@@ -4,7 +4,8 @@
 ## Copyright 2011-2016 Iñaki Úcar <i.ucar86@gmail.com>
 ## This program is published under a GPLv3 license
 
-import os, time, struct, pcap
+import os, time, pcap
+from struct import unpack_from
 from collections import defaultdict
 from scapy.all import Packet, ByteField, ShortField, \
     IP, ICMP, TCP, UDP, RTP, send, rdpcap
@@ -38,6 +39,36 @@ class PcapIter(pcap.pcapObject):
             raise StopIteration
         return res
 
+    def getOffsets(self, pkt):
+        # Datalink offset
+        try:
+            dlt = {
+                pcap.DLT_EN10MB: 14,
+                pcap.DLT_LINUX_SLL: 16
+            }[self.datalink()]
+        except KeyError:
+            raise Exception('Datalink protocol not supported')
+        # IP offset
+        ipv = unpack_from('!B', pkt, dlt)[0] >> 4
+        if ipv == 4:
+            net = 4 * (unpack_from('!B', pkt, dlt)[0] & 0x0F)
+            proto = unpack_from('!B', pkt, dlt + 9)[0]
+        elif ipv == 6:
+            net = 40
+            proto = unpack_from('!B', pkt, dlt + 6)[0]
+        else:
+            net = None
+            proto = None
+        # TCP/UDP offset
+        if proto == 6:
+            trans = 4 * (unpack_from('!B', pkt, dlt + net + 12)[0] >> 4)
+        elif proto == 17:
+            trans = 8
+        else:
+            trans = None
+
+        return dlt, net, trans
+
 class Sniffer:
     '''
     Network sniffer and packet parser.
@@ -65,18 +96,9 @@ class Sniffer:
         self.sequences = []
         #: List of RTP timestamps.
         self.timestamps = []
-        #: Round-trip time information (dictionary of request-response pairs).
-        self.rtt = defaultdict(dict)
+        #: Round-trip time information (list of request-response pairs).
+        self.rtt = []
         self.__add = 0
-
-    def doPing(self):
-        '''
-        Ping to server (4 echoes).
-        '''
-        VTLOG.info('Pinging...')
-        for i in range(0, 4):
-            send(IP(dst=self.ip)/ICMP(seq=i), verbose=False)
-            time.sleep(0.25)
 
     def run(self):
         '''
@@ -102,37 +124,43 @@ class Sniffer:
         :rtype: tuple
         '''
         VTLOG.info('Starting packet parser...')
-        dport = self.__identifySession(caps['sdp-id'])
-        self.captureFile = rdpcap(self.captureFile)
+        rtspDport = self.__getDport(caps['sdp-id'])
+        self.__getRTT(caps['rtsp-sport'], rtspDport)
+
         if proto == 'tcp':
+            self.captureFile = rdpcap(self.captureFile)
             self.__parseTCP(caps)
         else:
+            self.captureFile = rdpcap(self.captureFile)
             self.__parseUDP(caps)
         self.__normalize(caps)
+
         a = str(self.sequences[-1]-len(self.sequences)+1)
         b = str(len(self.sequences))
         VTLOG.debug(b + ' RTP packets received, ' + a + ' losses')
         VTLOG.info('Packet parser stopped')
+
         return self.lengths, self.times, self.sequences, self.timestamps, self.rtt
 
-    def __identifySession(self, sid):
-        for plen, pkt, ts in PcapIter(self.captureFile, 'host %s' % self.ip):
+    def __getDport(self, sid):
+        p = PcapIter(self.captureFile, 'host %s' % self.ip)
+        for plen, pkt, ts in p:
             if sid in pkt:
-                dport, = struct.unpack_from('>H', pkt, 36)
-                break
-        return dport
+                offset = sum(p.getOffsets(pkt)[0:2])
+                return unpack_from('!H', pkt, offset + 2)[0]
+
+    def __getRTT(self, sport, dport):
+        # PUSHes from client (24) and ACKs from server (16)
+        filt = 'host %s and ((src port %s and dst port %s and tcp[13] = 24) or (src port %s and dst port %s and tcp[13] = 16))' % (self.ip, dport, sport, sport, dport)
+        p = PcapIter(self.captureFile, filt)
+        for i in range(0, 3):
+            plen, pkt, ts1 = p.next()
+            plen, pkt, ts2 = p.next()
+            self.rtt.append((ts1, ts2))
 
     def __prepare(self, p):
-        '''
-        Pre-process capture file. This method parses RTSP information and extracts :attr:`ping`.
-
-        :returns: True when a RTSP *PLAY* packet is found.
-        :rtype: boolean
-        '''
         play = False
-        if p.haslayer(ICMP):
-            self.rtt[p[ICMP].seq][p[ICMP].type] = p.time
-        elif (str(p).find('PLAY') != -1) and (str(p).find('Public:') == -1):
+        if (str(p).find('PLAY') != -1) and (str(p).find('Public:') == -1):
             play = True
             VTLOG.debug('PLAY found!')
         return play
@@ -150,15 +178,13 @@ class Sniffer:
             ptype = ord(str(p[UDP].payload)[1]) & 0x7F #Delete RTP marker
             p[UDP].decode_payload_as(RTP)
             if ptype == caps['ptype']:
-                #Avoid duplicates while running on loopback interface
-                if p[RTP].sequence not in self.sequences:
-                    self.lengths.append(p.len)
-                    self.times.append(p.time)
-                    self.sequences.append(p[RTP].sequence + self.__add)
-                    self.timestamps.append(p[RTP].timestamp)
-                    VTLOG.debug('UDP/RTP packet found. Sequence: ' + str(p[RTP].sequence))
-                    if p[RTP].sequence == 65535:
-                        self.__add += 65536
+                self.lengths.append(p.len)
+                self.times.append(p.time)
+                self.sequences.append(p[RTP].sequence + self.__add)
+                self.timestamps.append(p[RTP].timestamp)
+                VTLOG.debug('UDP/RTP packet found. Sequence: ' + str(p[RTP].sequence))
+                if p[RTP].sequence == 65535:
+                    self.__add += 65536
 
         play = False
         for p in self.captureFile:
@@ -196,19 +222,18 @@ class Sniffer:
                 if ptype == caps['ptype']:
                     aux = str(p).split('ENDOFPACKET')
                     p[RTSPi].decode_payload_as(RTP)
-                    #Avoid duplicates while running on loopback interface
-                    if p[RTP].sequence not in self.sequences:
-                        self.lengths.append(int(aux[2]))
-                        self.times.append(float(aux[1]) / 1000000)
-                        self.sequences.append(p[RTP].sequence + self.__add)
-                        self.timestamps.append(p[RTP].timestamp)
-                        VTLOG.debug('TCP/RTP packet found. Sequence: ' + str(p[RTP].sequence))
-                        if p[RTP].sequence == 65535:
-                            self.__add += 65536
+                    self.lengths.append(int(aux[2]))
+                    self.times.append(float(aux[1]) / 1000000)
+                    self.sequences.append(p[RTP].sequence + self.__add)
+                    self.timestamps.append(p[RTP].timestamp)
+                    VTLOG.debug('TCP/RTP packet found. Sequence: ' + str(p[RTP].sequence))
+                    if p[RTP].sequence == 65535:
+                        self.__add += 65536
             else:
                 #Avoid PACKETLOSS
                 a = loss + len('PACKETLOSS')
                 VTLOG.debug('PACKETLOSS!')
+
             p = RTSPi(str(b)[a:len(b)])
             ptype = ord(str(p[RTSPi].payload)[1]) & 0x7F
             #Let's find the next RTSP packet

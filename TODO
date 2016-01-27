@@ -1,5 +1,4 @@
 Short-term:
-* Use RTSP session instead of ping (PSH-ACK pairs)
 * video: fix h264 and theora readers
 * Check for compatibility issues with other libraries
 * Fix scripts generate-conf.py and series.py
