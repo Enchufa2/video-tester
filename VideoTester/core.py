@@ -261,6 +261,7 @@ class VTClient(VTBase):
         try:
             child.start()
             VTLOG.info('PID: %s | Sniffer started' % child.pid)
+            time.sleep(1)
             rtspclient.receive(url, self.conf['protocol'])
         except KeyboardInterrupt:
             VTLOG.warning('Keyboard interrupt!')

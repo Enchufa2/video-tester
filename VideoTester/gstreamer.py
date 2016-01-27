@@ -136,11 +136,13 @@ class RTSPClient:
 	def __capsSDP(self, elem, sdp):
 		if sdp:
 			self.caps['sdp-id'] = sdp.get_origin().sess_id
+			VTLOG.debug('SDP ID: %s' % self.caps['sdp-id'])
 
 	def __capsUDP(self, elem, new_elem):
 		if 'udpsrc' in new_elem.name:
 			elem.disconnect(self.__shdlr)
 			self.caps['udp-dport'], = new_elem.get_properties('port')
+			VTLOG.debug('UDP dport: %s' % self.caps['udp-dport'])
 
 	def __capsRTP(self, pad, args):
 		caps = pad.get_current_caps()
@@ -149,6 +151,9 @@ class RTSPClient:
 			self.caps['ptype'] = struct.get_int('payload')[1]
 			self.caps['clock-rate'] = struct.get_int('clock-rate')[1]
 			self.caps['seq-base'] = struct.get_uint('seqnum-base')[1]
+			VTLOG.debug('RTP ptype: %s' % self.caps['ptype'])
+			VTLOG.debug('RTP clock: %s' % self.caps['clock-rate'])
+			VTLOG.debug('RTP seq base: %s' % self.caps['seq-base'])
 
 	def __capsYUV(self, pad, args):
 		caps = pad.get_current_caps()
@@ -157,6 +162,9 @@ class RTSPClient:
 			self.caps['width'] = struct.get_int('width')[1]
 			self.caps['height'] = struct.get_int('height')[1]
 			self.caps['format'] = struct.get_string('format')
+			VTLOG.debug('YUV width: %s' % self.caps['width'])
+			VTLOG.debug('YUV height: %s' % self.caps['height'])
+			VTLOG.debug('YUV format: %s' % self.caps['format'])
 
 	def receive(self, url, proto):
 		'''
