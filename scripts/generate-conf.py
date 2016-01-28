@@ -8,20 +8,22 @@
 
 import sys
 
-menu = [[False, '0: Interface', 'iface', ''],
-        [False, '1: Server IP', 'ip', ''],
-        [False, '2: Server port', 'port', ''],
-        [False, '3: Protocol', 'protocols', ''],
-        [False, '4: Video', 'video', ''],
-        [False, '5: Codec', 'codec', ''],
-        [False, '6: Bitrate', 'bitrate', ''],
-        [False, '7: Framerate', 'framerate', ''],
-        [False, '8: QoS measures', 'qos', ''],
-        [False, '9: BS measures', 'bs', ''],
-        [False, '10: VQ measures', 'vq', ''],
-        [False, '11: Clear'],
-        [False, '12: Done!'],
-        [False, '13: Exit']]
+menu = [
+    [False, '0: Temp path', 'temp', ''],
+    [False, '1: Interface', 'iface', ''],
+    [False, '2: Server IP', 'ip', ''],
+    [False, '3: Protocol', 'protocols', ''],
+    [False, '4: Video', 'video', ''],
+    [False, '5: Codec', 'codec', ''],
+    [False, '6: Bitrate', 'bitrate', ''],
+    [False, '7: Framerate', 'framerate', ''],
+    [False, '8: QoS measures', 'qos', ''],
+    [False, '9: BS measures', 'bs', ''],
+    [False, '10: VQ measures', 'vq', ''],
+    [False, '11: Clear'],
+    [False, '12: Done!'],
+    [False, '13: Exit']
+]
 
 while True:
     print 'Select common options:'

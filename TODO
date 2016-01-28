@@ -1,9 +1,8 @@
 Short-term:
-* video: fix h264 and theora readers
-* Fix scripts generate-conf.py and series.py
-* New stable release
+* ...
 
 Long-term:
+* video: fix h264 and theora readers
 * Fix udp-mcast or drop support (maybe it is a localhost only issue?)
 * Add unit tests
 * Integrate with Travis / Coveralls

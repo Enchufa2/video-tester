@@ -15,5 +15,5 @@ tests = 8
 for i in range(0, tests):
     test = conf_path + 'test-' + str(i) + '.conf'
     print 'Running ' + test
-    call([VT, 'client', '-c', test])
+    call([VT, '-c', test, 'client'])
 print '\nFinished'

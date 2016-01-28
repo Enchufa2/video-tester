@@ -39,6 +39,7 @@ This media mapping must be the same on both client and server side. The client m
 	[client]
 
 	# Video parameters
+	temp=path_to_temp_directory
 	video=one_key_from_video_section # E.g.: video0
 	codec=the_codec # Options (select one): h263, h264, mpeg4, theora
 	bitrate=the_bitrate_in_kbps
