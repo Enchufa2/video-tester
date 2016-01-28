@@ -95,7 +95,7 @@ class Sniffer:
         try:
             p = pcap.pcapObject()
             p.open_live(self.iface, 65536, 1, 0)
-            p.setfilter('host ' + self.ip, 0, 0)
+            p.setfilter('host %s and (tcp or udp)' % self.ip, 0, 0)
             p.dump_open(self.captureFile)
             while p.dispatch(-1, None) >= 0:
                 pass
