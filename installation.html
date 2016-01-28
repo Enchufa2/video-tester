@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Installation &mdash; VideoTester 0.2 documentation</title>
+  <title>Installation &mdash; VideoTester 1.0.0 documentation</title>
   
 
   
@@ -32,7 +32,7 @@
   
 
   
-    <link rel="top" title="VideoTester 0.2 documentation" href="index.html"/>
+    <link rel="top" title="VideoTester 1.0.0 documentation" href="index.html"/>
         <link rel="next" title="Configuration" href="configuration.html"/>
         <link rel="prev" title="Welcome to VideoTester’s documentation!" href="index.html"/> 
 
@@ -62,7 +62,7 @@
             
             
               <div class="version">
-                0.2
+                1.0.0
               </div>
             
           
@@ -139,39 +139,26 @@
 <p>Video Tester has the following dependencies:</p>
 <ul class="simple">
 <li>Python 2.7.</li>
-<li>GStreamer 0.10.35 with Python bindings.</li>
-<li>GStreamer plugins: base, good, ugly, bad.</li>
-<li>GStreamer FFmpeg plugins.</li>
-<li>GStreamer RTSP server 0.10.8 (at least) with Python bindings.</li>
-<li>Scapy 2.0.</li>
-<li>Matplotlib 1.0.1.</li>
-<li>Numpy 1.4.1.</li>
-<li>WxPython 2.8.11 with Matplotlib backend.</li>
-<li>OpenCV 2.1 with Python bindings.</li>
+<li>GStreamer (&gt;=1.0) + plugins: base, good, ugly, bad, libav.</li>
+<li>GStreamer RTSP server (&gt;=1.0).</li>
+<li>PyGObject (&gt;=3.18.2).</li>
+<li>Pylibpcap (&gt;=0.6.4).</li>
+<li>Numpy (&gt;=1.4.1).</li>
+<li>OpenCV (&gt;=2.1) with Python bindings.</li>
+<li>Matplotlib (&gt;=1.0.1).</li>
+<li>WxPython (&gt;=2.8.11) + Matplotlib backend.</li>
 </ul>
-<p>First of all, enable <a class="reference external" href="http://rpmfusion.org/">RPM Fusion</a> repositories:</p>
-<div class="highlight-python"><div class="highlight"><pre>$ su -c &#39;yum localinstall --nogpgcheck http://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm \
-        http://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm&#39;
+<p>If you are using <strong>Fedora</strong>, first of all, enable the <a class="reference external" href="http://rpmfusion.org/">RPM Fusion</a> repositories. Then, these dependencies can be installed with the following command:</p>
+<div class="highlight-python"><div class="highlight"><pre>$ sudo dnf install gstreamer1 gstreamer1-libav gstreamer1-plugins-base gstreamer1-plugins-good gstreamer1-plugins-ugly gstreamer1-plugins-bad-free gstreamer-plugins-bad-freeworld gstreamer1-rtsp-server pygobject2 pylibpcap numpy python2-matplotlib python2-matplotlib-wx wxPython opencv-python
 </pre></div>
 </div>
-<p>Then, these dependencies can be installed with the following command (Fedora):</p>
-<div class="highlight-python"><div class="highlight"><pre>$ yum install gstreamer gstreamer-plugins-base gstreamer-plugins-good gstreamer-plugins-ugly \
-        gstreamer-plugins-bad-free gstreamer-plugins-bad-nonfree gstreamer-python gstreamer-ffmpeg \
-        gstreamer-rtsp scapy numpy python-matplotlib python-matplotlib-wx wxPython opencv-python
+<p>You can download the latest version of Video Tester from <a class="reference external" href="https://github.com/Enchufa2/video-tester">the project page at GitHub</a>. Then, follow this steps:</p>
+<div class="highlight-python"><div class="highlight"><pre>$ tar xf VideoTester-x.x.x.tar.gz
+$ cd VideoTester-x.x.x
+$ sudo python setup.py install
 </pre></div>
 </div>
-<p>You can download the latest version of Video Tester from <a class="reference external" href="https://github.com/Enchufa2/video-tester">the project page at GitHub</a>. Then, follow this steps (the last command, with root privileges):</p>
-<div class="highlight-python"><div class="highlight"><pre>$ tar -xvf VideoTester-x.x.tar.gz
-$ cd VideoTester-x.x
-$ python setup.py install
-</pre></div>
-</div>
-<p>During the installation, you&#8217;ll be asked for two configuration parameters:</p>
-<ul class="simple">
-<li>The server interface (default: <tt class="docutils literal"><span class="pre">eth0</span></tt>).</li>
-<li>The server port (default: <tt class="docutils literal"><span class="pre">8000</span></tt>).</li>
-</ul>
-<p>After installation, Video Tester will be located in <tt class="docutils literal"><span class="pre">/usr/lib/python2.7/site-packages/VideoTester</span></tt>, and this documentation, in <tt class="docutils literal"><span class="pre">/usr/share/doc/VideoTester-0.2</span></tt>. You&#8217;ll be able to launch the application with the command <tt class="docutils literal"><span class="pre">VT</span></tt>.</p>
+<p>After the installation, Video Tester will be located in <tt class="docutils literal"><span class="pre">/usr/lib/python2.7/site-packages/VideoTester</span></tt>, and this documentation, in <tt class="docutils literal"><span class="pre">/usr/share/doc/VideoTester-x.x.x</span></tt>. You should be able to launch the application with the command <tt class="docutils literal"><span class="pre">VT</span></tt>.</p>
 </div>
 
 
@@ -193,7 +180,7 @@ $ python setup.py install
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2013-2016, Iñaki Úcar.
+        &copy; Copyright 2011-2016, Iñaki Úcar.
 
     </p>
   </div>
@@ -215,7 +202,7 @@ $ python setup.py install
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.2',
+            VERSION:'1.0.0',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

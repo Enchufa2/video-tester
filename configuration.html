@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Configuration &mdash; VideoTester 0.2 documentation</title>
+  <title>Configuration &mdash; VideoTester 1.0.0 documentation</title>
   
 
   
@@ -32,7 +32,7 @@
   
 
   
-    <link rel="top" title="VideoTester 0.2 documentation" href="index.html"/>
+    <link rel="top" title="VideoTester 1.0.0 documentation" href="index.html"/>
         <link rel="next" title="Usage" href="usage.html"/>
         <link rel="prev" title="Installation" href="installation.html"/> 
 
@@ -62,7 +62,7 @@
             
             
               <div class="version">
-                0.2
+                1.0.0
               </div>
             
           
@@ -142,7 +142,10 @@
 <h1>Configuration<a class="headerlink" href="#configuration" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="videos">
 <h2>Videos<a class="headerlink" href="#videos" title="Permalink to this headline">¶</a></h2>
-<p>It&#8217;s essential that the client and the server have a local repository with the same video files. Video Tester is designed to use lossless-coded video files. For example, EvalVid project has <a class="reference external" href="http://www.tkn.tu-berlin.de/research/evalvid/cif.html">YUV CIF samples compressed with lossless H.264</a>.</p>
+<p>Both the client and the server MUST share the same video repository. Video Tester may use almost any kind of source, but we encourage the use lossless-coded video files. For example, EvalVid project has <a class="reference external" href="http://www.tkn.tu-berlin.de/research/evalvid/cif.html">YUV CIF samples compressed with lossless H.264</a>. Unfortunately, that file format is not recognised by GStreamer without a container, so you need to _containerise_ it properly. For instance, the following <tt class="docutils literal"><span class="pre">ffmpeg</span></tt> command will convert any input file to lossless H.264 video inside a Matroska container:</p>
+<div class="highlight-python"><div class="highlight"><pre>ffmpeg -i akiyo_cif.264 -c:v libx264 -qp 0 akiyo_cif.mkv
+</pre></div>
+</div>
 </div>
 <div class="section" id="configuration-files">
 <h2>Configuration files<a class="headerlink" href="#configuration-files" title="Permalink to this headline">¶</a></h2>
@@ -152,8 +155,10 @@
 <span class="n">key</span><span class="o">=</span><span class="n">value</span>
 </pre></div>
 </div>
-<p>Both client and server mode require a section called <tt class="docutils literal"><span class="pre">video</span></tt> in a file called <tt class="docutils literal"><span class="pre">VT.conf</span></tt> like this:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="p">[</span><span class="n">video</span><span class="p">]</span>
+<p>Both client and server modes require a common section called <tt class="docutils literal"><span class="pre">general</span></tt> as follows:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">[</span><span class="n">general</span><span class="p">]</span>
+
+<span class="n">port</span><span class="o">=</span><span class="n">the_server_port</span>
 
 <span class="n">path</span><span class="o">=</span><span class="n">the_path_to_the_video_directory</span>
 
@@ -163,34 +168,29 @@
 <span class="c"># and so on</span>
 </pre></div>
 </div>
-<div class="admonition warning">
-<p class="first admonition-title">Warning</p>
-<p class="last"><tt class="docutils literal"><span class="pre">VT.conf</span></tt> MUST be in the current working directory.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">By default, Video Tester looks for a configuration file called <tt class="docutils literal"><span class="pre">VT.conf</span></tt> in the current working directory. You can specify another file and location using the global command-line option <tt class="docutils literal"><span class="pre">-c</span></tt>.</p>
 </div>
-<p>This media mapping must be the same on both client and server side. The client mode, moreover, requires a section called <tt class="docutils literal"><span class="pre">client</span></tt> like this:</p>
+<p>This media mapping must be the same on both client and server side. The client mode also requires a section called <tt class="docutils literal"><span class="pre">client</span></tt> as follows:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="p">[</span><span class="n">client</span><span class="p">]</span>
 
 <span class="c"># Video parameters</span>
-<span class="n">video</span><span class="o">=</span><span class="n">one_key_from_video_section</span> <span class="c"># E. g.: video0</span>
-<span class="n">codec</span><span class="o">=</span><span class="n">the_codec</span> <span class="c"># Options: h263, h264, mpeg4, theora</span>
+<span class="n">video</span><span class="o">=</span><span class="n">one_key_from_video_section</span> <span class="c"># E.g.: video0</span>
+<span class="n">codec</span><span class="o">=</span><span class="n">the_codec</span> <span class="c"># Options (select one): h263, h264, mpeg4, theora</span>
 <span class="n">bitrate</span><span class="o">=</span><span class="n">the_bitrate_in_kbps</span>
 <span class="n">framerate</span><span class="o">=</span><span class="n">the_framerate_in_fps</span>
 
 <span class="c"># Network parameters</span>
 <span class="n">iface</span><span class="o">=</span><span class="n">the_network_interface</span>
 <span class="n">ip</span><span class="o">=</span><span class="n">the_server_ip_address</span>
-<span class="n">port</span><span class="o">=</span><span class="n">the_server_port</span>
-<span class="n">protocols</span><span class="o">=</span><span class="n">transport_protocol</span> <span class="c"># Options: udp-unicast, tcp, udp-multicast</span>
+<span class="n">protocol</span><span class="o">=</span><span class="n">transport_protocol</span> <span class="c"># Options (select one): udp, tcp, udp-mcast</span>
 
-<span class="c"># Selected measures (comma separated)</span>
+<span class="c"># Measures (multiple selection, comma separated)</span>
 <span class="n">qos</span><span class="o">=</span><span class="n">qos_measures</span> <span class="c"># Options: latency, delta, jitter, skew, bandwidth, plr, pld</span>
 <span class="n">bs</span><span class="o">=</span><span class="n">bs_measures</span> <span class="c"># Options: streameye, refstreameye, gop, iflr</span>
 <span class="n">vq</span><span class="o">=</span><span class="n">vq_measures</span> <span class="c"># Options: psnr, ssim, g1070, psnrtomos, miv</span>
 </pre></div>
-</div>
-<div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">By default, Video Tester search this section in <tt class="docutils literal"><span class="pre">VT.conf</span></tt>. You can specify another configuration file from the command line.</p>
 </div>
 </div>
 </div>
@@ -214,7 +214,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2013-2016, Iñaki Úcar.
+        &copy; Copyright 2011-2016, Iñaki Úcar.
 
     </p>
   </div>
@@ -236,7 +236,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.2',
+            VERSION:'1.0.0',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

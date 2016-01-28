@@ -16,9 +16,9 @@ Welcome to VideoTester's documentation!
 What's this?
 ------------
 
-Video Tester is a framework for the video quality assessment over a real or simulated IP network. Parameter extraction is performed on the three levels involved in the video processing and transmission ---packet level, bitstream level and picture level--- in order to gather as much information as possible. Therefore, it's suitable to implement any kind of metric: data metrics, picture metrics, packet-based metrics, bitstream-based metrics or hybrid metrics; with full-reference, reduced-reference or no-reference.
+Video Tester is a framework for video quality assessment over a real or simulated IP network. Parameter extraction is performed on the three levels involved in the video processing and transmission ---packet level, bitstream level and picture level--- in order to gather as much information as possible. Therefore, it is suitable for implementing any kind of metric: data metrics, picture metrics, packet-based metrics, bitstream-based metrics or hybrid metrics; with full-reference, reduced-reference or no-reference.
 
-It's a Linux application programmed in Python with the aim of promoting extensibility, and the election of the GStreamer framework for video processing is due to its broad support in this area. Video Tester covers `EvalVid <http://www.tkn.tu-berlin.de/research/evalvid/>`_ features and adds further improvements in terms of usability, extensibility, codec support, support of transmission methods and reliability in case of losses.
+It is a Linux application programmed in Python with the aim of promoting extensibility, and the election of the GStreamer framework for video processing is due to its broad support in this area. Video Tester covers `EvalVid <http://www.tkn.tu-berlin.de/research/evalvid/>`_ features and adds further improvements in terms of usability, extensibility, codec support, support of transmission methods and reliability in case of losses.
 
 **Features:**
 
@@ -28,7 +28,7 @@ It's a Linux application programmed in Python with the aim of promoting extensib
  * QoS metrics: latency, delta, jitter, skew, bandwidth, packet loss rate, packet loss distribution.
  * Bitstream metrics: stream eye, reference stream eye, gop size, I-frame loss rate.
  * Video quality metrics: PSNR, SSIM, ITU-T G.1070, MOS (PSNR to MOS mapping from EvalVid), MIV (from EvalVid).
- 
+
 **Publications:**
 
 If you use this framework for your research, we would appreciate if you could cite the following reference:
@@ -54,4 +54,3 @@ Indices and tables
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
-
