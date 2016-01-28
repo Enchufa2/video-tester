@@ -9,7 +9,6 @@ Short-term:
 
 Long-term:
 * Fix udp-mcast or drop support (maybe it is a localhost only issue?)
-* Move from Scapy to a more efficient solution. Maybe implement the networking part (packet capturing and processing) in a dedicated C library with Python bindings
 * Add unit tests
 * Integrate with Travis / Coveralls
 * Move to Python3

@@ -6,18 +6,8 @@
 
 import os, time, pcap
 from struct import unpack_from
-from scapy.all import Packet, ByteField, ShortField, RTP
 from . import VTLOG
 from .utils import multiSort
-
-class RTSPi(Packet):
-    '''
-    *RTSP interleaved* packet decoder.
-    '''
-    name = 'RTSP interleaved'
-    fields_desc = [ ByteField('magic', 24),
-                    ByteField('channel', 0),
-                    ShortField('length', None) ]
 
 class PcapIter(pcap.pcapObject):
     '''
@@ -184,56 +174,7 @@ class Sniffer:
         '''
         Parse RTP over TCP session.
         '''
-        def extract(p):
-            '''
-            Extract many RTSP packets from a TCP stream recursively.
-
-            :param Packet p: TCP stream.
-            '''
-            fin = False
-            a = p[RTSPi].length
-            b = p[RTSPi].payload
-            c = str(b)[0:a]
-            loss = c.find('PACKETLOSS')
-            if loss == -1:
-                #No loss: look inside then
-                extptype = ord(str(p[RTSPi].payload)[1]) & 0x7F #Delete RTP marker
-                if ptype == extptype:
-                    aux = str(p).split('ENDOFPACKET')
-                    p[RTSPi].decode_payload_as(RTP)
-                    self.lengths.append(int(aux[2]))
-                    self.times.append(float(aux[1]) / 1000000)
-                    self.sequences.append(p[RTP].sequence + self.__add)
-                    self.timestamps.append(p[RTP].timestamp)
-                    VTLOG.debug('TCP/RTP packet found. Sequence: ' + str(p[RTP].sequence))
-                    if p[RTP].sequence == 65535:
-                        self.__add += 65536
-            else:
-                #Avoid PACKETLOSS
-                a = loss + len('PACKETLOSS')
-                VTLOG.debug('PACKETLOSS!')
-
-            p = RTSPi(str(b)[a:len(b)])
-            extptype = ord(str(p[RTSPi].payload)[1]) & 0x7F
-            #Let's find the next RTSP packet
-            while not fin and not ((p[RTSPi].magic == 0x24) and (p[RTSPi].channel == 0x00) and (ptype == extptype)):
-                stream = str(p)
-                if stream.find('PACKETLOSS') == 0:
-                    #Avoid PACKETLOSS
-                    stream = stream[len('PACKETLOSS'):len(stream)]
-                    VTLOG.debug('PACKETLOSS!')
-                else:
-                    #Find next packet
-                    stream = stream[1:len(stream)]
-                if len(stream) > 5:
-                    p = RTSPi(stream)
-                    extptype = ord(str(p[RTSPi].payload)[1]) & 0x7F
-                else:
-                    #Yep! We're done!
-                    fin = True
-            if not fin:
-                extract(p)
-
+        # Parse packets
         p = PcapIter(self.captureFile,
             'host %s and tcp and src port %s and dst port %s' % (
                 self.ip, rtspSport, rtspDport))
@@ -255,11 +196,14 @@ class Sniffer:
         seqlist, packetlist, lenlist, tslist = \
             multiSort(seqlist, packetlist, lenlist, tslist)
         VTLOG.debug('Sequence list sorted')
-        #Locate packet losses
+
+        # Locate packet losses
         fill = [0 for i in range(0, len(seqlist))]
         for i in range(0, len(seqlist)-1):
             if seqlist[i] + lenlist[i] < seqlist[i+1]:
                 fill[i] = 1
+
+        # Assemble the complete stream
         stream = ''
         for i in range(0, len(packetlist)):
             stream += packetlist[i][sum(offsets):]
@@ -274,8 +218,45 @@ class Sniffer:
                 VTLOG.debug('PACKETLOSS!')
                 stream += 'PACKETLOSS'
         VTLOG.debug('TCP payloads assembled')
-        stream = RTSPi(stream)
-        extract(stream)
+
+        # Parse the stream
+        offset = 0
+        parsing = True
+        while parsing:
+            plen = unpack_from('!xxH', stream, offset)[0]
+            loss = stream[offset+4:offset+plen].find('PACKETLOSS')
+            if loss == -1:
+                #No loss: look inside then
+                if ptype == unpack_from('!xB', stream, offset+4)[0] & 0x7F:
+                    aux = stream[offset:].split('ENDOFPACKET')
+                    self.lengths.append(int(aux[2]))
+                    self.times.append(float(aux[1]) / 1000000)
+                    seq = unpack_from('!xxH', stream, offset+4)[0]
+                    self.sequences.append(seq + self.__add)
+                    self.timestamps.append(unpack_from('!xxxxI', stream, offset+4)[0])
+                    VTLOG.debug('TCP/RTP packet found. Sequence: %s' % seq)
+                    if seq == 65535:
+                        self.__add += seq
+            else:
+                #Avoid PACKETLOSS
+                plen = loss + 10
+                VTLOG.debug('PACKETLOSS!')
+
+            offset += 4 + plen
+            #Let's find the next RTSPi packet
+            while parsing and not (
+                (0x24, 0x00) == unpack_from('!BB', stream, offset) \
+                and ptype == unpack_from('!xB', stream, offset+4)[0] & 0x7F):
+                if stream[offset:offset+10] == 'PACKETLOSS':
+                    #Avoid PACKETLOSS
+                    offset += 10
+                    VTLOG.debug('PACKETLOSS!')
+                else:
+                    #Find next packet
+                    offset += 1
+                if len(stream) - offset <= 5:
+                    #Yep! We're done!
+                    parsing = False
         VTLOG.debug('RTP session parsed')
 
     def __normalize(self, seqbase, clock):
