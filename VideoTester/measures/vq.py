@@ -45,8 +45,8 @@ class VQmeasure(Measure):
         **On init:** Register QoS + bit-stream + video parameters.
 
         :param string conf: Video parameters: `codec`, `bitrate`, `framerate` and `size`.
-        :param dictionary rawdata: Frame information from YUV videos (`original`, `received` and `coded`).
-        :param dictionary codecdata: Frame information from compressed videos (`received` and `coded`).
+        :param dict rawdata: Frame information from YUV videos (`original`, `received` and `coded`).
+        :param dict codecdata: Frame information from compressed videos (`received` and `coded`).
         :param tuple packetdata: QoS parameters.
         '''
         Measure.__init__(self)

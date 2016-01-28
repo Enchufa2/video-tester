@@ -20,7 +20,7 @@ class RTSPServer:
 		'''
 		**On init:** Some initialization code.
 
-		:param integer port: RTSP server port.
+		:param int port: RTSP server port.
 		'''
 		#: GStreamer RTSP server instance.
 		self.server = GstRtspServer.RTSPServer()
@@ -31,8 +31,8 @@ class RTSPServer:
 		Add videos to the server.
 
 		:param list videos: List of available videos.
-		:param integer bitrate: The bitrate (in kbps).
-		:param integer framerate: The framerate (in fps).
+		:param int bitrate: The bitrate (in kbps).
+		:param int framerate: The framerate (in fps).
 		:param string path: Path to the video directory.
 		'''
 		for i, video in enumerate(videos):
@@ -69,8 +69,8 @@ class RTSPClient:
 
 		:param string path: Path for the output files.
 		:param string codec: Selected codec.
-		:param integer bitrate: Selected bitrate.
-		:param integer framerate: Selected framerate.
+		:param int bitrate: Selected bitrate.
+		:param int framerate: Selected framerate.
 		'''
 		#: Path for the output files.
 		self.path = path
@@ -171,7 +171,7 @@ class RTSPClient:
 		Connect to the RTSP server and receive the selected video (see :attr:`video`).
 
 		:param string url: RTSP server URL.
-		:param integer proto: Transport protocol for the RTP transmission.
+		:param int proto: Transport protocol for the RTP transmission.
 		'''
 		VTLOG.info('Starting GStreamer receiver...')
 		self.pipeline = Gst.parse_launch('rtspsrc name=source ! tee name=t ! queue ! %s name=depay %s ! filesink name=sink1 t. ! queue ! decodebin ! videorate skip-to-first=True ! video/x-raw,framerate=%s/1 ! filesink name=sink2' % (

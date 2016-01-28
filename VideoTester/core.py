@@ -107,11 +107,11 @@ class VTServer(VTBase, SimpleXMLRPCServer):
         Run a subprocess for an RTSP server with a given bitrate and framerate (if not running)
         or add a client (if running).
 
-        :param integer bitrate: The bitrate (in kbps).
-        :param integer framerate: The framerate (in fps).
+        :param int bitrate: The bitrate (in kbps).
+        :param int framerate: The framerate (in fps).
 
         :returns: The RTSP server port.
-        :rtype: integer
+        :rtype: int
         '''
         key = '%s kbps, %s fps' % (bitrate, framerate)
         if key in self.servers:
@@ -141,8 +141,8 @@ class VTServer(VTBase, SimpleXMLRPCServer):
         Stop an RTSP server with a given bitrate and framerate (if no remaining clients)
         or remove a client (if remaining clients).
 
-        :param integer bitrate: The bitrate (in kbps).
-        :param integer framerate: The framerate (in fps).
+        :param int bitrate: The bitrate (in kbps).
+        :param int framerate: The framerate (in fps).
 
         :returns: True.
         :rtype: boolean
@@ -162,7 +162,7 @@ class VTServer(VTBase, SimpleXMLRPCServer):
         Find an unused port starting from :attr:`VideoTester.core.VTServer.port`.
 
         :returns: An unused port number.
-        :rtype: integer
+        :rtype: int
         '''
         port = self.port
         while True:

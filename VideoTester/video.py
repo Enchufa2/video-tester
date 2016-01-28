@@ -15,8 +15,8 @@ class YUVVideo:
         **On init:** Call the proper parser.
 
         :param string file: Path to the file.
-        :param integer width: Frame width.
-        :param integer height: Frame height.
+        :param int width: Frame width.
+        :param int height: Frame height.
         :param string format: YUV format.
 
         .. note::

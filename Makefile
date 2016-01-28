@@ -16,7 +16,7 @@ help:
 
 clean:
 	-rm -rf $(DIST)
-	-rm -rf $(DOC)/html
+	-find $(DOC) -maxdepth 1 -mindepth 1 ! -name 'sphinx' -exec rm -rf {} +
 	-rm -f MANIFEST
 
 doc: clean

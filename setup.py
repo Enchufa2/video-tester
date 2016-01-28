@@ -5,9 +5,7 @@
 ## This program is published under a GPLv3 license
 
 from distutils.core import setup
-from distutils import log
 import os, fnmatch
-from stat import ST_MODE
 from VideoTester import __version__
 
 # Code borrowed from wxPython's setup and config files
@@ -72,8 +70,7 @@ setup(name = 'VideoTester',
         'Topic :: Scientific/Engineering'
         ],
     keywords = ('video', 'tester', 'quality', 'assessment', 'measures', 'python', 'QoS', 'QoE'),
-    platforms = ['Any'],
+    platforms = ['Linux', 'Unix'],
     license = 'GPLv3',
-    requires = ['scapy', 'wx', 'matplotlib', 'matplotlib.backends.backend_wxagg', 'pygst', 'gst', 'gobject', 'numpy', 'cv'],
-    cmdclass = {'build': build}
+    requires = ['gi (>=3.18.2)', 'pcap (>=0.6.4)', 'numpy (>=1.4.1)', 'cv (>=2.1)', 'wx (>=2.8.11)', 'matplotlib (>=1.0.1)', 'matplotlib.backends.backend_wxagg']
 )

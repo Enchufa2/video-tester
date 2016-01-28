@@ -39,7 +39,7 @@ class BSmeasure(Measure):
         '''
         **On init:** Register bit-stream parameters.
 
-        :param dictionary codecdata: Frame information from compressed videos (`received` and `coded`).
+        :param dict codecdata: Frame information from compressed videos (`received` and `coded`).
         '''
         Measure.__init__(self)
         #: Frame information from received video.

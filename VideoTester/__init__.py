@@ -70,7 +70,7 @@ __all__.extend([
     'VTBase', 'VTServer', 'VTClient',
     'RTSPServer', 'RTSPClient',
     'VTApp',
-    'Sniffer',
+    'PcapIter', 'Sniffer',
     'multiSort',
     'YUVVideo', 'CodedVideo',
     'measures'
@@ -78,7 +78,7 @@ __all__.extend([
 from .core import VTBase, VTServer, VTClient
 from .gstreamer import RTSPServer, RTSPClient
 from .gui import VTApp
-from .sniffer import Sniffer
+from .sniffer import PcapIter, Sniffer
 from .utils import multiSort
 from .video import YUVVideo, CodedVideo
 

@@ -1,6 +1,6 @@
-``VideoTester.core`` --- Client and server base classes
-=======================================================
+``VideoTester`` --- Base package
+================================
 
-.. automodule:: VideoTester.core
+.. automodule:: VideoTester
     :members:
     :show-inheritance:

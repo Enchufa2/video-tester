@@ -106,7 +106,7 @@ class Sniffer:
         '''
         Parse packets and extract :attr:`lengths`, :attr:`times`, :attr:`sequences`, :attr:`timestamps` and :attr:`rtt`.
 
-        :param dictionary caps: Caps recolected from the GStreamer pipeline (see :attr:`VideoTester.gstreamer.RTSPClient.caps`).
+        :param dict caps: Caps recolected from the GStreamer pipeline (see :attr:`VideoTester.gstreamer.RTSPClient.caps`).
 
         :returns: :attr:`lengths`, :attr:`times`, :attr:`sequences`, :attr:`timestamps` and :attr:`rtt`.
         :rtype: tuple

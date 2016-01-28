@@ -4,7 +4,7 @@ Configuration
 Videos
 ------
 
-It's essential that the client and the server have a local repository with the same video files. Video Tester may use almost any kind of source, but we encourage the use lossless-coded video files. For example, EvalVid project has `YUV CIF samples compressed with lossless H.264 <http://www.tkn.tu-berlin.de/research/evalvid/cif.html>`_. Unfortunately, that file format is not recognised by GStreamer without a container, so you need to _containerise_ it properly. For instance, the following ``ffmpeg`` command will convert any input file to lossless H.264 video inside a Matroska container::
+Both the client and the server MUST share the same video repository. Video Tester may use almost any kind of source, but we encourage the use lossless-coded video files. For example, EvalVid project has `YUV CIF samples compressed with lossless H.264 <http://www.tkn.tu-berlin.de/research/evalvid/cif.html>`_. Unfortunately, that file format is not recognised by GStreamer without a container, so you need to _containerise_ it properly. For instance, the following ``ffmpeg`` command will convert any input file to lossless H.264 video inside a Matroska container::
 
 	ffmpeg -i akiyo_cif.264 -c:v libx264 -qp 0 akiyo_cif.mkv
 
@@ -32,7 +32,7 @@ Both client and server modes require a common section called ``general`` as foll
 
 .. note::
 
-	By default, Video Tester searches for a configuration file called ``VT.conf`` in the current working directory. You can specify another file and location using the command-line option ``-c``.
+	By default, Video Tester looks for a configuration file called ``VT.conf`` in the current working directory. You can specify another file and location using the global command-line option ``-c``.
 
 This media mapping must be the same on both client and server side. The client mode also requires a section called ``client`` as follows::
 

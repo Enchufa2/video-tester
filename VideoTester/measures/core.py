@@ -56,7 +56,7 @@ class Measure:
         Compute the measure.
 
         :returns: Results (see :attr:`data`).
-        :rtype: dictionary
+        :rtype: dict
 
         .. note::
             This method MUST be overwritten by the subclasses.

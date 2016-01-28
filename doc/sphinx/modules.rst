@@ -7,12 +7,4 @@ Module Reference
 
    core
 
-   gstreamer
- 
-   sniffer
- 
-   video
-
-   gui
-
    measures
