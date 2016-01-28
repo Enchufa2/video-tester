@@ -6,7 +6,7 @@
 
 import os, time, pcap
 from struct import unpack_from
-from scapy.all import Packet, ByteField, ShortField, IP, TCP, RTP, rdpcap
+from scapy.all import Packet, ByteField, ShortField, RTP
 from . import VTLOG
 from .utils import multiSort
 
@@ -126,7 +126,6 @@ class Sniffer:
         self.__getRTT(caps['rtsp-sport'], rtspDport)
 
         if proto == 'tcp':
-            self.captureFile = rdpcap(self.captureFile)
             self.__parseTCP(caps['rtsp-sport'], rtspDport, caps['ptype'])
         else:
             self.__parseUDP(caps['udp-dport'], caps['ptype'])
@@ -163,9 +162,8 @@ class Sniffer:
         p = PcapIter(self.captureFile,
             'host %s and udp and dst port %s' % (self.ip, dport))
         offsets = None
-        offset = 0
         for plen, pkt, ts in p:
-            if not offset:
+            if not offsets:
                 offsets = p.getOffsets(pkt)
                 offset = sum(offsets)
             if ptype == unpack_from('!xB', pkt, offset)[0] & 0x7F:
@@ -236,59 +234,45 @@ class Sniffer:
             if not fin:
                 extract(p)
 
-        def fillGaps(seqlist, lenlist):
-            '''
-            Locate packet losses.
-
-            :param list seqlist: List of RTP sequence numbers.
-            :param list lenlist: List of packet lengths.
-
-            :returns: List of losses (0 -> no loss, 1 -> loss).
-            :rtype: list
-            '''
-            fill = [0 for i in range(0, len(seqlist))]
-            for i in range(0, len(seqlist)-1):
-                if seqlist[i] + lenlist[i] < seqlist[i+1]:
-                    fill[i] = 1
-            return fill
-
-        play = False
+        p = PcapIter(self.captureFile,
+            'host %s and tcp and src port %s and dst port %s' % (
+                self.ip, rtspSport, rtspDport))
+        offsets = None
         packetlist = []
         seqlist = []
         lenlist = []
-        for p in self.captureFile:
-            if p.haslayer(IP):
-                if (str(p).find('PAUSE') != -1) and play:
-                    VTLOG.debug('PAUSE found!')
-                    break
-                if not play:
-                    if (str(p).find('PLAY') != -1) and (str(p).find('Public:') == -1):
-                        play = True
-                        VTLOG.debug('PLAY found!')
-                #Packets from server, with TCP layer. Avoid ACK's. Avoid RTSP packets
-                elif play and (p[IP].src == self.ip) and p.haslayer(TCP) and (len(p) > 66) and (str(p).find('RTSP/1.0') == -1):
-                    if p.sport == rtspSport:
-                        packetlist.append(p)
-                        seqlist.append(p[TCP].seq)
-                        lenlist.append(len(p[TCP].payload))
-                        VTLOG.debug('TCP packet appended. Sequence: ' + str(p[TCP].seq))
-        seqlist, packetlist, lenlist = multiSort(seqlist, packetlist, lenlist)
+        tslist = []
+        for plen, pkt, ts in p:
+            if plen > 74 and 'RTSP/1.0' not in pkt and 'GStreamer' not in pkt:
+                if not offsets:
+                    offsets = p.getOffsets(pkt)
+                packetlist.append(pkt)
+                seq = unpack_from('!xxxxI', pkt, sum(offsets[0:2]))[0]
+                seqlist.append(seq)
+                lenlist.append(plen - offsets[0])
+                tslist.append(ts)
+                VTLOG.debug('TCP packet appended. Sequence: %s' % seq)
+        seqlist, packetlist, lenlist, tslist = \
+            multiSort(seqlist, packetlist, lenlist, tslist)
         VTLOG.debug('Sequence list sorted')
         #Locate packet losses
-        fill = fillGaps(seqlist, lenlist)
+        fill = [0 for i in range(0, len(seqlist))]
+        for i in range(0, len(seqlist)-1):
+            if seqlist[i] + lenlist[i] < seqlist[i+1]:
+                fill[i] = 1
         stream = ''
-        for i, p in enumerate(packetlist):
-            stream = ''.join([stream, str(p[TCP].payload)])
+        for i in range(0, len(packetlist)):
+            stream += packetlist[i][sum(offsets):]
             #Mark ENDOFPACKET and save time and length
-            stream = ''.join([stream, 'ENDOFPACKET'])
-            stream = ''.join([stream, str(int(p.time * 1000000))])
-            stream = ''.join([stream, 'ENDOFPACKET'])
-            stream = ''.join([stream, str(p.len)])
-            stream = ''.join([stream, 'ENDOFPACKET'])
+            stream += 'ENDOFPACKET'
+            stream += str(int(tslist[i] * 1000000))
+            stream += 'ENDOFPACKET'
+            stream += str(lenlist[i])
+            stream += 'ENDOFPACKET'
             if fill[i]:
                 #Mark PACKETLOSS
                 VTLOG.debug('PACKETLOSS!')
-                stream = ''.join([stream, 'PACKETLOSS'])
+                stream += 'PACKETLOSS'
         VTLOG.debug('TCP payloads assembled')
         stream = RTSPi(stream)
         extract(stream)
