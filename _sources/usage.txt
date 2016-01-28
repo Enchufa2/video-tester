@@ -38,7 +38,7 @@ You can use VT client with a graphical user interface (GUI). Activate it with th
 Generated files
 ---------------
 
-After the client execution, a new temporary directory called ``temp`` will have been created in the current working directory. There, you will find a set of files inside a directory named like this: ``temp/<video>_<codec>_<bitrate>_<framerate>_<protocol>`` (e. g., ``temp/video0_h263_128_25_udp-unicast``). The name of those files starts with a numerical prefix (e. g., ``00``, ``01``...):
+After the client execution, you will find a set of result files inside your temporary directory organised as follows: ``temp/<video>_<codec>_<bitrate>_<framerate>_<protocol>/*`` (e. g., ``temp/video0_h263_128_25_udp-unicast/*``). The name of those files starts with a numerical prefix (e. g., ``00``, ``01``...):
 
 * ``00.cap``: PCAP file.
 * ``00.h263``: received video (coded).
