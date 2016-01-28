@@ -7,9 +7,9 @@ Long-term:
 * Fix udp-mcast or drop support (maybe it is a localhost only issue?)
 * Add unit tests
 * Integrate with Travis / Coveralls
-* Add Python3 support
 * Parallelization
 * Refactor... always refactor
 
 Long-long-term:
+* Add Python3 support (some packages are not compatible with Python3)
 * Online assessment?
