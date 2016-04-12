@@ -158,44 +158,44 @@
 <li>It MUST implement a method called <tt class="docutils literal"><span class="pre">calculate()</span></tt>.</li>
 </ul>
 <p>Here is an example of three new measures:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">PlotMeasure</span><span class="p">(</span><span class="n">QoSmeasure</span><span class="p">):</span>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">PlotMeasure</span><span class="p">(</span><span class="n">QoSmeasure</span><span class="p">):</span>
         <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
                 <span class="n">QoSmeasure</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;&quot;plot&quot; measure&#39;</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s">&#39;type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;plot&#39;</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s">&#39;units&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="s">&#39;units for x axis&#39;</span><span class="p">,</span> <span class="s">&#39;units for y axis&#39;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;&quot;plot&quot; measure&#39;</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;plot&#39;</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;units&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;units for x axis&#39;</span><span class="p">,</span> <span class="s1">&#39;units for y axis&#39;</span><span class="p">)</span>
 
         <span class="k">def</span> <span class="nf">calculate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-                <span class="c"># Some stuff...</span>
-                <span class="n">x</span> <span class="o">=</span> <span class="o">...</span> <span class="c"># List of values (x axis)</span>
-                <span class="n">y</span> <span class="o">=</span> <span class="o">...</span> <span class="c"># List of values (y axis)</span>
+                <span class="c1"># Some stuff...</span>
+                <span class="n">x</span> <span class="o">=</span> <span class="o">...</span> <span class="c1"># List of values (x axis)</span>
+                <span class="n">y</span> <span class="o">=</span> <span class="o">...</span> <span class="c1"># List of values (y axis)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
                 <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span>
 
 <span class="k">class</span> <span class="nc">ValueMeasure</span><span class="p">(</span><span class="n">QoSmeasure</span><span class="p">):</span>
         <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
                 <span class="n">QoSmeasure</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;&quot;value&quot; measure&#39;</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s">&#39;type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;value&#39;</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s">&#39;units&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;units&#39;</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;&quot;value&quot; measure&#39;</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;value&#39;</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;units&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;units&#39;</span>
 
         <span class="k">def</span> <span class="nf">calculate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-                <span class="c"># Some stuff...</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s">&#39;value&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="o">...</span> <span class="c"># Output value</span>
+                <span class="c1"># Some stuff...</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;value&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="o">...</span> <span class="c1"># Output value</span>
                 <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span>
 
 <span class="k">class</span> <span class="nc">BarMeasure</span><span class="p">(</span><span class="n">QoSmeasure</span><span class="p">):</span>
         <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
                 <span class="n">QoSmeasure</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s">&#39;name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;&quot;bar&quot; measure&#39;</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s">&#39;type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;bar&#39;</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s">&#39;units&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="s">&#39;units for x axis&#39;</span><span class="p">,</span> <span class="s">&#39;units for y axis&#39;</span><span class="p">)</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s">&#39;width&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="o">...</span> <span class="c"># Bar width</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;&quot;bar&quot; measure&#39;</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;bar&#39;</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;units&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;units for x axis&#39;</span><span class="p">,</span> <span class="s1">&#39;units for y axis&#39;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;width&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="o">...</span> <span class="c1"># Bar width</span>
 
         <span class="k">def</span> <span class="nf">calculate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-                <span class="c"># Some stuff...</span>
-                <span class="n">x</span> <span class="o">=</span> <span class="o">...</span> <span class="c"># List of values (x axis)</span>
-                <span class="n">y</span> <span class="o">=</span> <span class="o">...</span> <span class="c"># List of values (y axis)</span>
+                <span class="c1"># Some stuff...</span>
+                <span class="n">x</span> <span class="o">=</span> <span class="o">...</span> <span class="c1"># List of values (x axis)</span>
+                <span class="n">y</span> <span class="o">=</span> <span class="o">...</span> <span class="c1"># List of values (y axis)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
                 <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span>
 </pre></div>
@@ -207,19 +207,19 @@
 <li><tt class="xref py py-class docutils literal"><span class="pre">VideoTester.measures.vq.VQmeter</span></tt>.</li>
 </ul>
 <p>Here is an example:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="k">class</span> <span class="nc">QoSmeter</span><span class="p">(</span><span class="n">Meter</span><span class="p">):</span>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">QoSmeter</span><span class="p">(</span><span class="n">Meter</span><span class="p">):</span>
         <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">selected</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
                 <span class="n">Meter</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
-                <span class="k">if</span> <span class="s">&#39;latency&#39;</span> <span class="ow">in</span> <span class="n">selected</span><span class="p">:</span>
+                <span class="k">if</span> <span class="s1">&#39;latency&#39;</span> <span class="ow">in</span> <span class="n">selected</span><span class="p">:</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">measures</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Latency</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
 
-                <span class="c"># other measures</span>
+                <span class="c1"># other measures</span>
 
-                <span class="k">if</span> <span class="s">&#39;plotmeasure&#39;</span> <span class="ow">in</span> <span class="n">selected</span><span class="p">:</span>
+                <span class="k">if</span> <span class="s1">&#39;plotmeasure&#39;</span> <span class="ow">in</span> <span class="n">selected</span><span class="p">:</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">measures</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">PlotMeasure</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
-                <span class="k">if</span> <span class="s">&#39;valuemeasure&#39;</span> <span class="ow">in</span> <span class="n">selected</span><span class="p">:</span>
+                <span class="k">if</span> <span class="s1">&#39;valuemeasure&#39;</span> <span class="ow">in</span> <span class="n">selected</span><span class="p">:</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">measures</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ValueMeasure</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
-                <span class="k">if</span> <span class="s">&#39;barmeasure&#39;</span> <span class="ow">in</span> <span class="n">selected</span><span class="p">:</span>
+                <span class="k">if</span> <span class="s1">&#39;barmeasure&#39;</span> <span class="ow">in</span> <span class="n">selected</span><span class="p">:</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">measures</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">BarMeasure</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
 </pre></div>
 </div>

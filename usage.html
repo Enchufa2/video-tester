@@ -145,14 +145,14 @@
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p>By default, Video Tester looks for a configuration file called <tt class="docutils literal"><span class="pre">VT.conf</span></tt> in the current working directory. You can specify another file and location using the global command-line option <tt class="docutils literal"><span class="pre">-c</span></tt> (or <tt class="docutils literal"><span class="pre">--conf</span></tt>):</p>
-<div class="last highlight-python"><div class="highlight"><pre>$ VT -c path/to/another.conf [server|client]
+<div class="last highlight-python"><div class="highlight"><pre><span></span>$ VT -c path/to/another.conf [server|client]
 </pre></div>
 </div>
 </div>
 <div class="section" id="server-mode">
 <h2>Server mode<a class="headerlink" href="#server-mode" title="Permalink to this headline">¶</a></h2>
 <p>You can run Video Tester in server mode with the following command:</p>
-<div class="highlight-python"><div class="highlight"><pre>$ VT server
+<div class="highlight-python"><div class="highlight"><pre><span></span>$ VT server
 </pre></div>
 </div>
 <p>No more operation is required. The server waits for client requests in standalone mode.</p>
@@ -164,7 +164,7 @@
 <div class="section" id="client-mode">
 <h2>Client mode<a class="headerlink" href="#client-mode" title="Permalink to this headline">¶</a></h2>
 <p>You can launch Video Tester in client mode with the following command:</p>
-<div class="highlight-python"><div class="highlight"><pre>$ VT client
+<div class="highlight-python"><div class="highlight"><pre><span></span>$ VT client
 </pre></div>
 </div>
 <div class="admonition note">
@@ -172,7 +172,7 @@
 <p class="last">VT client requires root privileges (for network sniffing).</p>
 </div>
 <p>You can use VT client with a graphical user interface (GUI). Activate it with the option <tt class="docutils literal"><span class="pre">-g</span></tt> (or <tt class="docutils literal"><span class="pre">--gui</span></tt>):</p>
-<div class="highlight-python"><div class="highlight"><pre>$ VT client -g
+<div class="highlight-python"><div class="highlight"><pre><span></span>$ VT client -g
 </pre></div>
 </div>
 </div>
@@ -205,15 +205,15 @@
 <li><tt class="docutils literal"><span class="pre">width</span></tt> (only for <tt class="docutils literal"><span class="pre">bar</span></tt> measures): bar width.</li>
 </ul>
 <p>An example of <tt class="docutils literal"><span class="pre">plot</span></tt> measure:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="p">{</span> <span class="s">&#39;name&#39;</span><span class="p">:</span><span class="s">&#39;Bandwidth&#39;</span><span class="p">,</span> <span class="s">&#39;type&#39;</span><span class="p">:</span><span class="s">&#39;plot&#39;</span><span class="p">,</span> <span class="s">&#39;units&#39;</span><span class="p">:(</span><span class="s">&#39;time (s)&#39;</span><span class="p">,</span> <span class="s">&#39;kbps&#39;</span><span class="p">),</span> <span class="s">&#39;axes&#39;</span><span class="p">:([</span><span class="o">...</span><span class="p">],</span> <span class="p">[</span><span class="o">...</span><span class="p">]),</span> <span class="s">&#39;min&#39;</span><span class="p">:(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">7</span><span class="p">),</span> <span class="s">&#39;max&#39;</span><span class="p">:(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="s">&#39;mean&#39;</span><span class="p">:</span><span class="mi">5</span> <span class="p">}</span>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="p">{</span> <span class="s1">&#39;name&#39;</span><span class="p">:</span><span class="s1">&#39;Bandwidth&#39;</span><span class="p">,</span> <span class="s1">&#39;type&#39;</span><span class="p">:</span><span class="s1">&#39;plot&#39;</span><span class="p">,</span> <span class="s1">&#39;units&#39;</span><span class="p">:(</span><span class="s1">&#39;time (s)&#39;</span><span class="p">,</span> <span class="s1">&#39;kbps&#39;</span><span class="p">),</span> <span class="s1">&#39;axes&#39;</span><span class="p">:([</span><span class="o">...</span><span class="p">],</span> <span class="p">[</span><span class="o">...</span><span class="p">]),</span> <span class="s1">&#39;min&#39;</span><span class="p">:(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">7</span><span class="p">),</span> <span class="s1">&#39;max&#39;</span><span class="p">:(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="s1">&#39;mean&#39;</span><span class="p">:</span><span class="mi">5</span> <span class="p">}</span>
 </pre></div>
 </div>
 <p>An example of <tt class="docutils literal"><span class="pre">bar</span></tt> measure:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="p">{</span> <span class="s">&#39;name&#39;</span><span class="p">:</span><span class="s">&#39;PLD&#39;</span><span class="p">,</span> <span class="s">&#39;type&#39;</span><span class="p">:</span><span class="s">&#39;bar&#39;</span><span class="p">,</span> <span class="s">&#39;units&#39;</span><span class="p">:(</span><span class="s">&#39;time (s)&#39;</span><span class="p">,</span> <span class="s">&#39;Packet Loss Rate&#39;</span><span class="p">),</span> <span class="s">&#39;axes&#39;</span><span class="p">:([</span><span class="o">...</span><span class="p">],</span> <span class="p">[</span><span class="o">...</span><span class="p">]),</span> <span class="s">&#39;min&#39;</span><span class="p">:(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">7</span><span class="p">),</span> <span class="s">&#39;max&#39;</span><span class="p">:(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="s">&#39;mean&#39;</span><span class="p">:</span><span class="mi">5</span><span class="p">,</span> <span class="s">&#39;width&#39;</span><span class="p">:</span><span class="mi">1</span> <span class="p">}</span>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="p">{</span> <span class="s1">&#39;name&#39;</span><span class="p">:</span><span class="s1">&#39;PLD&#39;</span><span class="p">,</span> <span class="s1">&#39;type&#39;</span><span class="p">:</span><span class="s1">&#39;bar&#39;</span><span class="p">,</span> <span class="s1">&#39;units&#39;</span><span class="p">:(</span><span class="s1">&#39;time (s)&#39;</span><span class="p">,</span> <span class="s1">&#39;Packet Loss Rate&#39;</span><span class="p">),</span> <span class="s1">&#39;axes&#39;</span><span class="p">:([</span><span class="o">...</span><span class="p">],</span> <span class="p">[</span><span class="o">...</span><span class="p">]),</span> <span class="s1">&#39;min&#39;</span><span class="p">:(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">7</span><span class="p">),</span> <span class="s1">&#39;max&#39;</span><span class="p">:(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="s1">&#39;mean&#39;</span><span class="p">:</span><span class="mi">5</span><span class="p">,</span> <span class="s1">&#39;width&#39;</span><span class="p">:</span><span class="mi">1</span> <span class="p">}</span>
 </pre></div>
 </div>
 <p>An example of <tt class="docutils literal"><span class="pre">value</span></tt> measure:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="p">{</span> <span class="s">&#39;name&#39;</span><span class="p">:</span><span class="s">&#39;Latency&#39;</span><span class="p">,</span> <span class="s">&#39;type&#39;</span><span class="p">:</span><span class="s">&#39;value&#39;</span><span class="p">,</span> <span class="s">&#39;units&#39;</span><span class="p">:</span><span class="s">&#39;ms&#39;</span><span class="p">,</span> <span class="s">&#39;value&#39;</span><span class="p">:</span><span class="mi">50</span> <span class="p">}</span>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="p">{</span> <span class="s1">&#39;name&#39;</span><span class="p">:</span><span class="s1">&#39;Latency&#39;</span><span class="p">,</span> <span class="s1">&#39;type&#39;</span><span class="p">:</span><span class="s1">&#39;value&#39;</span><span class="p">,</span> <span class="s1">&#39;units&#39;</span><span class="p">:</span><span class="s1">&#39;ms&#39;</span><span class="p">,</span> <span class="s1">&#39;value&#39;</span><span class="p">:</span><span class="mi">50</span> <span class="p">}</span>
 </pre></div>
 </div>
 </div>

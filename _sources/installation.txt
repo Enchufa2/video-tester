@@ -15,7 +15,7 @@ Video Tester has the following dependencies:
 
 If you are using **Fedora**, first of all, enable the `RPM Fusion <http://rpmfusion.org/>`_ repositories. Then, these dependencies can be installed with the following command::
 
-	$ sudo dnf install gstreamer1 gstreamer1-libav gstreamer1-plugins-base gstreamer1-plugins-good gstreamer1-plugins-ugly gstreamer1-plugins-bad-free gstreamer-plugins-bad-freeworld gstreamer1-rtsp-server pygobject2 pylibpcap numpy python2-matplotlib python2-matplotlib-wx wxPython opencv-python
+	$ sudo dnf install gstreamer1 gstreamer1-libav gstreamer1-plugins-base gstreamer1-plugins-good gstreamer1-plugins-ugly gstreamer1-plugins-bad-free gstreamer-plugins-bad-freeworld gstreamer1-rtsp-server python-gobject pylibpcap numpy python2-matplotlib python2-matplotlib-wx wxPython opencv-python
 
 You can download the latest version of Video Tester from `the project page at GitHub <https://github.com/Enchufa2/video-tester>`_. Then, follow this steps::
 
