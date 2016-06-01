@@ -3,7 +3,6 @@ Short-term:
 
 Long-term:
 * video: fix h264 and theora readers
-* Fix udp-mcast or drop support (maybe it is a localhost only issue?)
 * Add unit tests
 * Integrate with Travis / Coveralls
 * Parallelization

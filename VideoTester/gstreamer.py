@@ -45,7 +45,10 @@ class RTSPServer:
 					items['bitrate_from_kbps'](bitrate),
 					items['rtppay']
 				)
+				pool = GstRtspServer.RTSPAddressPool()
+				pool.add_range("224.3.0.0", "224.3.0.10", 5000, 5010, 10)
 				factory = GstRtspServer.RTSPMediaFactory()
+				factory.set_address_pool(pool)
 				factory.set_launch(launch)
 				factory.set_shared(True)
 				factory.set_eos_shutdown(True)
