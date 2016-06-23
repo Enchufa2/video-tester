@@ -6,7 +6,9 @@
 
 import math, cv
 from itertools import izip
+from multiprocessing import cpu_count
 from .. import VTLOG
+from ..utils import ProcessingPool
 from .core import Meter, Measure
 from .qos import QoSmeter
 from .bs import BSmeter
@@ -92,6 +94,13 @@ class VQmeasure(Measure):
         VTLOG.info('---------------------------')
         return measures
 
+def doPSNR(frame1, frame2):
+    sum = (frame1.astype(int) - frame2.astype(int))**2
+    mse = sum.sum() / frame1.size
+    if mse != 0:
+        return 20 * math.log(255 / math.sqrt(mse), 10)
+    else: return 100
+
 class PSNR(VQmeasure):
     '''
     PSNR: Peak Signal to Noise Ratio (Y component).
@@ -110,32 +119,27 @@ class PSNR(VQmeasure):
             self.yuvref = self.rawdata['coded']
 
     def calculate(self):
-        L = 255
         size = min(self.yuv.frames, self.yuvref.frames)
         x = range(0, size)
-        y = [100] * size
-        for i, (frame1, frame2) in enumerate(izip(self.yuv, self.yuvref)):
-            sum = (frame1['Y'].astype(int) - frame2['Y'].astype(int))**2
-            mse = sum.sum() / self.yuv.width / self.yuv.height
-            if mse != 0:
-                y[i] = 20 * math.log(L / math.sqrt(mse), 10)
+        p = ProcessingPool(cpu_count())
+        for deg, ref in izip(self.yuv, self.yuvref):
+            p.add_task(doPSNR, deg['Y'], ref['Y'])
+        p.join()
+        y = p.get_results()
         self.graph(x, y)
         return self.data
 
-class SSIM(VQmeasure):
+def doSSIM(frame1, frame2):
     '''
-    SSIM: Structural Similarity index (Y component).
+    The equivalent of Zhou Wang's SSIM matlab code using OpenCV.
+    from http://www.cns.nyu.edu/~zwang/files/research/ssim/index.html
+    The measure is described in :
+    "Image quality assessment: From error measurement to structural similarity"
+    C++ code by Rabah Mehdi. http://mehdi.rabah.free.fr/SSIM
 
-    * Type: `plot`.
-    * Units: `SSIM index per frame`.
+    C++ to Python translation and adaptation by Iñaki Úcar
     '''
-    def __init__(self, data):
-        VQmeasure.__init__(self, data)
-        self.data['name'] = 'SSIM'
-        self.data['type'] = 'plot'
-        self.data['units'] = ('frame', 'SSIM index')
-
-    def __array2cv(self, a):
+    def array2cv(a):
         dtype2depth = {
             'uint8':   cv.IPL_DEPTH_8U,
             'int8':    cv.IPL_DEPTH_8S,
@@ -153,89 +157,94 @@ class SSIM(VQmeasure):
         cv.SetData(cv_im, a.tostring(), a.dtype.itemsize*nChannels*a.shape[1])
         return cv_im
 
-    def __SSIM(self, frame1, frame2):
-        '''
-            The equivalent of Zhou Wang's SSIM matlab code using OpenCV.
-            from http://www.cns.nyu.edu/~zwang/files/research/ssim/index.html
-            The measure is described in :
-            "Image quality assessment: From error measurement to structural similarity"
-            C++ code by Rabah Mehdi. http://mehdi.rabah.free.fr/SSIM
+    C1 = 6.5025
+    C2 = 58.5225
+    img1_temp = array2cv(frame1)
+    img2_temp = array2cv(frame2)
+    nChan = img1_temp.nChannels
+    d = cv.IPL_DEPTH_32F
+    size = img1_temp.width, img1_temp.height
+    img1 = cv.CreateImage(size, d, nChan)
+    img2 = cv.CreateImage(size, d, nChan)
+    cv.Convert(img1_temp, img1)
+    cv.Convert(img2_temp, img2)
+    img1_sq = cv.CreateImage(size, d, nChan)
+    img2_sq = cv.CreateImage(size, d, nChan)
+    img1_img2 = cv.CreateImage(size, d, nChan)
+    cv.Pow(img1, img1_sq, 2)
+    cv.Pow(img2, img2_sq, 2)
+    cv.Mul(img1, img2, img1_img2, 1)
+    mu1 = cv.CreateImage(size, d, nChan)
+    mu2 = cv.CreateImage(size, d, nChan)
+    mu1_sq = cv.CreateImage(size, d, nChan)
+    mu2_sq = cv.CreateImage(size, d, nChan)
+    mu1_mu2 = cv.CreateImage(size, d, nChan)
+    sigma1_sq = cv.CreateImage(size, d, nChan)
+    sigma2_sq = cv.CreateImage(size, d, nChan)
+    sigma12 = cv.CreateImage(size, d, nChan)
+    temp1 = cv.CreateImage(size, d, nChan)
+    temp2 = cv.CreateImage(size, d, nChan)
+    temp3 = cv.CreateImage(size, d, nChan)
+    ssim_map = cv.CreateImage(size, d, nChan)
+    #/*************************** END INITS **********************************/
+    #// PRELIMINARY COMPUTING
+    cv.Smooth(img1, mu1, cv.CV_GAUSSIAN, 11, 11, 1.5)
+    cv.Smooth(img2, mu2, cv.CV_GAUSSIAN, 11, 11, 1.5)
+    cv.Pow(mu1, mu1_sq, 2)
+    cv.Pow(mu2, mu2_sq, 2)
+    cv.Mul(mu1, mu2, mu1_mu2, 1)
+    cv.Smooth(img1_sq, sigma1_sq, cv.CV_GAUSSIAN, 11, 11, 1.5)
+    cv.AddWeighted(sigma1_sq, 1, mu1_sq, -1, 0, sigma1_sq)
+    cv.Smooth(img2_sq, sigma2_sq, cv.CV_GAUSSIAN, 11, 11, 1.5)
+    cv.AddWeighted(sigma2_sq, 1, mu2_sq, -1, 0, sigma2_sq)
+    cv.Smooth(img1_img2, sigma12, cv.CV_GAUSSIAN, 11, 11, 1.5)
+    cv.AddWeighted(sigma12, 1, mu1_mu2, -1, 0, sigma12)
+    #//////////////////////////////////////////////////////////////////////////
+    #// FORMULA
+    #// (2*mu1_mu2 + C1)
+    cv.Scale(mu1_mu2, temp1, 2)
+    cv.AddS(temp1, C1, temp1)
+    #// (2*sigma12 + C2)
+    cv.Scale(sigma12, temp2, 2)
+    cv.AddS(temp2, C2, temp2)
+    #// ((2*mu1_mu2 + C1).*(2*sigma12 + C2))
+    cv.Mul(temp1, temp2, temp3, 1)
+    #// (mu1_sq + mu2_sq + C1)
+    cv.Add(mu1_sq, mu2_sq, temp1)
+    cv.AddS(temp1, C1, temp1)
+    #// (sigma1_sq + sigma2_sq + C2)
+    cv.Add(sigma1_sq, sigma2_sq, temp2)
+    cv.AddS(temp2, C2, temp2)
+    #// ((mu1_sq + mu2_sq + C1).*(sigma1_sq + sigma2_sq + C2))
+    cv.Mul(temp1, temp2, temp1, 1)
+    #// ((2*mu1_mu2 + C1).*(2*sigma12 + C2))./((mu1_sq + mu2_sq + C1).*(sigma1_sq + sigma2_sq + C2))
+    cv.Div(temp3, temp1, ssim_map, 1)
+    index_scalar = cv.Avg(ssim_map)
+    #// through observation, there is approximately
+    #// 1% error max with the original matlab program
+    return index_scalar[0]
 
-            C++ to Python translation and adaptation by Iñaki Úcar
-        '''
-        C1 = 6.5025
-        C2 = 58.5225
-        img1_temp = self.__array2cv(frame1)
-        img2_temp = self.__array2cv(frame2)
-        nChan = img1_temp.nChannels
-        d = cv.IPL_DEPTH_32F
-        size = img1_temp.width, img1_temp.height
-        img1 = cv.CreateImage(size, d, nChan)
-        img2 = cv.CreateImage(size, d, nChan)
-        cv.Convert(img1_temp, img1)
-        cv.Convert(img2_temp, img2)
-        img1_sq = cv.CreateImage(size, d, nChan)
-        img2_sq = cv.CreateImage(size, d, nChan)
-        img1_img2 = cv.CreateImage(size, d, nChan)
-        cv.Pow(img1, img1_sq, 2)
-        cv.Pow(img2, img2_sq, 2)
-        cv.Mul(img1, img2, img1_img2, 1)
-        mu1 = cv.CreateImage(size, d, nChan)
-        mu2 = cv.CreateImage(size, d, nChan)
-        mu1_sq = cv.CreateImage(size, d, nChan)
-        mu2_sq = cv.CreateImage(size, d, nChan)
-        mu1_mu2 = cv.CreateImage(size, d, nChan)
-        sigma1_sq = cv.CreateImage(size, d, nChan)
-        sigma2_sq = cv.CreateImage(size, d, nChan)
-        sigma12 = cv.CreateImage(size, d, nChan)
-        temp1 = cv.CreateImage(size, d, nChan)
-        temp2 = cv.CreateImage(size, d, nChan)
-        temp3 = cv.CreateImage(size, d, nChan)
-        ssim_map = cv.CreateImage(size, d, nChan)
-        #/*************************** END INITS **********************************/
-        #// PRELIMINARY COMPUTING
-        cv.Smooth(img1, mu1, cv.CV_GAUSSIAN, 11, 11, 1.5)
-        cv.Smooth(img2, mu2, cv.CV_GAUSSIAN, 11, 11, 1.5)
-        cv.Pow(mu1, mu1_sq, 2)
-        cv.Pow(mu2, mu2_sq, 2)
-        cv.Mul(mu1, mu2, mu1_mu2, 1)
-        cv.Smooth(img1_sq, sigma1_sq, cv.CV_GAUSSIAN, 11, 11, 1.5)
-        cv.AddWeighted(sigma1_sq, 1, mu1_sq, -1, 0, sigma1_sq)
-        cv.Smooth(img2_sq, sigma2_sq, cv.CV_GAUSSIAN, 11, 11, 1.5)
-        cv.AddWeighted(sigma2_sq, 1, mu2_sq, -1, 0, sigma2_sq)
-        cv.Smooth(img1_img2, sigma12, cv.CV_GAUSSIAN, 11, 11, 1.5)
-        cv.AddWeighted(sigma12, 1, mu1_mu2, -1, 0, sigma12)
-        #//////////////////////////////////////////////////////////////////////////
-        #// FORMULA
-        #// (2*mu1_mu2 + C1)
-        cv.Scale(mu1_mu2, temp1, 2)
-        cv.AddS(temp1, C1, temp1)
-        #// (2*sigma12 + C2)
-        cv.Scale(sigma12, temp2, 2)
-        cv.AddS(temp2, C2, temp2)
-        #// ((2*mu1_mu2 + C1).*(2*sigma12 + C2))
-        cv.Mul(temp1, temp2, temp3, 1)
-        #// (mu1_sq + mu2_sq + C1)
-        cv.Add(mu1_sq, mu2_sq, temp1)
-        cv.AddS(temp1, C1, temp1)
-        #// (sigma1_sq + sigma2_sq + C2)
-        cv.Add(sigma1_sq, sigma2_sq, temp2)
-        cv.AddS(temp2, C2, temp2)
-        #// ((mu1_sq + mu2_sq + C1).*(sigma1_sq + sigma2_sq + C2))
-        cv.Mul(temp1, temp2, temp1, 1)
-        #// ((2*mu1_mu2 + C1).*(2*sigma12 + C2))./((mu1_sq + mu2_sq + C1).*(sigma1_sq + sigma2_sq + C2))
-        cv.Div(temp3, temp1, ssim_map, 1)
-        index_scalar = cv.Avg(ssim_map)
-        #// through observation, there is approximately
-        #// 1% error max with the original matlab program
-        return index_scalar[0]
+class SSIM(VQmeasure):
+    '''
+    SSIM: Structural Similarity index (Y component).
+
+    * Type: `plot`.
+    * Units: `SSIM index per frame`.
+    '''
+    def __init__(self, data):
+        VQmeasure.__init__(self, data)
+        self.data['name'] = 'SSIM'
+        self.data['type'] = 'plot'
+        self.data['units'] = ('frame', 'SSIM index')
 
     def calculate(self):
         size = min(self.yuv.frames, self.yuvref.frames)
         x = range(0, size)
-        y = [0] * size
-        for i, (frame1, frame2) in enumerate(izip(self.yuv, self.yuvref)):
-            y[i] = self.__SSIM(frame1['Y'], frame2['Y'])
+        p = ProcessingPool(cpu_count())
+        for deg, ref in izip(self.yuv, self.yuvref):
+            p.add_task(doSSIM, deg['Y'], ref['Y'])
+        p.join()
+        y = p.get_results()
         self.graph(x, y)
         return self.data
 
