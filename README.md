@@ -1,12 +1,10 @@
-Video Tester - Video Quality Assessment Tool
-============================================
+# Video Tester - Video Quality Assessment Tool
 
 Video Tester is a framework for video quality assessment over a real or simulated IP network. Parameter extraction is performed on the three levels involved in the video processing and transmission ---packet level, bitstream level and picture level--- in order to gather as much information as possible. Therefore, it is suitable for implementing any kind of metric: data metrics, picture metrics, packet-based metrics, bitstream-based metrics or hybrid metrics; with full-reference, reduced-reference or no-reference.
 
 It is a Linux application programmed in Python with the aim of promoting extensibility, and the election of the GStreamer framework for video processing is due to its broad support in this area. Video Tester covers [EvalVid](http://www.tkn.tu-berlin.de/research/evalvid/) features and adds further improvements in terms of usability, extensibility, codec support, support of transmission methods and reliability in case of losses.
 
-Features
---------
+## Features
 
 * Codec support: H.263, H.264, MPEG-4 part 2, Theora.
 * Implemented metrics:
@@ -14,15 +12,13 @@ Features
  * Bitstream metrics: stream eye, reference stream eye, gop size, I-frame loss rate.
  * Video quality metrics: PSNR, SSIM, ITU-T G.1070, MOS (PSNR to MOS mapping from EvalVid), MIV (from EvalVid).
 
-Publications
-------------
+## Publications
 
 If you use this framework for your research, we would appreciate if you could cite the following reference:
 
   Ucar, I.; Navarro-Ortiz, J.; Ameigeiras, P.; Lopez-Soler, J.M., **Video Tester — A multiple-metric framework for video quality assessment over IP networks**, *Broadband Multimedia Systems and Broadcasting (BMSB), 2012 IEEE International Symposium on*, pp.1-5, 27-29 June 2012, DOI: [10.1109/BMSB.2012.6264243](http://dx.doi.org/10.1109/BMSB.2012.6264243), [arXiv:1301.5793](http://arxiv.org/abs/1301.5793) **[cs.MM]**
 
-Installation
-------------
+## Installation
 
 Video Tester has the following dependencies:
 
@@ -36,18 +32,30 @@ Video Tester has the following dependencies:
 * Matplotlib (>=1.0.1).
 * WxPython (>=2.8.11) + Matplotlib backend.
 
-If you are using **Fedora**, first of all, enable the [RPM Fusion](http://rpmfusion.org) repositories. Then, these dependencies can be installed with the following command:
+### Method 1 (Fedora only):
 
-	$ sudo dnf install gstreamer1 gstreamer1-libav gstreamer1-plugins-base gstreamer1-plugins-good gstreamer1-plugins-ugly gstreamer1-plugins-bad-free gstreamer1-plugins-bad-freeworld gstreamer1-rtsp-server python-gobject pylibpcap numpy python2-matplotlib python2-matplotlib-wx wxPython opencv-python
+If you are using **Fedora**, you can build an RPM and let DNF/YUM manage all dependencies for you. First of all, enable the [RPM Fusion](http://rpmfusion.org) repositories. Then, follow these steps:
 
-Now, you can download the latest version of Video Tester. Then, follow this steps:
+    $ git clone https://github.com/Enchufa2/video-tester.git
+    $ cd video-tester
+    $ make bdist_rpm
+    $ sudo dnf install dist/VideoTester-x.x.x-1.noarch.rpm
 
-	$ tar xf VideoTester-x.x.x.tar.gz
-	$ cd VideoTester-x.x.x
-	$ sudo python setup.py install
+### Method 2 (all distributions):
 
-Basic Usage
------
+You need to manually install all the required dependencies.
+
+> If you are using **Fedora**, first of all, enable the [RPM Fusion](http://rpmfusion.org) repositories. Then, these dependencies can be installed with the following command:
+>
+> 	$ sudo dnf install gstreamer1 gstreamer1-libav gstreamer1-plugins-base gstreamer1-plugins-good gstreamer1-plugins-ugly gstreamer1-plugins-bad-free gstreamer1-plugins-bad-freeworld gstreamer1-rtsp-server python-gobject pylibpcap numpy python2-matplotlib python2-matplotlib-wx wxPython opencv-python
+
+Then, download the latest version of Video Tester and follow these steps:
+
+    $ tar xf VideoTester-x.x.x.tar.gz
+    $ cd VideoTester-x.x.x
+    $ sudo python setup.py install
+
+## Basic Usage
 
 VT in server mode:
 
