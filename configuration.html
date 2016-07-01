@@ -142,7 +142,7 @@
 <h1>Configuration<a class="headerlink" href="#configuration" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="videos">
 <h2>Videos<a class="headerlink" href="#videos" title="Permalink to this headline">¶</a></h2>
-<p>Both the client and the server MUST share the same video repository. Video Tester may use almost any kind of source, but we encourage the use lossless-coded video files. For example, EvalVid project has <a class="reference external" href="http://www.tkn.tu-berlin.de/research/evalvid/cif.html">YUV CIF samples compressed with lossless H.264</a>. Unfortunately, that file format is not recognised by GStreamer without a container, so you need to _containerise_ it properly. For instance, the following <tt class="docutils literal"><span class="pre">ffmpeg</span></tt> command will convert any input file to lossless H.264 video inside a Matroska container:</p>
+<p>Both the client and the server MUST share the same video repository. Video Tester may use almost any kind of source, but we encourage the use lossless-coded video files. For example, EvalVid project has <a class="reference external" href="http://www.tkn.tu-berlin.de/research/evalvid/cif.html">YUV CIF samples compressed with lossless H.264</a>. Unfortunately, that file format is not recognised by GStreamer without a container, so you need to _containerise_ it properly. For instance, the following <code class="docutils literal"><span class="pre">ffmpeg</span></code> command will convert any input file to lossless H.264 video inside a Matroska container:</p>
 <div class="highlight-python"><div class="highlight"><pre><span></span>ffmpeg -i akiyo_cif.264 -c:v libx264 -qp 0 akiyo_cif.mkv
 </pre></div>
 </div>
@@ -155,7 +155,7 @@
 <span class="n">key</span><span class="o">=</span><span class="n">value</span>
 </pre></div>
 </div>
-<p>Both client and server modes require a common section called <tt class="docutils literal"><span class="pre">general</span></tt> as follows:</p>
+<p>Both client and server modes require a common section called <code class="docutils literal"><span class="pre">general</span></code> as follows:</p>
 <div class="highlight-python"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">general</span><span class="p">]</span>
 
 <span class="n">port</span><span class="o">=</span><span class="n">the_server_port</span>
@@ -170,9 +170,9 @@
 </div>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">By default, Video Tester looks for a configuration file called <tt class="docutils literal"><span class="pre">VT.conf</span></tt> in the current working directory. You can specify another file and location using the global command-line option <tt class="docutils literal"><span class="pre">-c</span></tt>.</p>
+<p class="last">By default, Video Tester looks for a configuration file called <code class="docutils literal"><span class="pre">VT.conf</span></code> in the current working directory. You can specify another file and location using the global command-line option <code class="docutils literal"><span class="pre">-c</span></code>.</p>
 </div>
-<p>This media mapping must be the same on both client and server side. The client mode also requires a section called <tt class="docutils literal"><span class="pre">client</span></tt> as follows:</p>
+<p>This media mapping must be the same on both client and server side. The client mode also requires a section called <code class="docutils literal"><span class="pre">client</span></code> as follows:</p>
 <div class="highlight-python"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">client</span><span class="p">]</span>
 
 <span class="c1"># Video parameters</span>

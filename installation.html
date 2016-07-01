@@ -85,7 +85,11 @@
             
                 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="index.html">Welcome to VideoTester&#8217;s documentation!</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="">Installation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="">Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#method-1-fedora-only">Method 1 (Fedora only):</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#method-2-all-distributions">Method 2 (all distributions):</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="configuration.html">Configuration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
 <li class="toctree-l1"><a class="reference internal" href="howto.html">HOWTO: Implementing new metrics</a></li>
@@ -148,17 +152,38 @@
 <li>Matplotlib (&gt;=1.0.1).</li>
 <li>WxPython (&gt;=2.8.11) + Matplotlib backend.</li>
 </ul>
-<p>If you are using <strong>Fedora</strong>, first of all, enable the <a class="reference external" href="http://rpmfusion.org/">RPM Fusion</a> repositories. Then, these dependencies can be installed with the following command:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span>$ sudo dnf install gstreamer1 gstreamer1-libav gstreamer1-plugins-base gstreamer1-plugins-good gstreamer1-plugins-ugly gstreamer1-plugins-bad-free gstreamer1-plugins-bad-freeworld gstreamer1-rtsp-server python-gobject pylibpcap numpy python2-matplotlib python2-matplotlib-wx wxPython opencv-python
+<div class="section" id="method-1-fedora-only">
+<h2>Method 1 (Fedora only):<a class="headerlink" href="#method-1-fedora-only" title="Permalink to this headline">¶</a></h2>
+<p>If you are using <strong>Fedora</strong>, you can build an RPM and let DNF/YUM manage all dependencies for you. First of all, enable the <a class="reference external" href="http://rpmfusion.org/">RPM Fusion</a> repositories. Then, you can download the latest RPM, if available, or build it by yourself:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span>$ git clone https://github.com/Enchufa2/video-tester.git
+$ cd video-tester
+$ make bdist_rpm
+$ cd dist
 </pre></div>
 </div>
-<p>You can download the latest version of Video Tester from <a class="reference external" href="https://github.com/Enchufa2/video-tester">the project page at GitHub</a>. Then, follow this steps:</p>
+<p>and then install it:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span>$ sudo dnf install VideoTester-x.x.x-1.noarch.rpm
+</pre></div>
+</div>
+</div>
+<div class="section" id="method-2-all-distributions">
+<h2>Method 2 (all distributions):<a class="headerlink" href="#method-2-all-distributions" title="Permalink to this headline">¶</a></h2>
+<p>You need to manually install all the required dependencies.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>If you are using <strong>Fedora</strong>, first of all, enable the <a class="reference external" href="http://rpmfusion.org/">RPM Fusion</a> repositories. Then, these dependencies can be installed with the following command:</p>
+<div class="last highlight-python"><div class="highlight"><pre><span></span>$ sudo dnf install gstreamer1 gstreamer1-libav gstreamer1-plugins-base gstreamer1-plugins-good gstreamer1-plugins-ugly gstreamer1-plugins-bad-free gstreamer1-plugins-bad-freeworld gstreamer1-rtsp-server python-gobject pylibpcap numpy python2-matplotlib python2-matplotlib-wx wxPython opencv-python
+</pre></div>
+</div>
+</div>
+<p>Then, download the latest version of Video Tester and follow these steps:</p>
 <div class="highlight-python"><div class="highlight"><pre><span></span>$ tar xf VideoTester-x.x.x.tar.gz
 $ cd VideoTester-x.x.x
 $ sudo python setup.py install
 </pre></div>
 </div>
-<p>After the installation, Video Tester will be located in <tt class="docutils literal"><span class="pre">/usr/lib/python2.7/site-packages/VideoTester</span></tt>, and this documentation, in <tt class="docutils literal"><span class="pre">/usr/share/doc/VideoTester-x.x.x</span></tt>. You should be able to launch the application with the command <tt class="docutils literal"><span class="pre">VT</span></tt>.</p>
+<p>After the installation, Video Tester will be located in <code class="docutils literal"><span class="pre">/usr/lib/python2.7/site-packages/VideoTester</span></code>, and this documentation, in <code class="docutils literal"><span class="pre">/usr/share/doc/VideoTester-x.x.x</span></code>. You should be able to launch the application with the command <code class="docutils literal"><span class="pre">VT</span></code>.</p>
+</div>
 </div>
 
 

@@ -138,9 +138,9 @@
 <h1>HOWTO: Implementing new metrics<a class="headerlink" href="#howto-implementing-new-metrics" title="Permalink to this headline">¶</a></h1>
 <p>Video Tester has three categories:</p>
 <ul class="simple">
-<li>QoS measures (located at <tt class="xref py py-mod docutils literal"><span class="pre">VideoTester.measures.qos</span></tt>).</li>
-<li>Bitstream measures (located at <tt class="xref py py-mod docutils literal"><span class="pre">VideoTester.measures.bs</span></tt>).</li>
-<li>Video quality measures (located at <tt class="xref py py-mod docutils literal"><span class="pre">VideoTester.measures.vq</span></tt>).</li>
+<li>QoS measures (located at <code class="xref py py-mod docutils literal"><span class="pre">VideoTester.measures.qos</span></code>).</li>
+<li>Bitstream measures (located at <code class="xref py py-mod docutils literal"><span class="pre">VideoTester.measures.bs</span></code>).</li>
+<li>Video quality measures (located at <code class="xref py py-mod docutils literal"><span class="pre">VideoTester.measures.vq</span></code>).</li>
 </ul>
 <p>A new metric MUST be a new class that SHOULD be placed in its corresponding module, and it MUST satisfy the following requirements:</p>
 <ul class="simple">
@@ -148,14 +148,14 @@
 </ul>
 <blockquote>
 <div><ul class="simple">
-<li><tt class="xref py py-class docutils literal"><span class="pre">VideoTester.measures.qos.QoSmeasure</span></tt></li>
-<li><tt class="xref py py-class docutils literal"><span class="pre">VideoTester.measures.bs.BSmeasure</span></tt></li>
-<li><tt class="xref py py-class docutils literal"><span class="pre">VideoTester.measures.vq.VQmeasure</span></tt></li>
+<li><code class="xref py py-class docutils literal"><span class="pre">VideoTester.measures.qos.QoSmeasure</span></code></li>
+<li><code class="xref py py-class docutils literal"><span class="pre">VideoTester.measures.bs.BSmeasure</span></code></li>
+<li><code class="xref py py-class docutils literal"><span class="pre">VideoTester.measures.vq.VQmeasure</span></code></li>
 </ul>
 </div></blockquote>
 <ul class="simple">
-<li>It SHOULD implement a method called <tt class="docutils literal"><span class="pre">__init__()</span></tt>.</li>
-<li>It MUST implement a method called <tt class="docutils literal"><span class="pre">calculate()</span></tt>.</li>
+<li>It SHOULD implement a method called <code class="docutils literal"><span class="pre">__init__()</span></code>.</li>
+<li>It MUST implement a method called <code class="docutils literal"><span class="pre">calculate()</span></code>.</li>
 </ul>
 <p>Here is an example of three new measures:</p>
 <div class="highlight-python"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">PlotMeasure</span><span class="p">(</span><span class="n">QoSmeasure</span><span class="p">):</span>
@@ -202,9 +202,9 @@
 </div>
 <p>Finally, each measure MUST be registered in its corresponding meter:</p>
 <ul class="simple">
-<li><tt class="xref py py-class docutils literal"><span class="pre">VideoTester.measures.qos.QoSmeter</span></tt></li>
-<li><tt class="xref py py-class docutils literal"><span class="pre">VideoTester.measures.bs.BSmeter</span></tt></li>
-<li><tt class="xref py py-class docutils literal"><span class="pre">VideoTester.measures.vq.VQmeter</span></tt>.</li>
+<li><code class="xref py py-class docutils literal"><span class="pre">VideoTester.measures.qos.QoSmeter</span></code></li>
+<li><code class="xref py py-class docutils literal"><span class="pre">VideoTester.measures.bs.BSmeter</span></code></li>
+<li><code class="xref py py-class docutils literal"><span class="pre">VideoTester.measures.vq.VQmeter</span></code>.</li>
 </ul>
 <p>Here is an example:</p>
 <div class="highlight-python"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">QoSmeter</span><span class="p">(</span><span class="n">Meter</span><span class="p">):</span>

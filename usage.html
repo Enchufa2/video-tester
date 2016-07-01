@@ -144,7 +144,7 @@
 <h1>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h1>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p>By default, Video Tester looks for a configuration file called <tt class="docutils literal"><span class="pre">VT.conf</span></tt> in the current working directory. You can specify another file and location using the global command-line option <tt class="docutils literal"><span class="pre">-c</span></tt> (or <tt class="docutils literal"><span class="pre">--conf</span></tt>):</p>
+<p>By default, Video Tester looks for a configuration file called <code class="docutils literal"><span class="pre">VT.conf</span></code> in the current working directory. You can specify another file and location using the global command-line option <code class="docutils literal"><span class="pre">-c</span></code> (or <code class="docutils literal"><span class="pre">--conf</span></code>):</p>
 <div class="last highlight-python"><div class="highlight"><pre><span></span>$ VT -c path/to/another.conf [server|client]
 </pre></div>
 </div>
@@ -158,7 +158,7 @@
 <p>No more operation is required. The server waits for client requests in standalone mode.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">Use <tt class="docutils literal"><span class="pre">Ctrl</span> <span class="pre">+</span> <span class="pre">C</span></tt> to stop it.</p>
+<p class="last">Use <code class="docutils literal"><span class="pre">Ctrl</span> <span class="pre">+</span> <span class="pre">C</span></code> to stop it.</p>
 </div>
 </div>
 <div class="section" id="client-mode">
@@ -171,48 +171,48 @@
 <p class="first admonition-title">Note</p>
 <p class="last">VT client requires root privileges (for network sniffing).</p>
 </div>
-<p>You can use VT client with a graphical user interface (GUI). Activate it with the option <tt class="docutils literal"><span class="pre">-g</span></tt> (or <tt class="docutils literal"><span class="pre">--gui</span></tt>):</p>
+<p>You can use VT client with a graphical user interface (GUI). Activate it with the option <code class="docutils literal"><span class="pre">-g</span></code> (or <code class="docutils literal"><span class="pre">--gui</span></code>):</p>
 <div class="highlight-python"><div class="highlight"><pre><span></span>$ VT client -g
 </pre></div>
 </div>
 </div>
 <div class="section" id="generated-files">
 <h2>Generated files<a class="headerlink" href="#generated-files" title="Permalink to this headline">¶</a></h2>
-<p>After the client execution, you will find a set of result files inside your temporary directory organised as follows: <tt class="docutils literal"><span class="pre">temp/&lt;video&gt;_&lt;codec&gt;_&lt;bitrate&gt;_&lt;framerate&gt;_&lt;protocol&gt;/*</span></tt> (e. g., <tt class="docutils literal"><span class="pre">temp/video0_h263_128_25_udp-unicast/*</span></tt>). The name of those files starts with a numerical prefix (e. g., <tt class="docutils literal"><span class="pre">00</span></tt>, <tt class="docutils literal"><span class="pre">01</span></tt>...):</p>
+<p>After the client execution, you will find a set of result files inside your temporary directory organised as follows: <code class="docutils literal"><span class="pre">temp/&lt;video&gt;_&lt;codec&gt;_&lt;bitrate&gt;_&lt;framerate&gt;_&lt;protocol&gt;/*</span></code> (e. g., <code class="docutils literal"><span class="pre">temp/video0_h263_128_25_udp-unicast/*</span></code>). The name of those files starts with a numerical prefix (e. g., <code class="docutils literal"><span class="pre">00</span></code>, <code class="docutils literal"><span class="pre">01</span></code>...):</p>
 <ul class="simple">
-<li><tt class="docutils literal"><span class="pre">00.cap</span></tt>: PCAP file.</li>
-<li><tt class="docutils literal"><span class="pre">00.h263</span></tt>: received video (coded).</li>
-<li><tt class="docutils literal"><span class="pre">00.yuv</span></tt>: received video (YUV).</li>
-<li><tt class="docutils literal"><span class="pre">00_ref.h263</span></tt>: reference video (coded but not transmitted).</li>
-<li><tt class="docutils literal"><span class="pre">00_ref.yuv</span></tt>: reference video (coded and decoded).</li>
-<li><tt class="docutils literal"><span class="pre">00_ref_original.yuv</span></tt>: original reference video (uncompressed original file).</li>
-<li><tt class="docutils literal"><span class="pre">00_&lt;measure&gt;.pkl</span></tt>: serialized measure in Pickle format.</li>
+<li><code class="docutils literal"><span class="pre">00.cap</span></code>: PCAP file.</li>
+<li><code class="docutils literal"><span class="pre">00.h263</span></code>: received video (coded).</li>
+<li><code class="docutils literal"><span class="pre">00.yuv</span></code>: received video (YUV).</li>
+<li><code class="docutils literal"><span class="pre">00_ref.h263</span></code>: reference video (coded but not transmitted).</li>
+<li><code class="docutils literal"><span class="pre">00_ref.yuv</span></code>: reference video (coded and decoded).</li>
+<li><code class="docutils literal"><span class="pre">00_ref_original.yuv</span></code>: original reference video (uncompressed original file).</li>
+<li><code class="docutils literal"><span class="pre">00_&lt;measure&gt;.pkl</span></code>: serialized measure in Pickle format.</li>
 </ul>
-<p>Pickle files can be read with the GUI (<em class="menuselection">File ‣ Open files...</em>).</p>
+<p>Pickle files can be read with the GUI (<span class="menuselection">File ‣ Open files...</span>).</p>
 </div>
 <div class="section" id="measures-output">
 <h2>Measures output<a class="headerlink" href="#measures-output" title="Permalink to this headline">¶</a></h2>
 <p>Video Tester returns a list of measures. Each measure is a Python dictionary with the following keys:</p>
 <ul class="simple">
-<li><tt class="docutils literal"><span class="pre">name</span></tt> (mandatory): the name.</li>
-<li><tt class="docutils literal"><span class="pre">type</span></tt> (mandatory): the type (<tt class="docutils literal"><span class="pre">plot</span></tt>, <tt class="docutils literal"><span class="pre">bar</span></tt> or <tt class="docutils literal"><span class="pre">value</span></tt>).</li>
-<li><tt class="docutils literal"><span class="pre">units</span></tt> (mandatory): the units (a string for <tt class="docutils literal"><span class="pre">value</span></tt> measures, a tuple of strings for <tt class="docutils literal"><span class="pre">plot</span></tt> or <tt class="docutils literal"><span class="pre">bar</span></tt> measures).</li>
-<li><tt class="docutils literal"><span class="pre">axes</span></tt> (only for <tt class="docutils literal"><span class="pre">plot</span></tt> and <tt class="docutils literal"><span class="pre">bar</span></tt> measures): a tuple with X and Y axes. Each axis is a list of values.</li>
-<li><tt class="docutils literal"><span class="pre">min</span></tt> (only for <tt class="docutils literal"><span class="pre">plot</span></tt> and <tt class="docutils literal"><span class="pre">bar</span></tt> measures): minimum value.</li>
-<li><tt class="docutils literal"><span class="pre">max</span></tt> (only for <tt class="docutils literal"><span class="pre">plot</span></tt> and <tt class="docutils literal"><span class="pre">bar</span></tt> measures): maximum value.</li>
-<li><tt class="docutils literal"><span class="pre">mean</span></tt> (only for <tt class="docutils literal"><span class="pre">plot</span></tt> and <tt class="docutils literal"><span class="pre">bar</span></tt> measures): mean value.</li>
-<li><tt class="docutils literal"><span class="pre">value</span></tt> (only for <tt class="docutils literal"><span class="pre">value</span></tt> measures): the value.</li>
-<li><tt class="docutils literal"><span class="pre">width</span></tt> (only for <tt class="docutils literal"><span class="pre">bar</span></tt> measures): bar width.</li>
+<li><code class="docutils literal"><span class="pre">name</span></code> (mandatory): the name.</li>
+<li><code class="docutils literal"><span class="pre">type</span></code> (mandatory): the type (<code class="docutils literal"><span class="pre">plot</span></code>, <code class="docutils literal"><span class="pre">bar</span></code> or <code class="docutils literal"><span class="pre">value</span></code>).</li>
+<li><code class="docutils literal"><span class="pre">units</span></code> (mandatory): the units (a string for <code class="docutils literal"><span class="pre">value</span></code> measures, a tuple of strings for <code class="docutils literal"><span class="pre">plot</span></code> or <code class="docutils literal"><span class="pre">bar</span></code> measures).</li>
+<li><code class="docutils literal"><span class="pre">axes</span></code> (only for <code class="docutils literal"><span class="pre">plot</span></code> and <code class="docutils literal"><span class="pre">bar</span></code> measures): a tuple with X and Y axes. Each axis is a list of values.</li>
+<li><code class="docutils literal"><span class="pre">min</span></code> (only for <code class="docutils literal"><span class="pre">plot</span></code> and <code class="docutils literal"><span class="pre">bar</span></code> measures): minimum value.</li>
+<li><code class="docutils literal"><span class="pre">max</span></code> (only for <code class="docutils literal"><span class="pre">plot</span></code> and <code class="docutils literal"><span class="pre">bar</span></code> measures): maximum value.</li>
+<li><code class="docutils literal"><span class="pre">mean</span></code> (only for <code class="docutils literal"><span class="pre">plot</span></code> and <code class="docutils literal"><span class="pre">bar</span></code> measures): mean value.</li>
+<li><code class="docutils literal"><span class="pre">value</span></code> (only for <code class="docutils literal"><span class="pre">value</span></code> measures): the value.</li>
+<li><code class="docutils literal"><span class="pre">width</span></code> (only for <code class="docutils literal"><span class="pre">bar</span></code> measures): bar width.</li>
 </ul>
-<p>An example of <tt class="docutils literal"><span class="pre">plot</span></tt> measure:</p>
+<p>An example of <code class="docutils literal"><span class="pre">plot</span></code> measure:</p>
 <div class="highlight-python"><div class="highlight"><pre><span></span><span class="p">{</span> <span class="s1">&#39;name&#39;</span><span class="p">:</span><span class="s1">&#39;Bandwidth&#39;</span><span class="p">,</span> <span class="s1">&#39;type&#39;</span><span class="p">:</span><span class="s1">&#39;plot&#39;</span><span class="p">,</span> <span class="s1">&#39;units&#39;</span><span class="p">:(</span><span class="s1">&#39;time (s)&#39;</span><span class="p">,</span> <span class="s1">&#39;kbps&#39;</span><span class="p">),</span> <span class="s1">&#39;axes&#39;</span><span class="p">:([</span><span class="o">...</span><span class="p">],</span> <span class="p">[</span><span class="o">...</span><span class="p">]),</span> <span class="s1">&#39;min&#39;</span><span class="p">:(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">7</span><span class="p">),</span> <span class="s1">&#39;max&#39;</span><span class="p">:(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="s1">&#39;mean&#39;</span><span class="p">:</span><span class="mi">5</span> <span class="p">}</span>
 </pre></div>
 </div>
-<p>An example of <tt class="docutils literal"><span class="pre">bar</span></tt> measure:</p>
+<p>An example of <code class="docutils literal"><span class="pre">bar</span></code> measure:</p>
 <div class="highlight-python"><div class="highlight"><pre><span></span><span class="p">{</span> <span class="s1">&#39;name&#39;</span><span class="p">:</span><span class="s1">&#39;PLD&#39;</span><span class="p">,</span> <span class="s1">&#39;type&#39;</span><span class="p">:</span><span class="s1">&#39;bar&#39;</span><span class="p">,</span> <span class="s1">&#39;units&#39;</span><span class="p">:(</span><span class="s1">&#39;time (s)&#39;</span><span class="p">,</span> <span class="s1">&#39;Packet Loss Rate&#39;</span><span class="p">),</span> <span class="s1">&#39;axes&#39;</span><span class="p">:([</span><span class="o">...</span><span class="p">],</span> <span class="p">[</span><span class="o">...</span><span class="p">]),</span> <span class="s1">&#39;min&#39;</span><span class="p">:(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">7</span><span class="p">),</span> <span class="s1">&#39;max&#39;</span><span class="p">:(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="s1">&#39;mean&#39;</span><span class="p">:</span><span class="mi">5</span><span class="p">,</span> <span class="s1">&#39;width&#39;</span><span class="p">:</span><span class="mi">1</span> <span class="p">}</span>
 </pre></div>
 </div>
-<p>An example of <tt class="docutils literal"><span class="pre">value</span></tt> measure:</p>
+<p>An example of <code class="docutils literal"><span class="pre">value</span></code> measure:</p>
 <div class="highlight-python"><div class="highlight"><pre><span></span><span class="p">{</span> <span class="s1">&#39;name&#39;</span><span class="p">:</span><span class="s1">&#39;Latency&#39;</span><span class="p">,</span> <span class="s1">&#39;type&#39;</span><span class="p">:</span><span class="s1">&#39;value&#39;</span><span class="p">,</span> <span class="s1">&#39;units&#39;</span><span class="p">:</span><span class="s1">&#39;ms&#39;</span><span class="p">,</span> <span class="s1">&#39;value&#39;</span><span class="p">:</span><span class="mi">50</span> <span class="p">}</span>
 </pre></div>
 </div>

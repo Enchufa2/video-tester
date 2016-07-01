@@ -90,8 +90,8 @@
 <li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
 <li class="toctree-l1"><a class="reference internal" href="howto.html">HOWTO: Implementing new metrics</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="modules.html">Module Reference</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="core.html">1. <tt class="docutils literal"><span class="pre">VideoTester</span></tt> &#8212; Base package</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="">2. <tt class="docutils literal"><span class="pre">VideoTester.measures</span></tt> &#8212; Measures package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="core.html">1. <code class="docutils literal"><span class="pre">VideoTester</span></code> &#8212; Base package</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="">2. <code class="docutils literal"><span class="pre">VideoTester.measures</span></code> &#8212; Measures package</a></li>
 </ul>
 </li>
 </ul>
@@ -126,7 +126,7 @@
       
           <li><a href="modules.html">Module Reference</a> &raquo;</li>
       
-    <li>2. <tt class="docutils literal"><span class="pre">VideoTester.measures</span></tt> &#8212; Measures package</li>
+    <li>2. <code class="docutils literal"><span class="pre">VideoTester.measures</span></code> &#8212; Measures package</li>
       <li class="wy-breadcrumbs-aside">
         
           
@@ -141,22 +141,22 @@
            <div itemprop="articleBody">
             
   <div class="section" id="module-VideoTester.measures">
-<span id="videotester-measures-measures-package"></span><h1>2. <tt class="docutils literal"><span class="pre">VideoTester.measures</span></tt> &#8212; Measures package<a class="headerlink" href="#module-VideoTester.measures" title="Permalink to this headline">¶</a></h1>
+<span id="videotester-measures-measures-package"></span><h1>2. <code class="docutils literal"><span class="pre">VideoTester.measures</span></code> &#8212; Measures package<a class="headerlink" href="#module-VideoTester.measures" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
 <dt id="VideoTester.measures.Meter">
-<em class="property">class </em><tt class="descclassname">VideoTester.measures.</tt><tt class="descname">Meter</tt><a class="headerlink" href="#VideoTester.measures.Meter" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">VideoTester.measures.</code><code class="descname">Meter</code><a class="headerlink" href="#VideoTester.measures.Meter" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generic meter.</p>
 <dl class="method">
 <dt id="VideoTester.measures.Meter.run">
-<tt class="descname">run</tt><big>(</big><big>)</big><a class="headerlink" href="#VideoTester.measures.Meter.run" title="Permalink to this definition">¶</a></dt>
-<dd><p>Run registered measures. For each measure in <tt class="xref py py-attr docutils literal"><span class="pre">measures</span></tt>, this method calls <a class="reference internal" href="#VideoTester.measures.Measure.calculate" title="VideoTester.measures.Measure.calculate"><tt class="xref py py-meth docutils literal"><span class="pre">Measure.calculate()</span></tt></a>.</p>
+<code class="descname">run</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#VideoTester.measures.Meter.run" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run registered measures. For each measure in <code class="xref py py-attr docutils literal"><span class="pre">measures</span></code>, this method calls <a class="reference internal" href="#VideoTester.measures.Measure.calculate" title="VideoTester.measures.Measure.calculate"><code class="xref py py-meth docutils literal"><span class="pre">Measure.calculate()</span></code></a>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The list of measures.</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">list</td>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="http://docs.python.org/library/functions.html#list" title="(in Python v2.7)">list</a></td>
 </tr>
 </tbody>
 </table>
@@ -166,19 +166,19 @@
 
 <dl class="class">
 <dt id="VideoTester.measures.Measure">
-<em class="property">class </em><tt class="descclassname">VideoTester.measures.</tt><tt class="descname">Measure</tt><a class="headerlink" href="#VideoTester.measures.Measure" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">VideoTester.measures.</code><code class="descname">Measure</code><a class="headerlink" href="#VideoTester.measures.Measure" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generic measure.</p>
 <dl class="method">
 <dt id="VideoTester.measures.Measure.calculate">
-<tt class="descname">calculate</tt><big>(</big><big>)</big><a class="headerlink" href="#VideoTester.measures.Measure.calculate" title="Permalink to this definition">¶</a></dt>
+<code class="descname">calculate</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#VideoTester.measures.Measure.calculate" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute the measure.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Results (see <tt class="xref py py-attr docutils literal"><span class="pre">data</span></tt>).</td>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Results (see <code class="xref py py-attr docutils literal"><span class="pre">data</span></code>).</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">dict</td>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="http://docs.python.org/library/stdtypes.html#dict" title="(in Python v2.7)">dict</a></td>
 </tr>
 </tbody>
 </table>
@@ -190,8 +190,8 @@
 
 <dl class="method">
 <dt id="VideoTester.measures.Measure.graph">
-<tt class="descname">graph</tt><big>(</big><em>x</em>, <em>y</em><big>)</big><a class="headerlink" href="#VideoTester.measures.Measure.graph" title="Permalink to this definition">¶</a></dt>
-<dd><p>Set <cite>axes</cite>, <cite>max</cite>, <cite>min</cite> and <cite>mean</cite> for <cite>bar</cite> or <cite>plot</cite> graphs (see <tt class="xref py py-attr docutils literal"><span class="pre">data</span></tt>).</p>
+<code class="descname">graph</code><span class="sig-paren">(</span><em>x</em>, <em>y</em><span class="sig-paren">)</span><a class="headerlink" href="#VideoTester.measures.Measure.graph" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set <cite>axes</cite>, <cite>max</cite>, <cite>min</cite> and <cite>mean</cite> for <cite>bar</cite> or <cite>plot</cite> graphs (see <code class="xref py py-attr docutils literal"><span class="pre">data</span></code>).</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -210,22 +210,22 @@
 
 <dl class="class">
 <dt id="VideoTester.measures.QoSmeter">
-<em class="property">class </em><tt class="descclassname">VideoTester.measures.</tt><tt class="descname">QoSmeter</tt><big>(</big><em>selected</em>, <em>data</em><big>)</big><a class="headerlink" href="#VideoTester.measures.QoSmeter" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">VideoTester.measures.core.Meter</span></tt></p>
+<em class="property">class </em><code class="descclassname">VideoTester.measures.</code><code class="descname">QoSmeter</code><span class="sig-paren">(</span><em>selected</em>, <em>data</em><span class="sig-paren">)</span><a class="headerlink" href="#VideoTester.measures.QoSmeter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">VideoTester.measures.core.Meter</span></code></p>
 <p>QoS meter.</p>
 </dd></dl>
 
 <dl class="class">
 <dt id="VideoTester.measures.QoSmeasure">
-<em class="property">class </em><tt class="descclassname">VideoTester.measures.</tt><tt class="descname">QoSmeasure</tt><big>(</big><em>(lengths</em>, <em>times</em>, <em>sequences</em>, <em>timestamps</em>, <em>rtt)</em><big>)</big><a class="headerlink" href="#VideoTester.measures.QoSmeasure" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">VideoTester.measures.core.Measure</span></tt></p>
+<em class="property">class </em><code class="descclassname">VideoTester.measures.</code><code class="descname">QoSmeasure</code><span class="sig-paren">(</span><em>(lengths</em>, <em>times</em>, <em>sequences</em>, <em>timestamps</em>, <em>rtt)</em><span class="sig-paren">)</span><a class="headerlink" href="#VideoTester.measures.QoSmeasure" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">VideoTester.measures.core.Measure</span></code></p>
 <p>QoS measure type.</p>
 </dd></dl>
 
 <dl class="class">
 <dt id="VideoTester.measures.Latency">
-<em class="property">class </em><tt class="descclassname">VideoTester.measures.</tt><tt class="descname">Latency</tt><big>(</big><em>data</em><big>)</big><a class="headerlink" href="#VideoTester.measures.Latency" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">VideoTester.measures.qos.QoSmeasure</span></tt></p>
+<em class="property">class </em><code class="descclassname">VideoTester.measures.</code><code class="descname">Latency</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="headerlink" href="#VideoTester.measures.Latency" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">VideoTester.measures.qos.QoSmeasure</span></code></p>
 <p>Latency: end-to-end delay.</p>
 <ul class="simple">
 <li>Type: <cite>value</cite>.</li>
@@ -235,8 +235,8 @@
 
 <dl class="class">
 <dt id="VideoTester.measures.Delta">
-<em class="property">class </em><tt class="descclassname">VideoTester.measures.</tt><tt class="descname">Delta</tt><big>(</big><em>data</em><big>)</big><a class="headerlink" href="#VideoTester.measures.Delta" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">VideoTester.measures.qos.QoSmeasure</span></tt></p>
+<em class="property">class </em><code class="descclassname">VideoTester.measures.</code><code class="descname">Delta</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="headerlink" href="#VideoTester.measures.Delta" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">VideoTester.measures.qos.QoSmeasure</span></code></p>
 <p>Delta: gap between two consecutive packets.</p>
 <ul class="simple">
 <li>Type: <cite>plot</cite>.</li>
@@ -246,9 +246,9 @@
 
 <dl class="class">
 <dt id="VideoTester.measures.Jitter">
-<em class="property">class </em><tt class="descclassname">VideoTester.measures.</tt><tt class="descname">Jitter</tt><big>(</big><em>data</em><big>)</big><a class="headerlink" href="#VideoTester.measures.Jitter" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">VideoTester.measures.qos.QoSmeasure</span></tt></p>
-<p>Jitter: latency deviation (see <span class="target" id="index-0"></span><a class="rfc reference external" href="http://tools.ietf.org/html/rfc3550.html#page-94"><strong>RFC 3550</strong></a>).</p>
+<em class="property">class </em><code class="descclassname">VideoTester.measures.</code><code class="descname">Jitter</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="headerlink" href="#VideoTester.measures.Jitter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">VideoTester.measures.qos.QoSmeasure</span></code></p>
+<p>Jitter: latency deviation (see <span class="target" id="index-0"></span><a class="rfc reference external" href="https://tools.ietf.org/html/rfc3550.html#page-94"><strong>RFC 3550#page-94</strong></a>).</p>
 <ul class="simple">
 <li>Type: <cite>plot</cite>.</li>
 <li>Units: <cite>ms per RTP packet</cite>.</li>
@@ -257,8 +257,8 @@
 
 <dl class="class">
 <dt id="VideoTester.measures.Skew">
-<em class="property">class </em><tt class="descclassname">VideoTester.measures.</tt><tt class="descname">Skew</tt><big>(</big><em>data</em><big>)</big><a class="headerlink" href="#VideoTester.measures.Skew" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">VideoTester.measures.qos.QoSmeasure</span></tt></p>
+<em class="property">class </em><code class="descclassname">VideoTester.measures.</code><code class="descname">Skew</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="headerlink" href="#VideoTester.measures.Skew" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">VideoTester.measures.qos.QoSmeasure</span></code></p>
 <p>Skew: time deviation from RTP timestamp.</p>
 <ul class="simple">
 <li>Type: <cite>plot</cite>.</li>
@@ -268,8 +268,8 @@
 
 <dl class="class">
 <dt id="VideoTester.measures.Bandwidth">
-<em class="property">class </em><tt class="descclassname">VideoTester.measures.</tt><tt class="descname">Bandwidth</tt><big>(</big><em>data</em><big>)</big><a class="headerlink" href="#VideoTester.measures.Bandwidth" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">VideoTester.measures.qos.QoSmeasure</span></tt></p>
+<em class="property">class </em><code class="descclassname">VideoTester.measures.</code><code class="descname">Bandwidth</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="headerlink" href="#VideoTester.measures.Bandwidth" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">VideoTester.measures.qos.QoSmeasure</span></code></p>
 <p>Instantaneous bandwidth: data received in the last second.</p>
 <ul class="simple">
 <li>Type: <cite>plot</cite>.</li>
@@ -279,8 +279,8 @@
 
 <dl class="class">
 <dt id="VideoTester.measures.PacketLossRate">
-<em class="property">class </em><tt class="descclassname">VideoTester.measures.</tt><tt class="descname">PacketLossRate</tt><big>(</big><em>data</em><big>)</big><a class="headerlink" href="#VideoTester.measures.PacketLossRate" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">VideoTester.measures.qos.QoSmeasure</span></tt></p>
+<em class="property">class </em><code class="descclassname">VideoTester.measures.</code><code class="descname">PacketLossRate</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="headerlink" href="#VideoTester.measures.PacketLossRate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">VideoTester.measures.qos.QoSmeasure</span></code></p>
 <p>Packet Loss Rate.</p>
 <ul class="simple">
 <li>Type: <cite>value</cite>.</li>
@@ -290,8 +290,8 @@
 
 <dl class="class">
 <dt id="VideoTester.measures.PacketLossDist">
-<em class="property">class </em><tt class="descclassname">VideoTester.measures.</tt><tt class="descname">PacketLossDist</tt><big>(</big><em>data</em><big>)</big><a class="headerlink" href="#VideoTester.measures.PacketLossDist" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">VideoTester.measures.qos.QoSmeasure</span></tt></p>
+<em class="property">class </em><code class="descclassname">VideoTester.measures.</code><code class="descname">PacketLossDist</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="headerlink" href="#VideoTester.measures.PacketLossDist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">VideoTester.measures.qos.QoSmeasure</span></code></p>
 <p>Packet Loss Distribution: loss rate distribution.</p>
 <ul class="simple">
 <li>Type: <cite>bar</cite>.</li>
@@ -301,22 +301,22 @@
 
 <dl class="class">
 <dt id="VideoTester.measures.BSmeter">
-<em class="property">class </em><tt class="descclassname">VideoTester.measures.</tt><tt class="descname">BSmeter</tt><big>(</big><em>selected</em>, <em>data</em><big>)</big><a class="headerlink" href="#VideoTester.measures.BSmeter" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">VideoTester.measures.core.Meter</span></tt></p>
+<em class="property">class </em><code class="descclassname">VideoTester.measures.</code><code class="descname">BSmeter</code><span class="sig-paren">(</span><em>selected</em>, <em>data</em><span class="sig-paren">)</span><a class="headerlink" href="#VideoTester.measures.BSmeter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">VideoTester.measures.core.Meter</span></code></p>
 <p>Bit-stream meter.</p>
 </dd></dl>
 
 <dl class="class">
 <dt id="VideoTester.measures.BSmeasure">
-<em class="property">class </em><tt class="descclassname">VideoTester.measures.</tt><tt class="descname">BSmeasure</tt><big>(</big><em>codecdata</em><big>)</big><a class="headerlink" href="#VideoTester.measures.BSmeasure" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">VideoTester.measures.core.Measure</span></tt></p>
+<em class="property">class </em><code class="descclassname">VideoTester.measures.</code><code class="descname">BSmeasure</code><span class="sig-paren">(</span><em>codecdata</em><span class="sig-paren">)</span><a class="headerlink" href="#VideoTester.measures.BSmeasure" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">VideoTester.measures.core.Measure</span></code></p>
 <p>Bit-stream measure type.</p>
 </dd></dl>
 
 <dl class="class">
 <dt id="VideoTester.measures.StreamEye">
-<em class="property">class </em><tt class="descclassname">VideoTester.measures.</tt><tt class="descname">StreamEye</tt><big>(</big><em>data</em>, <em>video=''</em><big>)</big><a class="headerlink" href="#VideoTester.measures.StreamEye" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">VideoTester.measures.bs.BSmeasure</span></tt></p>
+<em class="property">class </em><code class="descclassname">VideoTester.measures.</code><code class="descname">StreamEye</code><span class="sig-paren">(</span><em>data</em>, <em>video=''</em><span class="sig-paren">)</span><a class="headerlink" href="#VideoTester.measures.StreamEye" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">VideoTester.measures.bs.BSmeasure</span></code></p>
 <p>Stream Eye: visualization of the compressed frames (received video).</p>
 <ul class="simple">
 <li>Type: <cite>videoframes</cite>.</li>
@@ -326,8 +326,8 @@
 
 <dl class="class">
 <dt id="VideoTester.measures.RefStreamEye">
-<em class="property">class </em><tt class="descclassname">VideoTester.measures.</tt><tt class="descname">RefStreamEye</tt><big>(</big><em>data</em><big>)</big><a class="headerlink" href="#VideoTester.measures.RefStreamEye" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">VideoTester.measures.bs.StreamEye</span></tt></p>
+<em class="property">class </em><code class="descclassname">VideoTester.measures.</code><code class="descname">RefStreamEye</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="headerlink" href="#VideoTester.measures.RefStreamEye" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">VideoTester.measures.bs.StreamEye</span></code></p>
 <p>ref Stream Eye: visualization of the compressed frames (reference video).</p>
 <ul class="simple">
 <li>Type: <cite>videoframes</cite>.</li>
@@ -337,8 +337,8 @@
 
 <dl class="class">
 <dt id="VideoTester.measures.GOP">
-<em class="property">class </em><tt class="descclassname">VideoTester.measures.</tt><tt class="descname">GOP</tt><big>(</big><em>data</em><big>)</big><a class="headerlink" href="#VideoTester.measures.GOP" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">VideoTester.measures.bs.BSmeasure</span></tt></p>
+<em class="property">class </em><code class="descclassname">VideoTester.measures.</code><code class="descname">GOP</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="headerlink" href="#VideoTester.measures.GOP" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">VideoTester.measures.bs.BSmeasure</span></code></p>
 <p>GOP: estimation of <em>Group Of Pictures</em> size for received video.</p>
 <ul class="simple">
 <li>Type: <cite>value</cite>.</li>
@@ -348,8 +348,8 @@
 
 <dl class="class">
 <dt id="VideoTester.measures.IFrameLossRate">
-<em class="property">class </em><tt class="descclassname">VideoTester.measures.</tt><tt class="descname">IFrameLossRate</tt><big>(</big><em>data</em><big>)</big><a class="headerlink" href="#VideoTester.measures.IFrameLossRate" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">VideoTester.measures.bs.BSmeasure</span></tt></p>
+<em class="property">class </em><code class="descclassname">VideoTester.measures.</code><code class="descname">IFrameLossRate</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="headerlink" href="#VideoTester.measures.IFrameLossRate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">VideoTester.measures.bs.BSmeasure</span></code></p>
 <p>I-Frame Loss Rate.</p>
 <ul class="simple">
 <li>Type: <cite>value</cite>.</li>
@@ -359,19 +359,19 @@
 
 <dl class="class">
 <dt id="VideoTester.measures.VQmeter">
-<em class="property">class </em><tt class="descclassname">VideoTester.measures.</tt><tt class="descname">VQmeter</tt><big>(</big><em>selected</em>, <em>data</em><big>)</big><a class="headerlink" href="#VideoTester.measures.VQmeter" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">VideoTester.measures.core.Meter</span></tt></p>
+<em class="property">class </em><code class="descclassname">VideoTester.measures.</code><code class="descname">VQmeter</code><span class="sig-paren">(</span><em>selected</em>, <em>data</em><span class="sig-paren">)</span><a class="headerlink" href="#VideoTester.measures.VQmeter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">VideoTester.measures.core.Meter</span></code></p>
 <p>Video quality meter.</p>
 </dd></dl>
 
 <dl class="class">
 <dt id="VideoTester.measures.VQmeasure">
-<em class="property">class </em><tt class="descclassname">VideoTester.measures.</tt><tt class="descname">VQmeasure</tt><big>(</big><em>(conf</em>, <em>rawdata</em>, <em>codecdata</em>, <em>packetdata)</em><big>)</big><a class="headerlink" href="#VideoTester.measures.VQmeasure" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">VideoTester.measures.core.Measure</span></tt></p>
+<em class="property">class </em><code class="descclassname">VideoTester.measures.</code><code class="descname">VQmeasure</code><span class="sig-paren">(</span><em>(conf</em>, <em>rawdata</em>, <em>codecdata</em>, <em>packetdata)</em><span class="sig-paren">)</span><a class="headerlink" href="#VideoTester.measures.VQmeasure" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">VideoTester.measures.core.Measure</span></code></p>
 <p>Video quality measure type.</p>
 <dl class="method">
 <dt id="VideoTester.measures.VQmeasure.getBSm">
-<tt class="descname">getBSm</tt><big>(</big><em>measures</em><big>)</big><a class="headerlink" href="#VideoTester.measures.VQmeasure.getBSm" title="Permalink to this definition">¶</a></dt>
+<code class="descname">getBSm</code><span class="sig-paren">(</span><em>measures</em><span class="sig-paren">)</span><a class="headerlink" href="#VideoTester.measures.VQmeasure.getBSm" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get bit-stream measures.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -381,7 +381,7 @@
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Calculated bit-stream measures.</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">list</td>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="http://docs.python.org/library/functions.html#list" title="(in Python v2.7)">list</a></td>
 </tr>
 </tbody>
 </table>
@@ -389,7 +389,7 @@
 
 <dl class="method">
 <dt id="VideoTester.measures.VQmeasure.getQoSm">
-<tt class="descname">getQoSm</tt><big>(</big><em>measures</em><big>)</big><a class="headerlink" href="#VideoTester.measures.VQmeasure.getQoSm" title="Permalink to this definition">¶</a></dt>
+<code class="descname">getQoSm</code><span class="sig-paren">(</span><em>measures</em><span class="sig-paren">)</span><a class="headerlink" href="#VideoTester.measures.VQmeasure.getQoSm" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get QoS measures.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -399,7 +399,7 @@
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Calculated QoS measures.</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">list</td>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="http://docs.python.org/library/functions.html#list" title="(in Python v2.7)">list</a></td>
 </tr>
 </tbody>
 </table>
@@ -409,8 +409,8 @@
 
 <dl class="class">
 <dt id="VideoTester.measures.PSNR">
-<em class="property">class </em><tt class="descclassname">VideoTester.measures.</tt><tt class="descname">PSNR</tt><big>(</big><em>data</em>, <em>yuv=False</em>, <em>yuvref=False</em><big>)</big><a class="headerlink" href="#VideoTester.measures.PSNR" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">VideoTester.measures.vq.VQmeasure</span></tt></p>
+<em class="property">class </em><code class="descclassname">VideoTester.measures.</code><code class="descname">PSNR</code><span class="sig-paren">(</span><em>data</em>, <em>yuv=False</em>, <em>yuvref=False</em><span class="sig-paren">)</span><a class="headerlink" href="#VideoTester.measures.PSNR" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">VideoTester.measures.vq.VQmeasure</span></code></p>
 <p>PSNR: Peak Signal to Noise Ratio (Y component).</p>
 <ul class="simple">
 <li>Type: <cite>plot</cite>.</li>
@@ -420,8 +420,8 @@
 
 <dl class="class">
 <dt id="VideoTester.measures.SSIM">
-<em class="property">class </em><tt class="descclassname">VideoTester.measures.</tt><tt class="descname">SSIM</tt><big>(</big><em>data</em><big>)</big><a class="headerlink" href="#VideoTester.measures.SSIM" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">VideoTester.measures.vq.VQmeasure</span></tt></p>
+<em class="property">class </em><code class="descclassname">VideoTester.measures.</code><code class="descname">SSIM</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="headerlink" href="#VideoTester.measures.SSIM" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">VideoTester.measures.vq.VQmeasure</span></code></p>
 <p>SSIM: Structural Similarity index (Y component).</p>
 <ul class="simple">
 <li>Type: <cite>plot</cite>.</li>
@@ -431,8 +431,8 @@
 
 <dl class="class">
 <dt id="VideoTester.measures.G1070">
-<em class="property">class </em><tt class="descclassname">VideoTester.measures.</tt><tt class="descname">G1070</tt><big>(</big><em>data</em><big>)</big><a class="headerlink" href="#VideoTester.measures.G1070" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">VideoTester.measures.vq.VQmeasure</span></tt></p>
+<em class="property">class </em><code class="descclassname">VideoTester.measures.</code><code class="descname">G1070</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="headerlink" href="#VideoTester.measures.G1070" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">VideoTester.measures.vq.VQmeasure</span></code></p>
 <p>ITU-T G.1070 video quality estimation.</p>
 <ul class="simple">
 <li>Type: <cite>value</cite>.</li>
@@ -442,8 +442,8 @@
 
 <dl class="class">
 <dt id="VideoTester.measures.PSNRtoMOS">
-<em class="property">class </em><tt class="descclassname">VideoTester.measures.</tt><tt class="descname">PSNRtoMOS</tt><big>(</big><em>data</em>, <em>yuv=False</em>, <em>yuvref=False</em><big>)</big><a class="headerlink" href="#VideoTester.measures.PSNRtoMOS" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">VideoTester.measures.vq.VQmeasure</span></tt></p>
+<em class="property">class </em><code class="descclassname">VideoTester.measures.</code><code class="descname">PSNRtoMOS</code><span class="sig-paren">(</span><em>data</em>, <em>yuv=False</em>, <em>yuvref=False</em><span class="sig-paren">)</span><a class="headerlink" href="#VideoTester.measures.PSNRtoMOS" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">VideoTester.measures.vq.VQmeasure</span></code></p>
 <p>PSNR to MOS mapping used on <cite>Evalvid &lt;http://www.tkn.tu-berlin.de/research/evalvid/&gt;</cite>.</p>
 <ul class="simple">
 <li>Type: <cite>plot</cite>.</li>
@@ -453,8 +453,8 @@
 
 <dl class="class">
 <dt id="VideoTester.measures.MIV">
-<em class="property">class </em><tt class="descclassname">VideoTester.measures.</tt><tt class="descname">MIV</tt><big>(</big><em>data</em><big>)</big><a class="headerlink" href="#VideoTester.measures.MIV" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">VideoTester.measures.vq.VQmeasure</span></tt></p>
+<em class="property">class </em><code class="descclassname">VideoTester.measures.</code><code class="descname">MIV</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="headerlink" href="#VideoTester.measures.MIV" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">VideoTester.measures.vq.VQmeasure</span></code></p>
 <p>MIV metric used on <cite>Evalvid &lt;http://www.tkn.tu-berlin.de/research/evalvid/&gt;</cite>.</p>
 <ul class="simple">
 <li>Type: <cite>plot</cite>.</li>

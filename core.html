@@ -91,8 +91,8 @@
 <li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
 <li class="toctree-l1"><a class="reference internal" href="howto.html">HOWTO: Implementing new metrics</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="modules.html">Module Reference</a><ul class="current">
-<li class="toctree-l2 current"><a class="current reference internal" href="">1. <tt class="docutils literal"><span class="pre">VideoTester</span></tt> &#8212; Base package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="measures.html">2. <tt class="docutils literal"><span class="pre">VideoTester.measures</span></tt> &#8212; Measures package</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="">1. <code class="docutils literal"><span class="pre">VideoTester</span></code> &#8212; Base package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="measures.html">2. <code class="docutils literal"><span class="pre">VideoTester.measures</span></code> &#8212; Measures package</a></li>
 </ul>
 </li>
 </ul>
@@ -127,7 +127,7 @@
       
           <li><a href="modules.html">Module Reference</a> &raquo;</li>
       
-    <li>1. <tt class="docutils literal"><span class="pre">VideoTester</span></tt> &#8212; Base package</li>
+    <li>1. <code class="docutils literal"><span class="pre">VideoTester</span></code> &#8212; Base package</li>
       <li class="wy-breadcrumbs-aside">
         
           
@@ -142,14 +142,14 @@
            <div itemprop="articleBody">
             
   <div class="section" id="module-VideoTester">
-<span id="videotester-base-package"></span><h1>1. <tt class="docutils literal"><span class="pre">VideoTester</span></tt> &#8212; Base package<a class="headerlink" href="#module-VideoTester" title="Permalink to this headline">¶</a></h1>
+<span id="videotester-base-package"></span><h1>1. <code class="docutils literal"><span class="pre">VideoTester</span></code> &#8212; Base package<a class="headerlink" href="#module-VideoTester" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
 <dt id="VideoTester.VTBase">
-<em class="property">class </em><tt class="descclassname">VideoTester.</tt><tt class="descname">VTBase</tt><big>(</big><em>conf=None</em><big>)</big><a class="headerlink" href="#VideoTester.VTBase" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">VideoTester.</code><code class="descname">VTBase</code><span class="sig-paren">(</span><em>conf=None</em><span class="sig-paren">)</span><a class="headerlink" href="#VideoTester.VTBase" title="Permalink to this definition">¶</a></dt>
 <dd><p>Superclass that gathers several common functionalities shared by the client and the server.</p>
 <dl class="method">
 <dt id="VideoTester.VTBase.parseConf">
-<tt class="descname">parseConf</tt><big>(</big><em>file</em>, <em>section</em><big>)</big><a class="headerlink" href="#VideoTester.VTBase.parseConf" title="Permalink to this definition">¶</a></dt>
+<code class="descname">parseConf</code><span class="sig-paren">(</span><em>file</em>, <em>section</em><span class="sig-paren">)</span><a class="headerlink" href="#VideoTester.VTBase.parseConf" title="Permalink to this definition">¶</a></dt>
 <dd><p>Extract a section from a configuration file.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -161,7 +161,7 @@
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">A list of <tt class="docutils literal"><span class="pre">(name,</span> <span class="pre">value)</span></tt> pairs for each option in the given section.</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">A list of <code class="docutils literal"><span class="pre">(name,</span> <span class="pre">value)</span></code> pairs for each option in the given section.</p>
 </td>
 </tr>
 <tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">list of tuples</p>
@@ -173,7 +173,7 @@
 
 <dl class="method">
 <dt id="VideoTester.VTBase.run">
-<tt class="descname">run</tt><big>(</big><big>)</big><a class="headerlink" href="#VideoTester.VTBase.run" title="Permalink to this definition">¶</a></dt>
+<code class="descname">run</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#VideoTester.VTBase.run" title="Permalink to this definition">¶</a></dt>
 <dd><p>Do nothing.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
@@ -185,12 +185,12 @@
 
 <dl class="class">
 <dt id="VideoTester.VTServer">
-<em class="property">class </em><tt class="descclassname">VideoTester.</tt><tt class="descname">VTServer</tt><big>(</big><em>conf=None</em><big>)</big><a class="headerlink" href="#VideoTester.VTServer" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">VideoTester.core.VTBase</span></tt>, <a class="reference external" href="http://docs.python.org/library/simplexmlrpcserver.html#SimpleXMLRPCServer.SimpleXMLRPCServer" title="(in Python v2.7)"><tt class="xref py py-class docutils literal"><span class="pre">SimpleXMLRPCServer.SimpleXMLRPCServer</span></tt></a></p>
+<em class="property">class </em><code class="descclassname">VideoTester.</code><code class="descname">VTServer</code><span class="sig-paren">(</span><em>conf=None</em><span class="sig-paren">)</span><a class="headerlink" href="#VideoTester.VTServer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">VideoTester.core.VTBase</span></code>, <a class="reference external" href="http://docs.python.org/library/simplexmlrpcserver.html#SimpleXMLRPCServer.SimpleXMLRPCServer" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">SimpleXMLRPCServer.SimpleXMLRPCServer</span></code></a></p>
 <p>VT Server class.</p>
 <dl class="method">
 <dt id="VideoTester.VTServer.run">
-<tt class="descname">run</tt><big>(</big><em>bitrate</em>, <em>framerate</em><big>)</big><a class="headerlink" href="#VideoTester.VTServer.run" title="Permalink to this definition">¶</a></dt>
+<code class="descname">run</code><span class="sig-paren">(</span><em>bitrate</em>, <em>framerate</em><span class="sig-paren">)</span><a class="headerlink" href="#VideoTester.VTServer.run" title="Permalink to this definition">¶</a></dt>
 <dd><p>Run a subprocess for an RTSP server with a given bitrate and framerate (if not running)
 or add a client (if running).</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -206,7 +206,7 @@ or add a client (if running).</p>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The RTSP server port.</p>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">int</p>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="http://docs.python.org/library/functions.html#int" title="(in Python v2.7)">int</a></p>
 </td>
 </tr>
 </tbody>
@@ -215,7 +215,7 @@ or add a client (if running).</p>
 
 <dl class="method">
 <dt id="VideoTester.VTServer.stop">
-<tt class="descname">stop</tt><big>(</big><em>bitrate</em>, <em>framerate</em><big>)</big><a class="headerlink" href="#VideoTester.VTServer.stop" title="Permalink to this definition">¶</a></dt>
+<code class="descname">stop</code><span class="sig-paren">(</span><em>bitrate</em>, <em>framerate</em><span class="sig-paren">)</span><a class="headerlink" href="#VideoTester.VTServer.stop" title="Permalink to this definition">¶</a></dt>
 <dd><p>Stop an RTSP server with a given bitrate and framerate (if no remaining clients)
 or remove a client (if remaining clients).</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -242,12 +242,12 @@ or remove a client (if remaining clients).</p>
 
 <dl class="class">
 <dt id="VideoTester.VTClient">
-<em class="property">class </em><tt class="descclassname">VideoTester.</tt><tt class="descname">VTClient</tt><big>(</big><em>conf=None</em><big>)</big><a class="headerlink" href="#VideoTester.VTClient" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">VideoTester.core.VTBase</span></tt></p>
+<em class="property">class </em><code class="descclassname">VideoTester.</code><code class="descname">VTClient</code><span class="sig-paren">(</span><em>conf=None</em><span class="sig-paren">)</span><a class="headerlink" href="#VideoTester.VTClient" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">VideoTester.core.VTBase</span></code></p>
 <p>VT Client class.</p>
 <dl class="method">
 <dt id="VideoTester.VTClient.run">
-<tt class="descname">run</tt><big>(</big><big>)</big><a class="headerlink" href="#VideoTester.VTClient.run" title="Permalink to this definition">¶</a></dt>
+<code class="descname">run</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#VideoTester.VTClient.run" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="docutils">
 <dt>Run the client and perform all the operations:</dt>
 <dd><ul class="first last simple">
@@ -263,9 +263,9 @@ or remove a client (if remaining clients).</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">A dictionary of video files received (see <tt class="xref py py-attr docutils literal"><span class="pre">VideoTester.gstreamer.RTSPClient.files</span></tt>), a dictionary of caps (see <tt class="xref py py-attr docutils literal"><span class="pre">VideoTester.gstreamer.RTSPClient.caps</span></tt>) and a list of results</td>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">A dictionary of video files received (see <code class="xref py py-attr docutils literal"><span class="pre">VideoTester.gstreamer.RTSPClient.files</span></code>), a dictionary of caps (see <code class="xref py py-attr docutils literal"><span class="pre">VideoTester.gstreamer.RTSPClient.caps</span></code>) and a list of results</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">list</td>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="http://docs.python.org/library/functions.html#list" title="(in Python v2.7)">list</a></td>
 </tr>
 </tbody>
 </table>
@@ -275,11 +275,11 @@ or remove a client (if remaining clients).</p>
 
 <dl class="class">
 <dt id="VideoTester.RTSPServer">
-<em class="property">class </em><tt class="descclassname">VideoTester.</tt><tt class="descname">RTSPServer</tt><big>(</big><em>port</em><big>)</big><a class="headerlink" href="#VideoTester.RTSPServer" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">VideoTester.</code><code class="descname">RTSPServer</code><span class="sig-paren">(</span><em>port</em><span class="sig-paren">)</span><a class="headerlink" href="#VideoTester.RTSPServer" title="Permalink to this definition">¶</a></dt>
 <dd><p>GStreamer RTSP server.</p>
 <dl class="method">
 <dt id="VideoTester.RTSPServer.addMedia">
-<tt class="descname">addMedia</tt><big>(</big><em>videos</em>, <em>bitrate</em>, <em>framerate</em>, <em>path</em><big>)</big><a class="headerlink" href="#VideoTester.RTSPServer.addMedia" title="Permalink to this definition">¶</a></dt>
+<code class="descname">addMedia</code><span class="sig-paren">(</span><em>videos</em>, <em>bitrate</em>, <em>framerate</em>, <em>path</em><span class="sig-paren">)</span><a class="headerlink" href="#VideoTester.RTSPServer.addMedia" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add videos to the server.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -299,7 +299,7 @@ or remove a client (if remaining clients).</p>
 
 <dl class="method">
 <dt id="VideoTester.RTSPServer.run">
-<tt class="descname">run</tt><big>(</big><big>)</big><a class="headerlink" href="#VideoTester.RTSPServer.run" title="Permalink to this definition">¶</a></dt>
+<code class="descname">run</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#VideoTester.RTSPServer.run" title="Permalink to this definition">¶</a></dt>
 <dd><p>Attach server and run the loop.</p>
 </dd></dl>
 
@@ -307,11 +307,11 @@ or remove a client (if remaining clients).</p>
 
 <dl class="class">
 <dt id="VideoTester.RTSPClient">
-<em class="property">class </em><tt class="descclassname">VideoTester.</tt><tt class="descname">RTSPClient</tt><big>(</big><em>path</em>, <em>codec</em>, <em>bitrate</em>, <em>framerate</em><big>)</big><a class="headerlink" href="#VideoTester.RTSPClient" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">VideoTester.</code><code class="descname">RTSPClient</code><span class="sig-paren">(</span><em>path</em>, <em>codec</em>, <em>bitrate</em>, <em>framerate</em><span class="sig-paren">)</span><a class="headerlink" href="#VideoTester.RTSPClient" title="Permalink to this definition">¶</a></dt>
 <dd><p>GStreamer RTSP client.</p>
 <dl class="method">
 <dt id="VideoTester.RTSPClient.makeReference">
-<tt class="descname">makeReference</tt><big>(</big><em>video</em><big>)</big><a class="headerlink" href="#VideoTester.RTSPClient.makeReference" title="Permalink to this definition">¶</a></dt>
+<code class="descname">makeReference</code><span class="sig-paren">(</span><em>video</em><span class="sig-paren">)</span><a class="headerlink" href="#VideoTester.RTSPClient.makeReference" title="Permalink to this definition">¶</a></dt>
 <dd><p>Make the reference videos.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -325,8 +325,8 @@ or remove a client (if remaining clients).</p>
 
 <dl class="method">
 <dt id="VideoTester.RTSPClient.receive">
-<tt class="descname">receive</tt><big>(</big><em>url</em>, <em>proto</em><big>)</big><a class="headerlink" href="#VideoTester.RTSPClient.receive" title="Permalink to this definition">¶</a></dt>
-<dd><p>Connect to the RTSP server and receive the selected video (see <tt class="xref py py-attr docutils literal"><span class="pre">video</span></tt>).</p>
+<code class="descname">receive</code><span class="sig-paren">(</span><em>url</em>, <em>proto</em><span class="sig-paren">)</span><a class="headerlink" href="#VideoTester.RTSPClient.receive" title="Permalink to this definition">¶</a></dt>
+<dd><p>Connect to the RTSP server and receive the selected video (see <code class="xref py py-attr docutils literal"><span class="pre">video</span></code>).</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -345,35 +345,35 @@ or remove a client (if remaining clients).</p>
 
 <dl class="class">
 <dt id="VideoTester.VTApp">
-<em class="property">class </em><tt class="descclassname">VideoTester.</tt><tt class="descname">VTApp</tt><big>(</big><em>conf</em><big>)</big><a class="headerlink" href="#VideoTester.VTApp" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">wx._core.App</span></tt></p>
+<em class="property">class </em><code class="descclassname">VideoTester.</code><code class="descname">VTApp</code><span class="sig-paren">(</span><em>conf</em><span class="sig-paren">)</span><a class="headerlink" href="#VideoTester.VTApp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">wx._core.App</span></code></p>
 <p>WxPython application class.</p>
 </dd></dl>
 
 <dl class="class">
 <dt id="VideoTester.PcapIter">
-<em class="property">class </em><tt class="descclassname">VideoTester.</tt><tt class="descname">PcapIter</tt><big>(</big><em>cap</em>, <em>filter=''</em><big>)</big><a class="headerlink" href="#VideoTester.PcapIter" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">pcap.pcapObject</span></tt></p>
+<em class="property">class </em><code class="descclassname">VideoTester.</code><code class="descname">PcapIter</code><span class="sig-paren">(</span><em>cap</em>, <em>filter=''</em><span class="sig-paren">)</span><a class="headerlink" href="#VideoTester.PcapIter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">pcap.pcapObject</span></code></p>
 <p><em>Iterable PCAP Object</em>.</p>
 </dd></dl>
 
 <dl class="class">
 <dt id="VideoTester.Sniffer">
-<em class="property">class </em><tt class="descclassname">VideoTester.</tt><tt class="descname">Sniffer</tt><big>(</big><em>iface</em>, <em>ip</em>, <em>cap</em><big>)</big><a class="headerlink" href="#VideoTester.Sniffer" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">VideoTester.</code><code class="descname">Sniffer</code><span class="sig-paren">(</span><em>iface</em>, <em>ip</em>, <em>cap</em><span class="sig-paren">)</span><a class="headerlink" href="#VideoTester.Sniffer" title="Permalink to this definition">¶</a></dt>
 <dd><p>Network sniffer and packet parser.</p>
 <dl class="method">
 <dt id="VideoTester.Sniffer.parsePkts">
-<tt class="descname">parsePkts</tt><big>(</big><em>proto</em>, <em>caps</em><big>)</big><a class="headerlink" href="#VideoTester.Sniffer.parsePkts" title="Permalink to this definition">¶</a></dt>
-<dd><p>Parse packets and extract <tt class="xref py py-attr docutils literal"><span class="pre">lengths</span></tt>, <tt class="xref py py-attr docutils literal"><span class="pre">times</span></tt>, <tt class="xref py py-attr docutils literal"><span class="pre">sequences</span></tt>, <tt class="xref py py-attr docutils literal"><span class="pre">timestamps</span></tt> and <tt class="xref py py-attr docutils literal"><span class="pre">rtt</span></tt>.</p>
+<code class="descname">parsePkts</code><span class="sig-paren">(</span><em>proto</em>, <em>caps</em><span class="sig-paren">)</span><a class="headerlink" href="#VideoTester.Sniffer.parsePkts" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parse packets and extract <code class="xref py py-attr docutils literal"><span class="pre">lengths</span></code>, <code class="xref py py-attr docutils literal"><span class="pre">times</span></code>, <code class="xref py py-attr docutils literal"><span class="pre">sequences</span></code>, <code class="xref py py-attr docutils literal"><span class="pre">timestamps</span></code> and <code class="xref py py-attr docutils literal"><span class="pre">rtt</span></code>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>caps</strong> (<a class="reference external" href="http://docs.python.org/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) &#8211; Caps recolected from the GStreamer pipeline (see <tt class="xref py py-attr docutils literal"><span class="pre">VideoTester.gstreamer.RTSPClient.caps</span></tt>).</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>caps</strong> (<a class="reference external" href="http://docs.python.org/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) &#8211; Caps recolected from the GStreamer pipeline (see <code class="xref py py-attr docutils literal"><span class="pre">VideoTester.gstreamer.RTSPClient.caps</span></code>).</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><tt class="xref py py-attr docutils literal"><span class="pre">lengths</span></tt>, <tt class="xref py py-attr docutils literal"><span class="pre">times</span></tt>, <tt class="xref py py-attr docutils literal"><span class="pre">sequences</span></tt>, <tt class="xref py py-attr docutils literal"><span class="pre">timestamps</span></tt> and <tt class="xref py py-attr docutils literal"><span class="pre">rtt</span></tt>.</td>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><code class="xref py py-attr docutils literal"><span class="pre">lengths</span></code>, <code class="xref py py-attr docutils literal"><span class="pre">times</span></code>, <code class="xref py py-attr docutils literal"><span class="pre">sequences</span></code>, <code class="xref py py-attr docutils literal"><span class="pre">timestamps</span></code> and <code class="xref py py-attr docutils literal"><span class="pre">rtt</span></code>.</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">tuple</td>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="http://docs.python.org/library/functions.html#tuple" title="(in Python v2.7)">tuple</a></td>
 </tr>
 </tbody>
 </table>
@@ -381,7 +381,7 @@ or remove a client (if remaining clients).</p>
 
 <dl class="method">
 <dt id="VideoTester.Sniffer.run">
-<tt class="descname">run</tt><big>(</big><big>)</big><a class="headerlink" href="#VideoTester.Sniffer.run" title="Permalink to this definition">¶</a></dt>
+<code class="descname">run</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#VideoTester.Sniffer.run" title="Permalink to this definition">¶</a></dt>
 <dd><p>Start packet sniffing and save a capture file.</p>
 </dd></dl>
 
@@ -389,19 +389,19 @@ or remove a client (if remaining clients).</p>
 
 <dl class="function">
 <dt id="VideoTester.multiSort">
-<tt class="descclassname">VideoTester.</tt><tt class="descname">multiSort</tt><big>(</big><em>*args</em><big>)</big><a class="headerlink" href="#VideoTester.multiSort" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">VideoTester.</code><code class="descname">multiSort</code><span class="sig-paren">(</span><em>*args</em><span class="sig-paren">)</span><a class="headerlink" href="#VideoTester.multiSort" title="Permalink to this definition">¶</a></dt>
 <dd><p>Efficient sort of multiple lists as the first one passed.</p>
 </dd></dl>
 
 <dl class="class">
 <dt id="VideoTester.YUVVideo">
-<em class="property">class </em><tt class="descclassname">VideoTester.</tt><tt class="descname">YUVVideo</tt><big>(</big><em>file</em>, <em>(width</em>, <em>height</em>, <em>fmt)</em><big>)</big><a class="headerlink" href="#VideoTester.YUVVideo" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">VideoTester.</code><code class="descname">YUVVideo</code><span class="sig-paren">(</span><em>file</em>, <em>(width</em>, <em>height</em>, <em>fmt)</em><span class="sig-paren">)</span><a class="headerlink" href="#VideoTester.YUVVideo" title="Permalink to this definition">¶</a></dt>
 <dd><p>YUV parser.</p>
 </dd></dl>
 
 <dl class="class">
 <dt id="VideoTester.CodedVideo">
-<em class="property">class </em><tt class="descclassname">VideoTester.</tt><tt class="descname">CodedVideo</tt><big>(</big><em>file</em>, <em>codec</em><big>)</big><a class="headerlink" href="#VideoTester.CodedVideo" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">VideoTester.</code><code class="descname">CodedVideo</code><span class="sig-paren">(</span><em>file</em>, <em>codec</em><span class="sig-paren">)</span><a class="headerlink" href="#VideoTester.CodedVideo" title="Permalink to this definition">¶</a></dt>
 <dd><p>Coded video parser.</p>
 </dd></dl>
 
