@@ -34,12 +34,16 @@ Video Tester has the following dependencies:
 
 ### Method 1 (Fedora only):
 
-If you are using **Fedora**, you can build an RPM and let DNF/YUM manage all dependencies for you. First of all, enable the [RPM Fusion](http://rpmfusion.org) repositories. Then, follow these steps:
+If you are using **Fedora**, you can build an RPM and let DNF/YUM manage all dependencies for you. First of all, enable the [RPM Fusion](http://rpmfusion.org) repositories. Then, you can download the latest RPM, if available, or build it by yourself:
 
     $ git clone https://github.com/Enchufa2/video-tester.git
     $ cd video-tester
     $ make bdist_rpm
-    $ sudo dnf install dist/VideoTester-x.x.x-1.noarch.rpm
+    $ cd dist
+
+and then install it:
+
+    $ sudo dnf install VideoTester-x.x.x-1.noarch.rpm
 
 ### Method 2 (all distributions):
 
