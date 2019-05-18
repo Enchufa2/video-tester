@@ -45,7 +45,20 @@ and then install it:
 
     $ sudo dnf install VideoTester-x.x.x-1.noarch.rpm
 
-### Method 2 (all distributions):
+### Method 2 (Ubuntu/Debian):
+
+If you are using **Ubuntu** or **Debian**, you can install all dependencies using **apt**. The following command tested on Ubuntu 18.04:
+
+    $ sudo apt-get install libgstreamer1.0-0 gstreamer1.0-plugins-base gstreamer1.0-plugins-good gstreamer1.0-plugins-bad gstreamer1.0-plugins-ugly gstreamer1.0-libav gstreamer1.0-doc gstreamer1.0-tools gstreamer1.0-x gstreamer1.0-alsa gstreamer1.0-gl gstreamer1.0-gtk3 gstreamer1.0-qt5 gstreamer1.0-pulseaudio gstreamer1.0-rtsp python-gobject python-libpcap python-numpy python-matplotlib  python-wxmpl python-wxgtk3.0 python-opencv gir1.2-gst-rtsp-server-1.0 libgstrtspserver-1.0-0
+
+Then, download the latest version of Video Tester and follow these steps:
+
+    $ git clone https://github.com/Enchufa2/video-tester.git
+    $ cd video-tester
+    $ sudo python setup.py install
+
+
+### Method 3 (all distributions):
 
 You need to manually install all the required dependencies.
 
