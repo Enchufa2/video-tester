@@ -1,7 +1,7 @@
 # coding=UTF8
 ## This file is part of VideoTester
 ## See https://github.com/Enchufa2/video-tester for more information
-## Copyright 2011-2016 Iñaki Úcar <i.ucar86@gmail.com>
+## Copyright 2011-2016 Iñaki Úcar <iucar@fedoraproject.org>
 ## This program is published under a GPLv3 license
 
 import wx, wx.aui, pickle, textwrap, logging
@@ -335,8 +335,8 @@ class VTframe(wx.Frame):
         info.SetCopyright('(C) 2011-2016 Iñaki Úcar')
         info.SetWebSite('https://github.com/Enchufa2/video-tester')
         info.SetLicense(license)
-        info.AddDeveloper('Iñaki Úcar <i.ucar86@gmail.com>')
-        info.AddDocWriter('Iñaki Úcar <i.ucar86@gmail.com>')
+        info.AddDeveloper('Iñaki Úcar <iucar@fedoraproject.org>')
+        info.AddDocWriter('Iñaki Úcar <iucar@fedoraproject.org>')
         info.AddArtist('Almudena M. Castro <almudena.m.castro@gmail.com>')
         wx.AboutBox(info)
 

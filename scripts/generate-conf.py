@@ -1,7 +1,7 @@
 # coding=UTF8
 ## This file is part of VideoTester
 ## See https://github.com/Enchufa2/video-tester for more information
-## Copyright 2011-2016 Iñaki Úcar <i.ucar86@gmail.com>
+## Copyright 2011-2016 Iñaki Úcar <iucar@fedoraproject.org>
 ## This program is published under a GPLv3 license
 
 # Description: interactive .conf file generator

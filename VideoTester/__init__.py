@@ -1,11 +1,11 @@
 # coding=UTF8
 ## This file is part of VideoTester
 ## See https://github.com/Enchufa2/video-tester for more information
-## Copyright 2011-2016 Iñaki Úcar <i.ucar86@gmail.com>
+## Copyright 2011-2016 Iñaki Úcar <iucar@fedoraproject.org>
 ## This program is published under a GPLv3 license
 
-__author__ = 'Iñaki Úcar <i.ucar86@gmail.com>'
-__version__ = '1.0.0'
+__author__ = 'Iñaki Úcar <iucar@fedoraproject.org>'
+__version__ = '1.0.1'
 
 __all__ = []
 

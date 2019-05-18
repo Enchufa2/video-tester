@@ -1,7 +1,7 @@
 # coding=UTF8
 ## This file is part of VideoTester
 ## See https://github.com/Enchufa2/video-tester for more information
-## Copyright 2011-2016 Iñaki Úcar <i.ucar86@gmail.com>
+## Copyright 2011-2016 Iñaki Úcar <iucar@fedoraproject.org>
 ## This program is published under a GPLv3 license
 
 from distutils.core import setup
@@ -48,7 +48,7 @@ setup(name = 'VideoTester',
     version = __version__,
     description = 'Video Quality Assessment Tool',
     author = 'Iñaki Úcar',
-    author_email = 'i.ucar86@gmail.com',
+    author_email = 'iucar@fedoraproject.org',
     url = 'https://github.com/Enchufa2/video-tester',
     download_url = 'https://github.com/Enchufa2/video-tester/tarball/master',
     packages = ['VideoTester', 'VideoTester.measures'],
