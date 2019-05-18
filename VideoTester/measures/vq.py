@@ -125,7 +125,7 @@ class PSNR(VQmeasure):
         for deg, ref in izip(self.yuv, self.yuvref):
             p.add_task(doPSNR, deg['Y'], ref['Y'])
         p.join()
-        y = p.get_results()
+        y = list(p.get_results())
         self.graph(x, y)
         return self.data
 
@@ -244,7 +244,7 @@ class SSIM(VQmeasure):
         for deg, ref in izip(self.yuv, self.yuvref):
             p.add_task(doSSIM, deg['Y'], ref['Y'])
         p.join()
-        y = p.get_results()
+        y = list(p.get_results())
         self.graph(x, y)
         return self.data
 
