@@ -7,7 +7,7 @@
 import wx, wx.aui, pickle, textwrap, logging
 import matplotlib as mpl
 from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg as Canvas
-from matplotlib.backends.backend_wxagg import NavigationToolbar2Wx as Toolbar
+from matplotlib.backends.backend_wx import NavigationToolbar2Wx as Toolbar
 from gi.repository import Gst, GstVideo, GObject
 from . import __version__, VTLOG, VTClient, netifaces, \
     supported_codecs, supported_protocols
